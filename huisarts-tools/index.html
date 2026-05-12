@@ -1446,7 +1446,7 @@
       </div>
       <div class="fade-in">${inner}</div>
       <div class="app-footer">
-        Praktijktools v0.3 · Het Roosendael, Roermond · Niet bedoeld ter vervanging van klinisch oordeel.
+        Praktijktools v0.4 · Het Roosendael, Roermond · Niet bedoeld ter vervanging van klinisch oordeel.
       </div>
     `;
   }
@@ -3845,6 +3845,120 @@
       `;
     }
   });
+
+  /* ==================================================================
+     25. ASRS-v1.1 — ADHD-screener volwassenen
+     ================================================================== */
+  const ASRS_ITEMS = [
+    'Hoe vaak heeft u moeite om de laatste details van een project af te ronden, wanneer de uitdagende delen al gedaan zijn?',
+    'Hoe vaak heeft u moeite dingen in de juiste volgorde te houden bij een taak die organisatie vereist?',
+    'Hoe vaak heeft u problemen met het onthouden van afspraken of verplichtingen?',
+    'Bij een taak die veel nadenken vereist — hoe vaak vermijdt u het of stelt u het uit?',
+    'Hoe vaak friemelt u met handen of voeten, of beweegt u onrustig wanneer u lang moet zitten?',
+    'Hoe vaak voelt u zich overactief, alsof er een motortje in u zit dat u voortdrijft?'
+  ];
+  // Per-item drempel voor positief: items 1-3 ≥ 2 (Soms), items 4-6 ≥ 3 (Vaak)
+  const ASRS_CUTOFFS = [2, 2, 2, 3, 3, 3];
+
+  TOOLS.push({
+    id: 'asrs',
+    name: 'ADHD-screener (ASRS-v1.1)',
+    category: 'Psyche & GGZ',
+    metaLabel: 'WHO · 6-item · volwassenen',
+    desc: 'Snelle gevalideerde screen voor ADHD bij volwassenen — item-specifieke drempels',
+    keywords: ['adhd','add','asrs','screener','volwassen','aandacht','concentratie','impulsiviteit','hyperactiviteit'],
+    render() {
+      const scale = ['Nooit', 'Zelden', 'Soms', 'Vaak', 'Zeer vaak'];
+      const items = ASRS_ITEMS.map((q, i) => `
+        <div class="scale-item">
+          <div class="scale-q">${i + 1}. ${escape(q)}</div>
+          <div class="scale-options" data-q="${i}">
+            ${scale.map((label, v) => `<button data-v="${v}">${label}</button>`).join('')}
+          </div>
+        </div>
+      `).join('');
+      return `
+        <div class="tool-view">
+          <h2>ADHD-screener (ASRS-v1.1)</h2>
+          <div class="tool-subtitle">Gevalideerde WHO/Adler-screener voor ADHD bij volwassenen. <strong>Geen diagnose</strong> — een positief resultaat is reden voor uitgebreidere evaluatie (anamnese, ontwikkelingsanamnese, comorbiditeit, eventueel partner-/oudervragenlijst).</div>
+
+          ${items}
+
+          <div id="asrs-out"></div>
+
+          <div class="disclaimer">Bron: Kessler RC et al., <em>Psychol Med</em> 2005;35:245-256 — World Health Organization Adult ADHD Self-Report Scale Symptom Checklist. Voor diagnose: ontwikkelingsanamnese vanaf jeugd, functioneren op meerdere domeinen, uitsluiten van andere oorzaken (slaap, schildklier, depressie, middelengebruik). Verwijs naar GGZ of psychiater met ADHD-expertise. Multidisciplinaire richtlijn ADHD bij kinderen en volwassenen (Akwa GGZ 2023).</div>
+        </div>
+      `;
+    },
+    onMount() {
+      [0, 1, 2, 3, 4, 5].forEach(i => {
+        document.querySelectorAll(`.scale-options[data-q="${i}"] button`).forEach(b => {
+          b.addEventListener('click', () => {
+            document.querySelectorAll(`.scale-options[data-q="${i}"] button`).forEach(x => x.classList.remove('active'));
+            b.classList.add('active');
+            computeASRS();
+          });
+        });
+      });
+    }
+  });
+  function computeASRS() {
+    let answered = 0, positives = 0;
+    const itemStatus = [];
+    ASRS_ITEMS.forEach((_, i) => {
+      const active = document.querySelector(`.scale-options[data-q="${i}"] button.active`);
+      if (active) {
+        answered++;
+        const v = parseInt(active.dataset.v);
+        const isPositive = v >= ASRS_CUTOFFS[i];
+        if (isPositive) positives++;
+        itemStatus.push({ i: i + 1, v, isPositive, cutoff: ASRS_CUTOFFS[i] });
+      } else {
+        itemStatus.push({ i: i + 1, v: null, isPositive: false, cutoff: ASRS_CUTOFFS[i] });
+      }
+    });
+    if (answered < 6) {
+      $('asrs-out').innerHTML = `
+        <div class="result">
+          <div class="result-eyebrow">Onvolledig</div>
+          <div class="result-interpretation">Beantwoord alle 6 items voor een betrouwbare uitslag (${answered}/6 ingevuld).</div>
+        </div>
+      `;
+      return;
+    }
+    const positive = positives >= 4;
+    const itemDetail = itemStatus.map(s => `
+      <div class="lookup-row">
+        <span class="lookup-row-label">Item ${s.i} — drempel ${s.cutoff === 2 ? '"Soms" of vaker' : '"Vaak" of vaker'}</span>
+        <span class="lookup-row-value" style="color:${s.isPositive ? 'var(--red-ink)' : 'var(--green-ink)'}">${s.isPositive ? '✚ positief' : '— neg.'}</span>
+      </div>
+    `).join('');
+
+    const adviceHtml = positive ? `
+      <div class="flag flag-amber">
+        <strong>Screen positief</strong> — verdere evaluatie aangewezen. Plan ADHD-anamnesegesprek (ontwikkelingsanamnese vanaf jeugd, schoolfunctioneren, comorbiditeit) of verwijs naar GGZ/psychiater met ADHD-expertise. Een positieve screen heeft een sensitiviteit van ~68%, specificiteit ~99% — het is een sterke <em>uitsluiting</em>-tool maar bewijst zelf geen ADHD.
+      </div>
+    ` : `
+      <div class="flag flag-green">
+        <strong>Screen negatief</strong> — ADHD onwaarschijnlijk op basis van deze 6-item screen. Bij blijvende klachten ondanks negatieve screen: heroverweeg andere oorzaken (slaaptekort, stress, depressie, schildklierprobleem, OSAS, middelengebruik) en herhaal eventueel later of doe een uitgebreidere assessment.
+      </div>
+    `;
+
+    $('asrs-out').innerHTML = `
+      <div class="result">
+        <div class="result-eyebrow">Aantal positieve items</div>
+        <div class="result-value">${positives}<span class="unit">van 6</span></div>
+        <div class="result-interpretation">
+          ASRS-v1.1 cut-off: <strong>≥ 4 positieve items</strong> wijst op een verhoogd risico op ADHD. Items 1–3 tellen mee bij "Soms" of vaker, items 4–6 bij "Vaak" of vaker.
+        </div>
+        ${adviceHtml}
+        <div class="result-detail" style="margin-top:16px">
+          <strong>Item-uitslag:</strong>
+          ${itemDetail}
+        </div>
+      </div>
+    `;
+  }
 
   /* ==================================================================
      INIT

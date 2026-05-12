@@ -175,11 +175,65 @@ Eerste vraag bij die stap: wil abdelkader het puur voor zichzelf installeerbaar 
 - Schrijfvoorkeur: narratief, beknopt, helder, geen bullets in lopende tekst, diepe analyse boven oppervlakkige opsommingen. Houd deze stijl ook aan in app-tekst (interpretaties, korte uitleg-blokjes).
 - Werkt graag in single-file architectuur; vermijd over-engineering.
 
+## Dark mode + theme toggle
+
+Sinds v0.4 ondersteunt de app dark mode op drie niveaus:
+
+1. **Automatisch via OS-voorkeur** — `@media (prefers-color-scheme: dark)` schakelt om wanneer de gebruiker op iOS/macOS dark mode aan heeft.
+2. **Handmatige override** — `data-theme="light"` of `data-theme="dark"` op `<html>` overschrijft de OS-voorkeur.
+3. **Persistent** — keuze wordt opgeslagen in `localStorage` onder key `praktijktools.theme`.
+
+API:
+```javascript
+Theme.current()  // → 'light' | 'dark'
+Theme.set('dark')
+Theme.toggle()
+App.toggleTheme()  // UI-handler, doet ook re-render
+```
+
+Iconen: zon (in dark mode getoond) + maan (in light mode getoond). Knop staat in masthead-hoek op home. Op tool-detailpagina niet zichtbaar — gebruiker stelt het één keer in.
+
+Alle design tokens hebben een dark variant. Status-kleuren (rood/groen/geel/blauw/amber) ook — die zijn herijkt voor leesbaarheid op donkere achtergrond (donkere fill + lichte ink). Accent-teal wijzigt van `#0F766E` naar `#2DD4BF` in dark mode voor genoeg contrast.
+
+## Flowchart-patroon
+
+Voor tools waar een beslisboom logischer werkt dan een lijst (anafylaxie, antibiotica-keuze, anticonceptie etc.):
+
+```html
+<div class="flow">
+  <div class="flow-node flow-critical">
+    <div class="flow-node-label">Stap 1 · Onmiddellijk</div>
+    <div class="flow-node-title">Adrenaline IM</div>
+    <div class="flow-node-body">...</div>
+  </div>
+  <div class="flow-node flow-warn">
+    ...
+  </div>
+  <div class="flow-node flow-info">
+    ...
+  </div>
+  <div class="flow-node">
+    <!-- standaard, geen kleur -->
+  </div>
+</div>
+```
+
+CSS regelt de connectoren (verticale lijn + pijl tussen nodes) automatisch via `:before`/`:after` pseudo-elementen. Vier varianten beschikbaar: `flow-critical` (rood, voor levensbedreigende stappen), `flow-warn` (amber), `flow-info` (blauw), of geen modifier voor neutrale stappen. Anafylaxie-protocol is het referentievoorbeeld.
+
+## Interactieve dermatomen
+
+De dermatomen-tool heeft twee views:
+1. **Diagram** — schematisch SVG-body (anterior view, viewBox 200×440) met klikbare regions per spinaal niveau. Tap → highlight + detail panel. Daarnaast een 2×n grid niveau-knoppen voor directe selectie.
+2. **Tabel** — de bestaande lookup-tabel als fallback.
+
+Toggle bovenaan via `.view-toggle` patroon (segmented control style). Data zit in `const DERMATOMES = [...]` (tekst) en `const BODY_REGIONS = [...]` (SVG-paths). Beide arrays moeten gesynchroniseerd blijven op `lvl`.
+
 ## Versie
 
 - v0.1 — initiële release, 18 tools.
 - v0.2 — redesign (Geist + teal), surfaces opwaardering.
 - v0.3 — IA-herstructurering naar 7 klinische domeinen, favorieten-systeem, categorie-iconen, tags op cards, 6 nieuwe tools (ADHD-medicatie, antibiotica-keuzehulp, paracetamol pediatrisch, testosteron-suppletie, dermatomen, hersenzenuwen). Totaal 24 tools.
+- v0.4 — dark mode + theme toggle, contrast bumped voor spreekkamerlicht, interactieve dermatomen (SVG body + clickable regions), flowchart-patroon (anafylaxie als demo), ASRS-v1.1 ADHD-screener. Totaal 25 tools.
 
 ---
 
