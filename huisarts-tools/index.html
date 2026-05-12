@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
-  <meta name="theme-color" content="#F7F6F3" />
+  <meta name="theme-color" content="#FAFAFA" />
   <meta name="description" content="Klinische rekentools en wijzers voor de Nederlandse huisartsenpraktijk" />
 
   <!-- iOS PWA tags -->
@@ -20,45 +20,60 @@
 
   <title>Praktijktools</title>
 
-  <!-- Editorial typography -->
+  <!-- Clinical-modern typography: Geist (Vercel) + JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <style>
     /* ----------------------------------------------------------------
-       Design tokens — Editorial Minimalist
+       Design tokens — Clinical Modern (Geist + cool neutrals + teal accent)
     ---------------------------------------------------------------- */
     :root {
-      --bg: #F7F6F3;
+      /* Surfaces — cool clinical, replaces warm beige */
+      --bg: #FAFAFA;
       --surface: #FFFFFF;
-      --surface-2: #F9F9F8;
-      --ink: #1A1A1A;
-      --ink-2: #2F3437;
-      --muted: #787774;
-      --muted-2: #9B9A97;
-      --border: #EAEAEA;
-      --border-strong: #D7D6D2;
+      --surface-2: #F5F5F5;
 
-      --red-bg: #FDEBEC;
-      --red-ink: #9F2F2D;
-      --blue-bg: #E1F3FE;
-      --blue-ink: #1F6C9F;
-      --green-bg: #EDF3EC;
-      --green-ink: #346538;
-      --yellow-bg: #FBF3DB;
-      --yellow-ink: #956400;
-      --amber-bg: #FAEFE0;
-      --amber-ink: #8B5A1E;
+      /* Ink — off-black hierarchy in zinc family */
+      --ink: #0A0A0A;
+      --ink-2: #262626;
+      --muted: #525252;
+      --muted-2: #A3A3A3;
+      --border: #E5E5E5;
+      --border-strong: #D4D4D4;
 
-      --font-serif: 'Newsreader', 'Lyon Text', Georgia, serif;
-      --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+      /* Single accent — deep teal: medisch, betrouwbaar, niet schreeuwerig */
+      --accent: #0F766E;
+      --accent-hover: #115E59;
+      --accent-bg: #F0FDFA;
+      --accent-border: #99F6E4;
+
+      /* Status colors — recalibrated to feel aligned with the neutral base */
+      --red-bg: #FEF2F2;
+      --red-ink: #B91C1C;
+      --blue-bg: #EFF6FF;
+      --blue-ink: #1D4ED8;
+      --green-bg: #F0FDF4;
+      --green-ink: #15803D;
+      --yellow-bg: #FEFCE8;
+      --yellow-ink: #A16207;
+      --amber-bg: #FFFBEB;
+      --amber-ink: #B45309;
+
+      /* Typography — Geist for everything, JetBrains Mono for numbers.
+         --font-serif retained as alias so existing rules keep working. */
+      --font-display: 'Geist', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+      --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
       --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      --font-serif: var(--font-display);
 
-      --radius: 10px;
-      --radius-sm: 6px;
-      --radius-lg: 14px;
-      --shadow-card: 0 1px 2px rgba(0,0,0,0.02), 0 0 0 1px var(--border);
+      --radius: 12px;
+      --radius-sm: 8px;
+      --radius-lg: 16px;
+
+      --shadow-card: 0 1px 2px rgba(0,0,0,0.04), 0 1px 1px rgba(0,0,0,0.02);
+      --shadow-hover: 0 4px 12px rgba(15,118,110,0.08), 0 2px 4px rgba(0,0,0,0.04);
 
       --safe-top: env(safe-area-inset-top);
       --safe-bottom: env(safe-area-inset-bottom);
@@ -70,6 +85,8 @@
       font-family: var(--font-sans);
       font-size: 16px;
       line-height: 1.5;
+      font-feature-settings: 'ss01', 'cv11';
+      font-variant-numeric: tabular-nums;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       overscroll-behavior-y: none;
@@ -77,7 +94,7 @@
       min-height: 100dvh;
     }
     button { font-family: inherit; cursor: pointer; }
-    input, select, textarea { font-family: inherit; }
+    input, select, textarea { font-family: inherit; font-variant-numeric: tabular-nums; }
 
     /* ----------------------------------------------------------------
        App shell
@@ -94,12 +111,12 @@
       justify-content: space-between;
       gap: 12px;
       margin-bottom: 24px;
-      min-height: 36px;
+      min-height: 40px;
     }
     .topbar-title {
-      font-family: var(--font-serif);
-      font-size: 22px;
-      font-weight: 500;
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 600;
       letter-spacing: -0.02em;
       color: var(--ink);
       flex: 1;
@@ -112,77 +129,126 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 36px; height: 36px;
+      width: 40px; height: 40px;
       border-radius: 50%;
       border: 1px solid var(--border);
       background: var(--surface);
-      color: var(--ink);
+      color: var(--ink-2);
       padding: 0;
+      box-shadow: var(--shadow-card);
+      transition: all 150ms ease;
     }
-    .topbar-back:active { transform: scale(0.96); }
+    .topbar-back:hover { border-color: var(--accent); color: var(--accent); }
+    .topbar-back:active { transform: scale(0.94); }
+    .topbar-star {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted-2);
+      padding: 0;
+      box-shadow: var(--shadow-card);
+      transition: all 150ms ease;
+    }
+    .topbar-star.pinned { color: var(--accent); border-color: var(--accent-border); background: var(--accent-bg); }
+    .topbar-star:active { transform: scale(0.94); }
 
     /* ----------------------------------------------------------------
        Home — masthead + search
     ---------------------------------------------------------------- */
     .masthead {
       padding: 8px 0 28px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 28px;
+      margin-bottom: 24px;
+      position: relative;
+    }
+    .masthead::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 40px;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 2px;
     }
     .masthead-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
       font-family: var(--font-mono);
       font-size: 11px;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 12px;
+      color: var(--accent);
+      font-weight: 500;
+      margin-bottom: 14px;
+    }
+    .masthead-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-bg);
     }
     .masthead h1 {
-      font-family: var(--font-serif);
-      font-size: 38px;
-      font-weight: 500;
-      letter-spacing: -0.03em;
-      line-height: 1.05;
-      margin: 0 0 8px 0;
+      font-family: var(--font-display);
+      font-size: 36px;
+      font-weight: 600;
+      letter-spacing: -0.035em;
+      line-height: 1.02;
+      margin: 0 0 10px 0;
       color: var(--ink);
+      text-wrap: balance;
     }
     .masthead h1 em {
-      font-style: italic;
+      font-style: normal;
       font-weight: 400;
       color: var(--muted);
     }
     .masthead p {
       font-size: 15px;
       color: var(--muted);
-      margin: 8px 0 0 0;
-      max-width: 28em;
+      margin: 10px 0 0 0;
+      max-width: 32em;
       line-height: 1.55;
     }
 
     .search {
       position: relative;
-      margin: 18px 0 0 0;
+      margin: 8px 0 24px 0;
+      position: sticky;
+      top: var(--safe-top, 0);
+      z-index: 10;
+      padding-top: 4px;
+      background: linear-gradient(180deg, var(--bg) 70%, rgba(250,250,250,0));
     }
     .search input {
       width: 100%;
-      padding: 12px 14px 12px 40px;
+      padding: 14px 16px 14px 44px;
       border: 1px solid var(--border);
       background: var(--surface);
       border-radius: var(--radius);
       font-size: 15px;
       color: var(--ink);
       outline: none;
-      transition: border-color 150ms ease;
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+      box-shadow: var(--shadow-card);
     }
+    .search input::placeholder { color: var(--muted-2); }
     .search input:focus {
-      border-color: var(--ink);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-bg);
     }
     .search-icon {
       position: absolute;
-      left: 14px;
+      left: 16px;
       top: 50%;
       transform: translateY(-50%);
-      color: var(--muted);
+      color: var(--muted-2);
       pointer-events: none;
     }
 
@@ -194,77 +260,213 @@
     }
     .section-head {
       display: flex;
-      align-items: baseline;
+      align-items: center;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
     }
     .section-title {
-      font-family: var(--font-serif);
-      font-size: 20px;
-      font-weight: 500;
-      letter-spacing: -0.015em;
-      color: var(--ink);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-2);
     }
+    .section-title-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--accent-bg);
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .section-title-icon svg { width: 16px; height: 16px; }
     .section-count {
       font-family: var(--font-mono);
       font-size: 11px;
-      color: var(--muted);
+      color: var(--muted-2);
       letter-spacing: 0.04em;
+      font-weight: 500;
     }
 
     /* Tool grid */
     .tool-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      gap: 12px;
     }
     @media (min-width: 540px) {
-      .tool-grid { grid-template-columns: repeat(3, 1fr); }
+      .tool-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
     }
     .tool-card {
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      padding: 16px 14px;
+      gap: 8px;
+      padding: 18px 16px;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       text-align: left;
-      transition: transform 150ms ease, border-color 150ms ease;
-      min-height: 92px;
+      transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 180ms ease,
+                  box-shadow 180ms ease;
+      min-height: 100px;
+      box-shadow: var(--shadow-card);
+      position: relative;
+      overflow: hidden;
     }
-    .tool-card:active {
-      transform: scale(0.98);
+    .tool-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px;
+      height: 0;
+      background: var(--accent);
+      transition: height 180ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .tool-card:hover {
+      transform: translateY(-2px);
       border-color: var(--border-strong);
+      box-shadow: var(--shadow-hover);
+    }
+    .tool-card:hover::after { height: 100%; }
+    .tool-card:active {
+      transform: translateY(0) scale(0.98);
     }
     .tool-card-meta {
       font-family: var(--font-mono);
       font-size: 10px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--muted-2);
+      color: var(--accent);
+      font-weight: 500;
     }
     .tool-card-name {
-      font-family: var(--font-serif);
-      font-size: 17px;
-      font-weight: 500;
-      letter-spacing: -0.015em;
-      line-height: 1.2;
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
       color: var(--ink);
     }
     .tool-card-desc {
       font-size: 12px;
       color: var(--muted);
-      line-height: 1.4;
+      line-height: 1.45;
       margin-top: 2px;
     }
+    .tool-card-tag {
+      display: inline-block;
+      margin-top: auto;
+      padding: 2px 8px;
+      font-size: 9px;
+      font-family: var(--font-mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: var(--surface-2);
+      border-radius: 4px;
+      font-weight: 500;
+      align-self: flex-start;
+    }
+    .tool-card-tag.tag-acuut { background: var(--red-bg); color: var(--red-ink); }
+    .tool-card-tag.tag-pediatrisch { background: var(--blue-bg); color: var(--blue-ink); }
+    .tool-card-tag.tag-lookup { background: var(--surface-2); color: var(--muted); }
     .tool-card.featured {
       grid-column: span 2;
-      min-height: 110px;
+      min-height: 120px;
+      background: linear-gradient(135deg, var(--surface) 0%, var(--accent-bg) 200%);
+      border-color: var(--accent-border);
     }
+    .tool-card.featured .tool-card-name { font-size: 18px; }
     @media (min-width: 540px) {
       .tool-card.featured { grid-column: span 2; }
+    }
+
+    /* Favorites strip — horizontal scroll, top of home */
+    .favorites {
+      margin: 0 0 28px 0;
+      padding-bottom: 4px;
+    }
+    .favorites-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .favorites-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-2);
+    }
+    .favorites-title svg { width: 14px; height: 14px; color: var(--accent); }
+    .favorites-scroll {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 4px;
+      margin: 0 -20px;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+    .favorites-scroll::-webkit-scrollbar { display: none; }
+    .favorite-chip {
+      flex: 0 0 auto;
+      min-width: 130px;
+      max-width: 180px;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 14px 14px;
+      background: var(--surface);
+      border: 1px solid var(--accent-border);
+      border-radius: var(--radius);
+      text-align: left;
+      transition: transform 180ms ease, box-shadow 180ms ease;
+      box-shadow: var(--shadow-card);
+    }
+    .favorite-chip:active { transform: scale(0.97); }
+    .favorite-chip-meta {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 500;
+    }
+    .favorite-chip-name {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      line-height: 1.2;
+      color: var(--ink);
+    }
+    .favorites-empty {
+      padding: 14px 16px;
+      background: var(--surface-2);
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--radius);
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
     }
 
     /* ----------------------------------------------------------------
@@ -274,23 +476,26 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 24px 20px;
+      padding: 28px 22px;
       margin-bottom: 24px;
+      box-shadow: var(--shadow-card);
     }
     .tool-view h2 {
-      font-family: var(--font-serif);
-      font-size: 26px;
-      font-weight: 500;
-      letter-spacing: -0.02em;
-      line-height: 1.15;
-      margin: 0 0 6px 0;
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin: 0 0 8px 0;
       color: var(--ink);
+      text-wrap: balance;
     }
     .tool-view .tool-subtitle {
       font-size: 14px;
       color: var(--muted);
-      margin-bottom: 22px;
-      line-height: 1.5;
+      margin-bottom: 24px;
+      line-height: 1.55;
+      max-width: 42em;
     }
 
     /* Form elements */
@@ -315,18 +520,21 @@
     .field input[type="text"],
     .field select,
     .field textarea {
-      padding: 11px 12px;
+      padding: 12px 14px;
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
       background: var(--surface);
       font-size: 16px;
       color: var(--ink);
       outline: none;
-      transition: border-color 150ms ease;
+      transition: border-color 150ms ease, box-shadow 150ms ease;
     }
     .field input:focus,
     .field select:focus,
-    .field textarea:focus { border-color: var(--ink); }
+    .field textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-bg);
+    }
 
     .field-row {
       display: grid;
@@ -356,8 +564,9 @@
     }
     .segmented button.active {
       background: var(--surface);
-      color: var(--ink);
+      color: var(--accent);
       box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      font-weight: 600;
     }
 
     /* Checkbox row */
@@ -373,7 +582,7 @@
     .checkrow input[type="checkbox"] {
       margin: 3px 0 0 0;
       width: 18px; height: 18px;
-      accent-color: var(--ink);
+      accent-color: var(--accent);
       flex-shrink: 0;
     }
     .checkrow-text {
@@ -408,20 +617,26 @@
       gap: 6px;
     }
     .scale-options button {
-      padding: 10px 4px;
+      padding: 11px 4px;
       border: 1px solid var(--border);
       background: var(--surface);
-      border-radius: 6px;
+      border-radius: 8px;
       font-size: 12px;
       color: var(--ink-2);
-      transition: all 150ms ease;
+      transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
       line-height: 1.2;
       font-family: var(--font-mono);
+      font-weight: 500;
+    }
+    .scale-options button:hover {
+      border-color: var(--accent);
+      color: var(--accent);
     }
     .scale-options button.active {
-      background: var(--ink);
-      color: var(--surface);
-      border-color: var(--ink);
+      background: var(--accent);
+      color: #FFFFFF;
+      border-color: var(--accent);
+      box-shadow: 0 1px 2px rgba(15,118,110,0.2);
     }
 
     /* Buttons */
@@ -430,60 +645,87 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      padding: 13px 18px;
+      padding: 14px 20px;
       border: none;
       border-radius: var(--radius-sm);
       font-size: 15px;
-      font-weight: 500;
+      font-weight: 600;
+      letter-spacing: -0.01em;
       cursor: pointer;
-      transition: all 150ms ease;
+      transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
     }
     .btn-primary {
-      background: var(--ink);
-      color: var(--surface);
+      background: var(--accent);
+      color: #FFFFFF;
       width: 100%;
+      box-shadow: 0 1px 2px rgba(15,118,110,0.2),
+                  inset 0 1px 0 rgba(255,255,255,0.15);
     }
-    .btn-primary:active { transform: scale(0.98); background: #333; }
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(15,118,110,0.25),
+                  inset 0 1px 0 rgba(255,255,255,0.15);
+    }
+    .btn-primary:active {
+      transform: translateY(0) scale(0.99);
+      box-shadow: 0 1px 2px rgba(15,118,110,0.2);
+    }
     .btn-ghost {
       background: transparent;
       color: var(--muted);
       border: 1px solid var(--border);
       padding: 10px 14px;
       font-size: 13px;
+      font-weight: 500;
     }
+    .btn-ghost:hover { color: var(--ink-2); border-color: var(--border-strong); }
 
-    /* Result card */
+    /* Result card — most important real estate in the app */
     .result {
-      margin-top: 24px;
-      padding: 20px;
-      border: 1px solid var(--border);
+      margin-top: 28px;
+      padding: 24px;
+      border: 1px solid var(--accent-border);
       border-radius: var(--radius);
-      background: var(--surface-2);
+      background: linear-gradient(180deg, var(--accent-bg) 0%, var(--surface-2) 100%);
+      position: relative;
     }
     .result-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       font-family: var(--font-mono);
       font-size: 11px;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 8px;
+      color: var(--accent);
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+    .result-eyebrow::before {
+      content: '';
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--accent);
     }
     .result-value {
-      font-family: var(--font-serif);
-      font-size: 44px;
-      font-weight: 500;
-      letter-spacing: -0.03em;
-      line-height: 1;
+      font-family: var(--font-display);
+      font-size: 48px;
+      font-weight: 600;
+      letter-spacing: -0.04em;
+      line-height: 0.95;
       color: var(--ink);
       margin-bottom: 4px;
+      font-variant-numeric: tabular-nums;
     }
     .result-value .unit {
       font-family: var(--font-sans);
       font-size: 14px;
-      font-weight: 400;
+      font-weight: 500;
       color: var(--muted);
       letter-spacing: 0;
-      margin-left: 6px;
+      margin-left: 8px;
     }
     .result-interpretation {
       font-size: 14px;
@@ -716,6 +958,10 @@
     back() {
       location.hash = '';
     },
+    toggleFav(toolId) {
+      Favs.toggle(toolId);
+      this.render();
+    },
     render() {
       if (this.state.view === 'home') {
         this.el.innerHTML = renderHome(this.state.search);
@@ -738,7 +984,7 @@
           `, '');
           return;
         }
-        this.el.innerHTML = renderShell(tool.render(), tool.name);
+        this.el.innerHTML = renderShell(tool.render(), tool.name, tool.id);
         // Wire up listeners
         if (tool.onMount) tool.onMount();
       }
@@ -750,18 +996,58 @@
     }
   };
 
-  function renderShell(inner, title) {
+  // ------------------------------------------------------------------
+  // Category icons — inline SVG paths (Phosphor-style 1.75 stroke)
+  // ------------------------------------------------------------------
+  const CATEGORY_ICONS = {
+    'Acuut & spoed':            '<path d="M12 2v6"/><path d="M12 14v8"/><circle cx="12" cy="11" r="2"/><path d="M5 9c0-3.866 3.134-7 7-7s7 3.134 7 7"/><path d="M19 13c0 3.866-3.134 7-7 7s-7-3.134-7-7"/>',
+    'Hart & vaten':             '<path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0L12 5.34l-.77-.76a5.4 5.4 0 0 0-7.65 7.65l8.42 8.42 8.42-8.42a5.4 5.4 0 0 0 0-7.65z"/>',
+    'Infectie & antibiotica':   '<circle cx="12" cy="12" r="3"/><path d="M12 3v3"/><path d="M12 18v3"/><path d="M3 12h3"/><path d="M18 12h3"/><path d="m5.6 5.6 2.1 2.1"/><path d="m16.3 16.3 2.1 2.1"/><path d="m5.6 18.4 2.1-2.1"/><path d="m16.3 7.7 2.1-2.1"/>',
+    'Psyche & GGZ':             '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+    'Medicatie & rotatie':      '<path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/>',
+    'Endocrien & metabool':     '<path d="M3 12c0-4.97 4.03-9 9-9s9 4.03 9 9-4.03 9-9 9c-2.97 0-5.61-1.44-7.25-3.65"/><path d="M12 7v5l3 3"/>',
+    'Neuro & anatomie':         '<path d="M12 4.5C9.5 4 7 5.5 7 8c0 1 .5 2 1 2.5C7 11 6 12 6 13.5c0 1.5 1 2.5 2 3"/><path d="M12 4.5c2.5-.5 5 1 5 3.5 0 1-.5 2-1 2.5 1 .5 2 1.5 2 3 0 1.5-1 2.5-2 3"/><path d="M12 4.5v15"/><path d="M8 16.5c.5 2 2 3 4 3s3.5-1 4-3"/>'
+  };
+
+  // ------------------------------------------------------------------
+  // Favorites — localStorage-backed pinning
+  // ------------------------------------------------------------------
+  const Favs = {
+    KEY: 'praktijktools.favs.v1',
+    list() {
+      try { return JSON.parse(localStorage.getItem(this.KEY) || '[]'); }
+      catch (e) { return []; }
+    },
+    has(id) { return this.list().includes(id); },
+    toggle(id) {
+      const cur = this.list();
+      const idx = cur.indexOf(id);
+      if (idx >= 0) cur.splice(idx, 1);
+      else cur.push(id);
+      try { localStorage.setItem(this.KEY, JSON.stringify(cur.slice(0, 8))); }
+      catch (e) {}
+      return this.has(id);
+    }
+  };
+
+  function renderShell(inner, title, toolId) {
+    const pinned = toolId ? Favs.has(toolId) : false;
+    const starBtn = toolId ? `
+        <button class="topbar-star ${pinned ? 'pinned' : ''}" onclick="App.toggleFav('${toolId}')" aria-label="${pinned ? 'Pin verwijderen' : 'Vastpinnen'}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="${pinned ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </button>
+    ` : '<div style="width:40px"></div>';
     return `
       <div class="topbar fade-in">
         <button class="topbar-back" onclick="App.back()" aria-label="Terug">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
         </button>
         <div class="topbar-title">${escape(title)}</div>
-        <div style="width:36px"></div>
+        ${starBtn}
       </div>
       <div class="fade-in">${inner}</div>
       <div class="app-footer">
-        Praktijktools v0.1 · Het Roosendael · Niet bedoeld ter vervanging van klinisch oordeel.
+        Praktijktools v0.3 · Het Roosendael, Roermond · Niet bedoeld ter vervanging van klinisch oordeel.
       </div>
     `;
   }
@@ -772,21 +1058,70 @@
   function renderHome(search) {
     return `
       <header class="masthead fade-in">
-        <div class="masthead-eyebrow">Praktijktools · v0.1</div>
-        <h1>Klinische gereedschapskist <em>voor de huisartsenpraktijk</em></h1>
-        <p>Switch-kaarten, rekenformules en wijzers — gebundeld voor het spreekuur. Werkt offline.</p>
-        <div class="search">
-          <span class="search-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-          </span>
-          <input id="searchbox" type="search" placeholder="Zoek tool, score, medicatie…" value="${escape(search)}" autocomplete="off" />
-        </div>
+        <div class="masthead-eyebrow">Het Roosendael · Roermond</div>
+        <h1>Praktijktools</h1>
+        <p>Klinische rekentools, switch-kaarten en wijzers voor de spreekkamer. Werkt offline.</p>
       </header>
+
+      <div class="search fade-in">
+        <span class="search-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        </span>
+        <input id="searchbox" type="search" placeholder="Zoek tool, score, medicatie…" value="${escape(search)}" autocomplete="off" />
+      </div>
+
+      ${search.trim() ? '' : renderFavorites()}
 
       <div id="tool-sections">
         ${renderToolSections(search)}
       </div>
     `;
+  }
+
+  function renderFavorites() {
+    const ids = Favs.list();
+    const pinned = ids.map(id => TOOLS.find(t => t.id === id)).filter(Boolean);
+
+    if (pinned.length === 0) {
+      return `
+        <div class="favorites fade-in">
+          <div class="favorites-head">
+            <div class="favorites-title">
+              <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="0" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              Favorieten
+            </div>
+          </div>
+          <div class="favorites-empty">
+            Tik het ster-icoon bovenaan een tool om hem hier vast te pinnen. Maximaal 8.
+          </div>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="favorites fade-in">
+        <div class="favorites-head">
+          <div class="favorites-title">
+            <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="0" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Favorieten
+          </div>
+        </div>
+        <div class="favorites-scroll">
+          ${pinned.map(t => `
+            <button class="favorite-chip" onclick="App.navigate('${t.id}')">
+              <span class="favorite-chip-meta">${escape(t.metaLabel || t.category)}</span>
+              <span class="favorite-chip-name">${escape(t.name)}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  function categoryIcon(cat) {
+    const paths = CATEGORY_ICONS[cat];
+    if (!paths) return '';
+    return `<span class="section-title-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">${paths}</svg></span>`;
   }
 
   function renderToolSections(search) {
@@ -820,11 +1155,11 @@
       if (!cats[t.category]) cats[t.category] = [];
       cats[t.category].push(t);
     });
-    const CAT_ORDER = ['Rekenformules', 'Cardiovasculair', 'GGZ-scores', 'Switch & rotatie', 'Pharmacowijzer', 'Polyfarmacie', 'Gynaecologie & endocrien', 'Acuut'];
+    const CAT_ORDER = ['Acuut & spoed', 'Hart & vaten', 'Infectie & antibiotica', 'Psyche & GGZ', 'Medicatie & rotatie', 'Endocrien & metabool', 'Neuro & anatomie'];
     return CAT_ORDER.filter(c => cats[c]).map(c => `
       <section class="section">
         <div class="section-head">
-          <div class="section-title">${escape(c)}</div>
+          <div class="section-title">${categoryIcon(c)}${escape(c)}</div>
           <div class="section-count">${cats[c].length}</div>
         </div>
         <div class="tool-grid">${cats[c].map(toolCard).join('')}</div>
@@ -833,11 +1168,13 @@
   }
 
   function toolCard(t) {
+    const tag = t.tag ? `<span class="tool-card-tag tag-${t.tag}">${escape(t.tag)}</span>` : '';
     return `
       <button class="tool-card ${t.featured ? 'featured' : ''}" onclick="App.navigate('${t.id}')">
         <span class="tool-card-meta">${escape(t.metaLabel || t.category)}</span>
         <span class="tool-card-name">${escape(t.name)}</span>
         <span class="tool-card-desc">${escape(t.desc)}</span>
+        ${tag}
       </button>
     `;
   }
@@ -879,7 +1216,7 @@
   TOOLS.push({
     id: 'egfr',
     name: 'eGFR + medicatie-flags',
-    category: 'Rekenformules',
+    category: 'Hart & vaten',
     metaLabel: 'CKD-EPI 2021',
     desc: 'Nierfunctie met automatische dosering-waarschuwingen',
     keywords: ['nierfunctie','egfr','creatinine','metformine','doac','ckd'],
@@ -978,7 +1315,7 @@
   TOOLS.push({
     id: 'chads-hasbled',
     name: 'CHA₂DS₂-VASc + HAS-BLED',
-    category: 'Cardiovasculair',
+    category: 'Hart & vaten',
     metaLabel: 'AF · antistolling',
     desc: 'Tromboembolierisico en bloedingsrisico in één scherm',
     keywords: ['atriumfibrilleren','chads','hasbled','antistolling','doac'],
@@ -1073,7 +1410,7 @@
   TOOLS.push({
     id: 'score2',
     name: 'SCORE2 + CV-leeftijd',
-    category: 'Cardiovasculair',
+    category: 'Hart & vaten',
     metaLabel: 'NL low-risk · NHG/ESC',
     desc: '10-jaars CV-risico met motivationele cardiovasculaire leeftijd',
     keywords: ['score2','cvrm','cardiovasculair','risico','cv-leeftijd'],
@@ -1239,7 +1576,7 @@
   TOOLS.push({
     id: 'phq9',
     name: 'PHQ-9',
-    category: 'GGZ-scores',
+    category: 'Psyche & GGZ',
     metaLabel: 'Depressie · 9 items',
     desc: 'Screening en ernstmeting depressie',
     keywords: ['phq','depressie','screening','ggz'],
@@ -1326,7 +1663,7 @@
   TOOLS.push({
     id: 'gad7',
     name: 'GAD-7',
-    category: 'GGZ-scores',
+    category: 'Psyche & GGZ',
     metaLabel: 'Angst · 7 items',
     desc: 'Screening gegeneraliseerde angststoornis',
     keywords: ['gad','angst','screening'],
@@ -1399,7 +1736,7 @@
   TOOLS.push({
     id: 'ad-switch',
     name: 'Antidepressiva-switch',
-    category: 'Switch & rotatie',
+    category: 'Medicatie & rotatie',
     metaLabel: 'SSRI/SNRI/TCA/MAOi',
     desc: 'Cross-taper of directe switch — washout MAOi',
     keywords: ['antidepressiva','ssri','snri','switch','cross-taper','mao','maoi'],
@@ -1497,7 +1834,7 @@
   TOOLS.push({
     id: 'opioid-rotate',
     name: 'Opiatenrotatie',
-    category: 'Switch & rotatie',
+    category: 'Medicatie & rotatie',
     metaLabel: 'OME · Pallialine',
     desc: 'Conversie naar orale morfine-equivalent met 25–30% reductie',
     keywords: ['opiaten','opioid','morfine','oxycodon','fentanyl','rotatie','pallialine'],
@@ -1597,7 +1934,7 @@
   TOOLS.push({
     id: 'benzo-eq',
     name: 'Benzodiazepine-equivalenten',
-    category: 'Switch & rotatie',
+    category: 'Medicatie & rotatie',
     metaLabel: 'Diazepam-equivalent · Ashton',
     desc: 'Conversie en afbouwschema (12,5% per 2 wk)',
     keywords: ['benzodiazepine','benzo','afbouw','ashton','diazepam','oxazepam','lorazepam','zolpidem'],
@@ -1678,7 +2015,7 @@
   TOOLS.push({
     id: 'steroid-eq',
     name: 'Corticosteroïd-equivalenten',
-    category: 'Switch & rotatie',
+    category: 'Medicatie & rotatie',
     metaLabel: 'Glucocorticoïden',
     desc: 'Conversie tussen hydrocortison · prednison · dexamethason',
     keywords: ['corticosteroid','prednison','dexamethason','hydrocortison','stressdosering'],
@@ -1751,7 +2088,7 @@
   TOOLS.push({
     id: 'cyp',
     name: 'CYP-interacties',
-    category: 'Pharmacowijzer',
+    category: 'Medicatie & rotatie',
     metaLabel: 'P450 · SIP-score',
     desc: 'Substraten, remmers, inductoren — klinisch advies',
     keywords: ['cyp','interactie','p450','farmacologie','pharmacowijzer','sip'],
@@ -1819,7 +2156,7 @@
   TOOLS.push({
     id: 'stopp-start',
     name: 'STOPP/START quick screener',
-    category: 'Polyfarmacie',
+    category: 'Medicatie & rotatie',
     metaLabel: 'Ouderen · medicatiereview',
     desc: 'Kernpunten voor jaarlijkse polyfarmacie-evaluatie',
     keywords: ['stopp','start','polyfarmacie','ouderen','medicatiereview'],
@@ -1868,7 +2205,7 @@
   TOOLS.push({
     id: 'contraception',
     name: 'Anticonceptie-keuzehulp',
-    category: 'Gynaecologie & endocrien',
+    category: 'Endocrien & metabool',
     metaLabel: 'NHG · WHO MEC',
     desc: 'Geschikte opties op basis van profiel',
     keywords: ['anticonceptie','pil','spiraal','iud','implanon','migraine','trombose'],
@@ -1979,8 +2316,9 @@
   ------------------------------------------------------------------ */
   TOOLS.push({
     id: 'anaphylaxis',
+    tag: 'acuut',
     name: 'Anafylaxie-protocol',
-    category: 'Acuut',
+    category: 'Acuut & spoed',
     metaLabel: 'NVA · ABCDE',
     desc: 'Doseringsschema adrenaline en vervolgmedicatie',
     keywords: ['anafylaxie','adrenaline','epipen','shock','allergie'],
@@ -2024,7 +2362,7 @@
   TOOLS.push({
     id: 'centor',
     name: 'Centor / McIsaac',
-    category: 'Rekenformules',
+    category: 'Infectie & antibiotica',
     metaLabel: 'Keelpijn · antibiotica',
     desc: 'Kans op streptokokken-faryngitis',
     keywords: ['centor','mcisaac','keelpijn','tonsillitis','strep'],
@@ -2095,7 +2433,7 @@
   TOOLS.push({
     id: 'wells-dvt',
     name: 'Wells DVT',
-    category: 'Rekenformules',
+    category: 'Hart & vaten',
     metaLabel: 'Beenklacht · trombose',
     desc: 'Voorafkans op diepe veneuze trombose',
     keywords: ['wells','dvt','trombose','beenklacht'],
@@ -2151,7 +2489,7 @@
   TOOLS.push({
     id: 'audit-c',
     name: 'AUDIT-C',
-    category: 'GGZ-scores',
+    category: 'Psyche & GGZ',
     metaLabel: 'Alcohol · 3 items',
     desc: 'Screening problematisch alcoholgebruik',
     keywords: ['audit','alcohol','screening'],
@@ -2239,7 +2577,7 @@
   TOOLS.push({
     id: 'findrisc',
     name: 'FINDRISC',
-    category: 'Rekenformules',
+    category: 'Endocrien & metabool',
     metaLabel: 'Diabetes · screening',
     desc: '10-jaars risico op diabetes type 2',
     keywords: ['findrisc','diabetes','screening','dm2'],
@@ -2335,7 +2673,7 @@
   TOOLS.push({
     id: 'hrt',
     name: 'Hormonale substitutie (HRT)',
-    category: 'Gynaecologie & endocrien',
+    category: 'Endocrien & metabool',
     metaLabel: 'Overgang · NHG',
     desc: 'Keuze oestrogeen-progestageen-combinatie',
     keywords: ['hrt','overgang','menopauze','oestrogeen','progestageen'],
@@ -2423,6 +2761,524 @@
       </div>
     `;
   }
+
+  /* ==================================================================
+     19. ADHD-medicatie — pediatrisch + volwassen
+     ================================================================== */
+  TOOLS.push({
+    id: 'adhd-meds',
+    name: 'ADHD-medicatie',
+    category: 'Psyche & GGZ',
+    tag: 'pediatrisch',
+    metaLabel: 'Dosering · titratie',
+    desc: 'Startdoseringen en opbouw voor stimulantia en atomoxetine, gewicht-gebaseerd bij kinderen',
+    keywords: ['adhd','methylfenidaat','ritalin','concerta','equasym','medikinet','atomoxetine','strattera','lisdexamfetamine','elvanse','dexamfetamine','tempo','add'],
+    render() {
+      return `
+        <div class="tool-view">
+          <h2>ADHD-medicatie</h2>
+          <div class="tool-subtitle">Stimulantia en atomoxetine. Pediatrische doseringen zijn per kilogram lichaamsgewicht; volwassenen volgen vaste schalen. Altijd starten met laagste dosis en wekelijks titreren op effect en bijwerkingen.</div>
+
+          <div class="field"><label>Doelgroep</label>
+            <div class="segmented" id="adhd-pop">
+              <button class="active" data-v="kind">Kind / adolescent (6–17 jr)</button>
+              <button data-v="vw">Volwassen (≥ 18 jr)</button>
+            </div>
+          </div>
+
+          <div class="field" id="adhd-weight-field"><label>Gewicht (kg)</label>
+            <input type="number" id="adhd-weight" placeholder="bv. 32" min="10" max="120" step="0.5" />
+            <span class="hint">Bij kind alléén — bepaalt mg/kg-doseringen.</span>
+          </div>
+
+          <div class="field"><label>Voorkeursklasse</label>
+            <div class="segmented" id="adhd-class">
+              <button class="active" data-v="mph-short">Methylfenidaat kort</button>
+              <button data-v="mph-long">Methylfenidaat lang</button>
+              <button data-v="atx">Atomoxetine</button>
+              <button data-v="lis">Lisdex / dex</button>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" onclick="computeADHD()">Bereken dosering</button>
+          <div id="adhd-out"></div>
+
+          <div class="disclaimer">Bronnen: Multidisciplinaire richtlijn ADHD bij kinderen en volwassenen (Akwa GGZ 2023) · NHG-Standaard ADHD · Kinderformularium · Farmacotherapeutisch Kompas. Vóór start stimulantia altijd hartslag, bloeddruk, lengte/gewicht meten en cardiale anamnese uitvragen. Bij rode vlaggen ECG en cardiologisch consult.</div>
+        </div>
+      `;
+    },
+    onMount() {
+      ['adhd-pop','adhd-class'].forEach(id => {
+        document.querySelectorAll(`#${id} button`).forEach(b => {
+          b.addEventListener('click', () => {
+            document.querySelectorAll(`#${id} button`).forEach(x => x.classList.remove('active'));
+            b.classList.add('active');
+            // Show/hide weight field
+            if (id === 'adhd-pop') {
+              const isKid = b.dataset.v === 'kind';
+              document.getElementById('adhd-weight-field').style.display = isKid ? '' : 'none';
+            }
+          });
+        });
+      });
+    }
+  });
+  function computeADHD() {
+    const pop = document.querySelector('#adhd-pop button.active').dataset.v;
+    const klass = document.querySelector('#adhd-class button.active').dataset.v;
+    const w = parseFloat(document.getElementById('adhd-weight').value);
+
+    let title = '', body = '', label = '';
+    if (pop === 'kind' && (!w || w < 10 || w > 120)) {
+      $('adhd-out').innerHTML = `<div class="result"><div class="result-eyebrow">Invoer nodig</div><div class="result-interpretation">Vul gewicht in tussen 10 en 120 kg om mg/kg-doseringen te berekenen.</div></div>`;
+      return;
+    }
+
+    if (klass === 'mph-short') {
+      title = 'Methylfenidaat kortwerkend';
+      label = 'Ritalin · Medikinet IR';
+      if (pop === 'kind') {
+        const startDose = Math.max(2.5, Math.round(w * 0.1 * 2) / 2);
+        const targetLow = Math.round(w * 0.3);
+        const targetHigh = Math.round(w * 1.0);
+        body = `
+          <strong>Start:</strong> ${fmt(startDose, 1)} mg 's ochtends + ${fmt(startDose, 1)} mg rond lunchtijd (kortwerkend werkt 3–4 uur).<br>
+          <strong>Wekelijks ophogen</strong> met 5 mg/dag op geleide van effect en bijwerkingen.<br>
+          <strong>Streefrange:</strong> ${targetLow}–${targetHigh} mg/dag verdeeld over 2–3 doses.<br>
+          <strong>Maximum:</strong> 60 mg/dag (of 2 mg/kg/dag, wat lager is).
+        `;
+      } else {
+        body = `
+          <strong>Start:</strong> 5–10 mg 2–3× per dag.<br>
+          <strong>Ophogen</strong> per week met 5–10 mg/dag.<br>
+          <strong>Streefrange:</strong> 20–60 mg/dag in 2–3 doses.<br>
+          <strong>Maximum:</strong> 80 mg/dag (off-label boven 60 mg).
+        `;
+      }
+    } else if (klass === 'mph-long') {
+      title = 'Methylfenidaat verlengd';
+      label = 'Concerta · Equasym XL · Medikinet CR';
+      if (pop === 'kind') {
+        const targetLow = Math.round(w * 0.5);
+        const targetHigh = Math.round(w * 1.5);
+        body = `
+          <strong>Start:</strong> 18 mg Concerta 1×/dag (of equivalent Equasym XL 10 mg / Medikinet CR 10 mg).<br>
+          <strong>Wekelijks ophogen</strong> met 9–18 mg/dag.<br>
+          <strong>Streefrange:</strong> ${targetLow}–${targetHigh} mg/dag in 1 dosis 's ochtends.<br>
+          <strong>Maximum:</strong> 54–72 mg/dag (Concerta tot 72 mg toegestaan bij adolescenten).
+        `;
+      } else {
+        body = `
+          <strong>Start:</strong> 18 mg 's ochtends.<br>
+          <strong>Ophogen</strong> per week met 18 mg.<br>
+          <strong>Streefrange:</strong> 36–72 mg/dag.<br>
+          <strong>Maximum:</strong> 72 mg/dag.
+        `;
+      }
+    } else if (klass === 'atx') {
+      title = 'Atomoxetine';
+      label = 'Strattera · non-stimulans';
+      if (pop === 'kind') {
+        const startDose = Math.round(w * 0.5);
+        const targetDose = Math.round(w * 1.2);
+        const maxDose = Math.min(100, Math.round(w * 1.4));
+        body = `
+          <strong>Start:</strong> ${startDose} mg/dag (0.5 mg/kg) gedurende ten minste 7 dagen.<br>
+          <strong>Ophogen</strong> naar streefdosis ${targetDose} mg/dag (1.2 mg/kg) in 1 of 2 doses.<br>
+          <strong>Maximum:</strong> ${maxDose} mg/dag (1.4 mg/kg of 100 mg, wat lager is).<br>
+          <strong>Tijdshorizon:</strong> volledig effect pas na 6–8 weken — niet vroeg opgeven.
+        `;
+      } else {
+        body = `
+          <strong>Start:</strong> 40 mg/dag gedurende minimaal 7 dagen.<br>
+          <strong>Ophogen</strong> naar 80 mg/dag, eventueel na 2–4 weken naar 100 mg.<br>
+          <strong>Maximum:</strong> 100 mg/dag.<br>
+          <strong>Tijdshorizon:</strong> volledig effect na 6–8 weken.
+        `;
+      }
+    } else { // lis
+      title = 'Lisdexamfetamine / dexamfetamine';
+      label = 'Elvanse · Tempo · 2e keus na MPH';
+      if (pop === 'kind') {
+        body = `
+          <strong>Lisdexamfetamine (Elvanse):</strong> start 30 mg 's ochtends; wekelijks ophogen met 10–20 mg/dag; max 70 mg/dag.<br>
+          <strong>Dexamfetamine:</strong> 0.2–0.5 mg/kg/dosis 2–3× per dag, max 1.4 mg/kg/dag (max 40 mg/dag).<br>
+          <strong>Tweede keus</strong> na onvoldoende respons op of bijwerking van methylfenidaat.
+        `;
+      } else {
+        body = `
+          <strong>Lisdexamfetamine:</strong> start 30 mg/dag; ophogen per week met 10–20 mg; max 70 mg/dag.<br>
+          <strong>Dexamfetamine:</strong> 5–20 mg in 2–3 doses; max 60 mg/dag.<br>
+          <strong>Tweede keus</strong> na onvoldoende respons op methylfenidaat.
+        `;
+      }
+    }
+
+    $('adhd-out').innerHTML = `
+      <div class="result">
+        <div class="result-eyebrow">${escape(label)}</div>
+        <div class="result-value" style="font-size:24px">${escape(title)}</div>
+        <div class="result-interpretation" style="margin-top:14px">${body}</div>
+        <div class="result-detail">
+          <strong>Monitoring:</strong> hartslag + bloeddruk bij elke dosisverhoging, lengte/gewicht 6-maandelijks, jaarlijks evalueren of medicatie nog nodig is (medicatievakantie overwegen).<br>
+          <strong>Bijwerkingen om te bespreken:</strong> verminderde eetlust, slaap, hoofdpijn, irritabiliteit, hartkloppingen. Bij stimulantia ook: tics, stemmingswisselingen.
+        </div>
+      </div>
+    `;
+  }
+
+  /* ==================================================================
+     20. Antibiotica per indicatie — eerstekeus dosering
+     ================================================================== */
+  const AB_PROTOCOLS = {
+    'faryngitis':   { name: 'Acute keelpijn (GAS bij rode vlaggen)', drug: 'Feneticilline', adult: '500 mg 3×/dag, 7 dagen', kid: '25 mg/kg/dag in 3 doses (max 1500 mg/dag), 7 dagen', allergy: 'Bij penicilline-allergie: claritromycine 500 mg 2×/dag (volw) of 7.5 mg/kg 2×/dag (kind), 5 dagen.', note: 'NHG-Standaard Acute keelpijn: alleen AB bij ernstig ziekzijn, peritonsillair abces of risicogroep. Centor-score helpt selecteren.' },
+    'otitis':       { name: 'Otitis media acuta', drug: 'Amoxicilline', adult: '500 mg 3×/dag, 7 dagen', kid: '30–50 mg/kg/dag in 3 doses (max 3000 mg/dag), 7 dagen', allergy: 'Bij penicilline-allergie: azitromycine 10 mg/kg/dag (max 500 mg) gedurende 3 dagen.', note: 'NHG-Standaard Otitis media: AB pas bij < 2 jaar dubbelzijdig, koortsig ziekzijn, otorroe of onvoldoende herstel na 3 dagen.' },
+    'cystitis-vw':  { name: 'Cystitis bij gezonde vrouw (ongecompliceerd)', drug: 'Nitrofurantoine MR', adult: '100 mg 2×/dag, 5 dagen (vrouwen, geen comorbiditeit)', kid: 'Zie Kinderformularium — kind altijd verdacht voor structurele afwijking.', allergy: 'Alternatieven: fosfomycine 3 g eenmalig OF trimethoprim 300 mg 1×/dag 3 dagen.', note: 'NHG-Standaard UWI: bij zwangerschap, mannen, kinderen, ouderen > 65 jaar: andere route. Geen routine-AB bij asymptomatische bacteriurie.' },
+    'pyelo':        { name: 'Pyelonefritis / gecompliceerde UWI', drug: 'Ciprofloxacine', adult: '500 mg 2×/dag, 7 dagen (volw, ambulant)', kid: 'Verwijs — kind altijd cliniclus of pediater raadplegen.', allergy: 'Alternatief: cotrimoxazol 960 mg 2×/dag 14 dagen, mits gevoeligheid bekend.', note: 'NHG: bij koorts, ziek, zwangere of mannen → laagdrempelig opname overwegen. Urinekweek vooraf afnemen.' },
+    'cap':          { name: 'Pneumonie buiten ziekenhuis (CAP)', drug: 'Amoxicilline', adult: '500–1000 mg 3×/dag, 5 dagen (verleng tot 7 als nog koorts)', kid: '50–75 mg/kg/dag in 3 doses (max 3000 mg/dag), 5–7 dagen', allergy: 'Bij penicilline-allergie: doxycycline 100 mg 2×/dag (volw, eerste dag 200 mg) 5 dagen — niet bij kind < 8 jaar of zwangere.', note: 'NHG-Standaard CAP: laagdrempelig X-thorax bij twijfel. Bij ernstig ziek, CURB-65 ≥ 2, comorbiditeit, of geen reactie na 48 uur → opname.' },
+    'erysipelas':   { name: 'Erysipelas / cellulitis', drug: 'Flucloxacilline', adult: '500 mg 4×/dag, 7–14 dagen (oraal)', kid: '50–100 mg/kg/dag in 3–4 doses (max 4000 mg/dag), 10–14 dagen', allergy: 'Bij penicilline-allergie: claritromycine 500 mg 2×/dag (volw), 10 dagen.', note: 'SWAB: aanvankelijk feneticilline kan ook bij zekere streptokokken-cellulitis. Bij verdenking MRSA of geen verbetering → kweek + ziekenhuis.' },
+    'em':           { name: 'Erythema migrans (vroege lyme)', drug: 'Doxycycline', adult: '100 mg 2×/dag, 10 dagen', kid: '≥ 8 jr: 4 mg/kg/dag in 2 doses (max 200 mg/dag), 10 dagen. < 8 jr of zwangere: amoxicilline 50 mg/kg/dag in 3 doses, 14 dagen.', allergy: 'Alternatief volw: amoxicilline 500 mg 3×/dag 14 dagen. Bij echte amoxicilline-allergie azitromycine 500 mg dag 1, daarna 250 mg/dag × 4 dagen.', note: 'NHG-Standaard Tekenbeet: klinische diagnose, geen serologie nodig bij typisch EM. Bij neuroborreliose of ACA → ziekenhuis.' }
+  };
+  TOOLS.push({
+    id: 'ab-keuze',
+    name: 'Antibiotica per indicatie',
+    category: 'Infectie & antibiotica',
+    metaLabel: 'NHG · SWAB',
+    desc: 'Eerstekeus middel + dosering + duur, met kinderdosering per kg',
+    featured: true,
+    keywords: ['antibiotica','infectie','dosering','amoxicilline','feneticilline','doxycycline','nitrofurantoine','kind','volwassen','swab'],
+    render() {
+      const opts = Object.entries(AB_PROTOCOLS).map(([k, v]) => `<option value="${k}">${escape(v.name)}</option>`).join('');
+      return `
+        <div class="tool-view">
+          <h2>Antibiotica per indicatie</h2>
+          <div class="tool-subtitle">Eerstekeus middel + dosering volgens NHG-Behandelrichtlijnen en SWAB. Selecteer indicatie en patiëntcategorie.</div>
+
+          <div class="field"><label>Indicatie</label>
+            <select id="ab-ind">${opts}</select>
+          </div>
+          <div class="field"><label>Patiënt</label>
+            <div class="segmented" id="ab-pop">
+              <button class="active" data-v="adult">Volwassen</button>
+              <button data-v="kid">Kind (&lt; 18 jr)</button>
+            </div>
+          </div>
+          <div class="field" id="ab-weight-field" style="display:none"><label>Gewicht (kg) — optioneel</label>
+            <input type="number" id="ab-weight" placeholder="bv. 18" min="5" max="80" step="0.5" />
+            <span class="hint">Vul gewicht in voor concrete mg-berekening waar van toepassing.</span>
+          </div>
+
+          <button class="btn btn-primary" onclick="computeAB()">Toon protocol</button>
+          <div id="ab-out"></div>
+
+          <div class="disclaimer">Bronnen: NHG-Behandelrichtlijnen (Acute keelpijn, OMA, UWI, CAP, Tekenbeet, Cellulitis) · SWAB Antibioticaboekje · Kinderformularium. Bij allergie, zwangerschap, ernstige comorbiditeit of geen respons binnen 48 uur: raadpleeg specialist of formularium.</div>
+        </div>
+      `;
+    },
+    onMount() {
+      document.querySelectorAll('#ab-pop button').forEach(b => {
+        b.addEventListener('click', () => {
+          document.querySelectorAll('#ab-pop button').forEach(x => x.classList.remove('active'));
+          b.classList.add('active');
+          document.getElementById('ab-weight-field').style.display = b.dataset.v === 'kid' ? '' : 'none';
+        });
+      });
+    }
+  });
+  function computeAB() {
+    const indKey = document.getElementById('ab-ind').value;
+    const proto = AB_PROTOCOLS[indKey];
+    const pop = document.querySelector('#ab-pop button.active').dataset.v;
+    const w = parseFloat(document.getElementById('ab-weight').value);
+
+    let mgBlock = '';
+    // Bereken concrete mg-doses waar mogelijk
+    if (pop === 'kid' && w && w >= 5 && w <= 80) {
+      const calc = AB_KID_CALC[indKey];
+      if (calc) {
+        mgBlock = `<div class="flag flag-blue"><strong>Voor ${fmt(w, 1)} kg:</strong> ${calc(w)}</div>`;
+      }
+    }
+
+    const dose = pop === 'adult' ? proto.adult : proto.kid;
+    $('ab-out').innerHTML = `
+      <div class="result">
+        <div class="result-eyebrow">${escape(proto.name)}</div>
+        <div class="result-value" style="font-size:28px">${escape(proto.drug)}</div>
+        <div class="result-interpretation" style="margin-top:14px"><strong>Dosering:</strong> ${dose}</div>
+        ${mgBlock}
+        <div class="result-detail">
+          <strong>Bij allergie:</strong> ${proto.allergy}<br><br>
+          <strong>Beleid:</strong> ${proto.note}
+        </div>
+      </div>
+    `;
+  }
+  // Concrete mg-berekening voor kind, per indicatie
+  const AB_KID_CALC = {
+    'otitis':       w => `${Math.round(w * 40 / 3)} mg amoxicilline 3×/dag (40 mg/kg/dag verdeeld).`,
+    'cap':          w => `${Math.round(w * 60 / 3)} mg amoxicilline 3×/dag (60 mg/kg/dag verdeeld).`,
+    'erysipelas':   w => `${Math.round(w * 75 / 4)} mg flucloxacilline 4×/dag (75 mg/kg/dag verdeeld).`,
+    'faryngitis':   w => `${Math.round(w * 25 / 3)} mg feneticilline 3×/dag (25 mg/kg/dag verdeeld).`,
+    'em':           w => w >= 30 ? `Standaard volwassen-dosering doxycycline 100 mg 2×/dag, mits ≥ 8 jaar.` : `${Math.round(w * 50 / 3)} mg amoxicilline 3×/dag (50 mg/kg/dag) — bij kind < 8 jr of zwangere.`
+  };
+
+  /* ==================================================================
+     21. Paracetamol-dosering pediatrisch
+     ================================================================== */
+  TOOLS.push({
+    id: 'paracetamol-peds',
+    name: 'Paracetamol pediatrisch',
+    category: 'Infectie & antibiotica',
+    tag: 'pediatrisch',
+    metaLabel: 'Kinderformularium',
+    desc: 'Gewicht-gebaseerde dosering oraal + rectaal, met maximum dagdosis',
+    keywords: ['paracetamol','kind','koorts','pijn','dosering','rectaal','oraal','pediatrisch','kinderformularium'],
+    render() {
+      return `
+        <div class="tool-view">
+          <h2>Paracetamol pediatrisch</h2>
+          <div class="tool-subtitle">Dosering bij koorts of pijn. Oraal heeft de voorkeur boven rectaal — opname is voorspelbaarder en effectiever.</div>
+
+          <div class="field"><label>Gewicht (kg)</label>
+            <input type="number" id="par-weight" placeholder="bv. 14" min="3" max="50" step="0.5" />
+            <span class="hint">Voor kind 3–50 kg. Boven 50 kg: volwassen-dosering 500–1000 mg, max 4 g/dag.</span>
+          </div>
+
+          <button class="btn btn-primary" onclick="computeParacetamol()">Bereken dosering</button>
+          <div id="par-out"></div>
+
+          <div class="disclaimer">Bron: Kinderformularium (NKFK) · KNMP. Korte-duur dosering ≤ 3 dagen mag tijdelijk hoger zijn; bij langer gebruik altijd terug naar standaarddosering. Voorzichtig bij leverfunctiestoornis, ondervoeding of dehydratie.</div>
+        </div>
+      `;
+    },
+    onMount() {
+      document.getElementById('par-weight').addEventListener('input', computeParacetamol);
+    }
+  });
+  function computeParacetamol() {
+    const w = parseFloat(document.getElementById('par-weight').value);
+    if (!w || w < 3 || w > 50) { $('par-out').innerHTML = ''; return; }
+
+    const oralDose = Math.round(w * 15);          // 15 mg/kg per gift
+    const rectalFirst = Math.round(w * 30);       // 1e rectale gift mag 30 mg/kg
+    const rectalRepeat = Math.round(w * 20);      // herhaling 20 mg/kg
+    const maxDaily = Math.min(4000, Math.round(w * 60));
+    const maxShort = Math.min(4000, Math.round(w * 90));
+
+    $('par-out').innerHTML = `
+      <div class="result">
+        <div class="result-eyebrow">Per gift</div>
+        <div class="result-value">${oralDose}<span class="unit">mg oraal</span></div>
+        <div class="result-interpretation">
+          <strong>Oraal:</strong> ${oralDose} mg per gift (15 mg/kg), max 4× per dag, interval ≥ 4 uur.<br>
+          <strong>Rectaal:</strong> eerste gift ${rectalFirst} mg (30 mg/kg), daarna ${rectalRepeat} mg (20 mg/kg) max 4× per dag.
+        </div>
+        <div class="result-detail">
+          <strong>Maximum per dag:</strong> ${maxDaily} mg (60 mg/kg) bij standaardgebruik · ${maxShort} mg (90 mg/kg) bij gebruik ≤ 3 dagen, daarna terug naar standaarddosering.<br>
+          <strong>Tip:</strong> noteer dosis en tijdstip op een notitieblok bij wisselende verzorgers — overdosering ontstaat meestal door dubbele toediening, niet door één te hoge gift.
+        </div>
+      </div>
+    `;
+  }
+
+  /* ==================================================================
+     22. Testosteron-suppletie therapie
+     ================================================================== */
+  TOOLS.push({
+    id: 'testosterone',
+    name: 'Testosteron-suppletie',
+    category: 'Endocrien & metabool',
+    metaLabel: 'NHG-Standpunt 2022',
+    desc: 'Indicatie, preparaatkeuze, dosering en monitoring bij hypogonadisme',
+    keywords: ['testosteron','hypogonadisme','tostran','testogel','nebido','sustanon','androgeen','suppletie','man'],
+    render() {
+      return `
+        <div class="tool-view">
+          <h2>Testosteron-suppletie</h2>
+          <div class="tool-subtitle">Behandeling van bevestigd hypogonadisme bij mannen. Vóór start altijd secundaire oorzaken uitsluiten (medicatie, OSAS, obesitas, alcohol, hypofysepathologie).</div>
+
+          <div class="field"><label>Stap in het traject</label>
+            <div class="segmented" id="t-step">
+              <button class="active" data-v="indication">1 · Indicatie</button>
+              <button data-v="choice">2 · Preparaatkeuze</button>
+              <button data-v="monitor">3 · Monitoring</button>
+            </div>
+          </div>
+
+          <div id="t-out"></div>
+
+          <div class="disclaimer">Bron: NHG-Standpunt Testosterontherapie bij mannen (2022) · NIV-richtlijn Hypogonadisme. Contra-indicaties: actief prostaat- of mammacarcinoom, hematocriet > 0.54, ernstige obstructieve BPH-klachten, NYHA-IV hartfalen, ongewenste kinderwens (suppressie spermatogenese).</div>
+        </div>
+      `;
+    },
+    onMount() {
+      const steps = {
+        indication: `
+          <div class="result">
+            <div class="result-eyebrow">Wanneer indicatie?</div>
+            <div class="result-interpretation">
+              Diagnose hypogonadisme vereist <strong>beide</strong> van:<br>
+              · klachten passend bij androgeen-deficiëntie (verminderd libido, erectiestoornis, vermoeidheid, verminderde spierkracht, depressieve klachten), én<br>
+              · 2× ochtend-totaal-testosteron <strong>&lt; 8 nmol/L</strong> (of 8–12 nmol/L met verlaagd vrij/SHBG-gecorrigeerd testosteron + persisterende klachten).
+            </div>
+            <div class="result-detail">
+              <strong>Vóór labbevestiging eerst uitsluiten:</strong> medicatie (opiaten, glucocorticoïden, anti-androgenen), OSAS, obesitas, chronische ziekte, slechte slaap, alcohol/THC. Bij verlaagde LH/FSH (secundair hypogonadisme): hypofyse-as evalueren (prolactine, IGF-1, cortisol, vrij T4) en MRI hypofyse overwegen.<br><br>
+              <strong>Vóór start:</strong> Ht, PSA + DRE bij ≥ 40 jaar, totaal-testosteron, LH/FSH, cardiale anamnese.
+            </div>
+          </div>
+        `,
+        choice: `
+          <div class="result">
+            <div class="result-eyebrow">Preparaten — voorkeur transdermaal</div>
+            <div class="result-interpretation" style="margin-top:8px">
+              <strong>Eerste keus — transdermaal:</strong><br>
+              · <strong>Testogel 50 mg/dag</strong> (1 sachet 's ochtends op schouders/armen, niet wassen ≥ 2 uur, niet aanraken door partner/kind).<br>
+              · <strong>Tostran 2% gel 60 mg/dag</strong> (3 metered doses).<br>
+              Voordeel: dagelijkse aanpassing mogelijk, snelle wash-out bij bijwerking.<br><br>
+              <strong>Tweede keus — intramusculair</strong> (bij voorkeur en goede therapietrouw):<br>
+              · <strong>Nebido (testosteron-undecanoaat) 1000 mg IM</strong> diep gluteaal. Schema: t = 0, t = 6 weken, daarna elke 10–14 weken (gedoseerd op dal-testosteron).<br>
+              · <strong>Sustanon 250 mg IM</strong> elke 3–4 weken — sterk fluctuerend serumniveau, daarom in praktijk minder gebruikt.
+            </div>
+            <div class="result-detail">
+              <strong>Verwachte respons:</strong> klachtenverbetering binnen 3–6 maanden. Geen effect → her-evalueer indicatie i.p.v. dosis ophogen. Testosteron <em>geen</em> behandeling voor 'normal aging' of vermoeidheid zonder duidelijk hypogonadisme.
+            </div>
+          </div>
+        `,
+        monitor: `
+          <div class="result">
+            <div class="result-eyebrow">Monitor-schema</div>
+            <div class="result-interpretation" style="margin-top:8px">
+              <strong>3 maanden na start:</strong> totaal-testosteron (dal-spiegel voor Nebido), Ht, klachten, bloeddruk. Streefwaarde testosteron 15–25 nmol/L (mid-normal range).<br><br>
+              <strong>6 en 12 maanden:</strong> idem + PSA + DRE (bij ≥ 40 jaar).<br><br>
+              <strong>Daarna jaarlijks:</strong> testosteron, Ht, PSA, DRE, lipiden, gewicht.
+            </div>
+            <div class="result-detail">
+              <strong>Stoppen of dosis verlagen bij:</strong><br>
+              · Ht &gt; 0.54 — eerst aderlaten + dosering halveren; bij persisteren staken.<br>
+              · PSA-stijging &gt; 1.4 ng/mL in 1 jaar of suspect DRE — urologisch consult vóór voortzetten.<br>
+              · Erythrocytose-symptomen, polycythemia rubra-achtig beeld.<br>
+              · Nieuwe of toegenomen OSAS-klachten.<br>
+              · Verslechtering hartfalen.<br><br>
+              <strong>Bespreek vooraf:</strong> sub-/infertiliteit door suppressie endogene spermatogenese. Bij kinderwens: hCG ± FSH overwegen i.p.v. testosteron, of LH-stimulerende strategie via uroloog/endocrinoloog.
+            </div>
+          </div>
+        `
+      };
+      function showStep(v) { $('t-out').innerHTML = steps[v]; }
+      document.querySelectorAll('#t-step button').forEach(b => {
+        b.addEventListener('click', () => {
+          document.querySelectorAll('#t-step button').forEach(x => x.classList.remove('active'));
+          b.classList.add('active');
+          showStep(b.dataset.v);
+        });
+      });
+      showStep('indication');
+    }
+  });
+
+  /* ==================================================================
+     23. Dermatomen + myotomen (C2–S4)
+     ================================================================== */
+  const DERMATOMES = [
+    { lvl: 'C2',     derm: 'Achterhoofd, capitis posterior',                    myot: 'Capitis-spieren (nekflexie)',                                    refl: '—' },
+    { lvl: 'C3–C4',  derm: 'Hals, schouders (kraagveld)',                        myot: 'M. trapezius, diafragma (C3–C5)',                                refl: '—' },
+    { lvl: 'C5',     derm: 'Bovenarm lateraal, m. deltoideus',                   myot: 'M. deltoideus (abductie schouder), m. biceps (flexie elleboog)', refl: 'Bicepsreflex (C5/C6)' },
+    { lvl: 'C6',     derm: 'Voorarm lateraal, duim, wijsvinger',                 myot: 'M. extensor carpi (polsextensie), m. biceps',                    refl: 'Brachioradialisreflex (C5/C6)' },
+    { lvl: 'C7',     derm: 'Middelvinger, dorsale voorarm',                       myot: 'M. triceps (extensie elleboog), m. flexor carpi',                refl: 'Tricepsreflex (C7/C8)' },
+    { lvl: 'C8',     derm: 'Pink, voorarm mediaal',                              myot: 'M. flexor digitorum, intrinsieke handspieren',                   refl: '—' },
+    { lvl: 'T1',     derm: 'Bovenarm mediaal, oksel',                            myot: 'Mm. interossei (vingerspreiding/-sluiting)',                     refl: '—' },
+    { lvl: 'T4',     derm: 'Tepellijn (mid-borst)',                               myot: 'Intercostaal',                                                   refl: 'Bovenste buikhuidreflex' },
+    { lvl: 'T10',    derm: 'Navel',                                              myot: 'Onderste rectus abdominis',                                      refl: 'Middelste buikhuidreflex' },
+    { lvl: 'L1',     derm: 'Lies, bovenste 1/3 dij voor',                         myot: 'M. iliopsoas (heupflexie, begin)',                               refl: 'Cremasterreflex (L1/L2)' },
+    { lvl: 'L2',     derm: 'Dij voor (midden)',                                  myot: 'M. iliopsoas (heupflexie), heup-adductoren',                     refl: '—' },
+    { lvl: 'L3',     derm: 'Knie mediaal, dij distaal-voor',                      myot: 'M. quadriceps (knie-extensie)',                                  refl: 'Patellareflex (L3/L4)' },
+    { lvl: 'L4',     derm: 'Mediaal onderbeen, mediale malleolus',                myot: 'M. tibialis anterior (dorsoflexie voet)',                        refl: 'Patellareflex (L3/L4)' },
+    { lvl: 'L5',     derm: 'Dorsum voet, hallux, lateraal onderbeen',             myot: 'M. extensor hallucis longus (hallux-extensie)',                  refl: '—' },
+    { lvl: 'S1',     derm: 'Hak, plantair, laterale voet',                        myot: 'M. gastrocnemius/soleus (plantarflexie), m. peroneus',           refl: 'Achillespeesreflex (S1/S2)' },
+    { lvl: 'S2',     derm: 'Achterzijde dij (midden)',                            myot: 'Intrinsieke voetspieren',                                        refl: '—' },
+    { lvl: 'S3–S5',  derm: 'Perineum, perianaal (zadelgebied)',                   myot: 'Bekkenbodem, m. sphincter ani externus',                         refl: 'Anale reflex, bulbocavernosus' }
+  ];
+  TOOLS.push({
+    id: 'dermatomes',
+    name: 'Dermatomen & myotomen',
+    category: 'Neuro & anatomie',
+    tag: 'lookup',
+    metaLabel: 'C2 – S5',
+    desc: 'Spinale niveaus met dermatoom, aangestuurde spier en bijhorende reflex',
+    keywords: ['dermatoom','myotoom','reflex','wortel','sensibiliteit','radiculair','wortelcompressie','zenuw','anatomie'],
+    render() {
+      const rows = DERMATOMES.map(d => `
+        <div class="matrix-row">
+          <div class="matrix-from-to">${escape(d.lvl)}</div>
+          <div class="matrix-strategy">
+            <strong>Dermatoom:</strong> ${escape(d.derm)}<br>
+            <strong>Myotoom:</strong> ${escape(d.myot)}<br>
+            <strong>Reflex:</strong> ${escape(d.refl)}
+          </div>
+        </div>
+      `).join('');
+      return `
+        <div class="tool-view">
+          <h2>Dermatomen & myotomen</h2>
+          <div class="tool-subtitle">Snelle lookup voor radiculaire klachten en lokalisatie van wortelcompressie. Sensorisch + motorisch + reflex per spinaal niveau.</div>
+
+          ${rows}
+
+          <div class="disclaimer">Vereenvoudigde schematische weergave — er bestaat overlap tussen niveaus en interindividuele variatie. Bij twijfel altijd vergelijken met klinisch onderzoek aan beide zijden. Bron: Netter, Kandel.</div>
+        </div>
+      `;
+    }
+  });
+
+  /* ==================================================================
+     24. Hersenzenuwen I–XII
+     ================================================================== */
+  const CRANIAL_NERVES = [
+    { rom: 'I',    naam: 'N. olfactorius',          functie: 'Sensorisch: reuk',                                                                                    test: 'Ruiken aan koffie/kruidnagel per neusgat; sluit oog en andere neusgat af',                                lesie: 'Anosmie (vaak na hoofdtrauma, postviraal, frontale tumor)' },
+    { rom: 'II',   naam: 'N. opticus',              functie: 'Sensorisch: visus, gezichtsveld, afferente pupilreflex',                                              test: 'Visus, konfrontatie-gezichtsveld, pupilreactie direct + consensueel',                                    lesie: 'Visusdaling, gezichtsvelduitval (lokalisatie afhankelijk van laesie-locatie)' },
+    { rom: 'III',  naam: 'N. oculomotorius',        functie: 'Motorisch: mm. recti sup/inf/med, m. obliquus inf, m. levator palpebrae; efferente pupil + accommodatie', test: 'H-test, ooglid heffen, pupilreactie',                                                                    lesie: 'Ptosis, oog "down and out", verwijde lichtstijve pupil' },
+    { rom: 'IV',   naam: 'N. trochlearis',          functie: 'Motorisch: m. obliquus superior (oog naar caudo-mediaal)',                                            test: 'Kijken naar binnen en omlaag; vraag naar verticale diplopie bij trap af lopen',                          lesie: 'Verticale diplopie, hoofd gekanteld naar gezonde zijde (compensatie)' },
+    { rom: 'V',    naam: 'N. trigeminus',           functie: 'Sensorisch: gezicht (V1 voorhoofd, V2 wang, V3 kaak), cornea. Motorisch: kauwmusculatuur',           test: 'Lichte aanraking 3 gebieden bilateraal, corneareflex, kaak openen + masseter palpatie',                  lesie: 'Sensibele uitval, trigeminus-neuralgie, verzwakte kauwmusculatuur' },
+    { rom: 'VI',   naam: 'N. abducens',             functie: 'Motorisch: m. rectus lateralis (oog naar lateraal)',                                                  test: 'Laterale blik per oog',                                                                                  lesie: 'Horizontale diplopie, oog naar mediaal afwijkend in rust' },
+    { rom: 'VII',  naam: 'N. facialis',             functie: 'Motorisch: mimiek. Sensorisch: smaak voorste 2/3 tong. Autonoom: tranen, speeksel. M. stapedius.',     test: 'Wenkbrauwen optrekken, ogen krachtig knijpen, tanden zien, opblazen wangen',                            lesie: 'Centraal (alleen onderste helft, voorhoofd gespaard) vs perifeer (Bell, hele helft incl. voorhoofd)' },
+    { rom: 'VIII', naam: 'N. vestibulocochlearis',  functie: 'Sensorisch: gehoor + vestibulair (evenwicht)',                                                        test: 'Fluisterstem, Weber + Rinne, evt. calorisch onderzoek; HINTS-protocol bij acute vertigo',                lesie: 'Gehoorverlies, draaiduizeligheid, nystagmus' },
+    { rom: 'IX',   naam: 'N. glossopharyngeus',     functie: 'Sensorisch: smaak achterste 1/3, keelwand. Motorisch: m. stylopharyngeus. Autonoom: glandula parotis.', test: 'Gag-reflex, palatum heffen ("aaaa"); klein onderzoeksbereik in praktijk',                                lesie: 'Slikstoornissen, smaakverlies, soms gloss.-neuralgie (uitschietende keelpijn)' },
+    { rom: 'X',    naam: 'N. vagus',                functie: 'Motorisch: palatum, farynx, larynx. Autonoom: parasympaticus hart/long/GI-tractus.',                  test: 'Uvula in middellijn ("aaaa"), stem-kwaliteit, slikken; bij heesheid larynx inspectie',                  lesie: 'Heesheid (n. recurrens), slikstoornis, uvula deviatie naar gezonde zijde' },
+    { rom: 'XI',   naam: 'N. accessorius',          functie: 'Motorisch: m. sternocleidomastoideus en m. trapezius (deels)',                                       test: 'Schouder ophalen tegen weerstand, hoofd draaien tegen weerstand',                                       lesie: 'Verzwakt schouder ophalen, atrofie SCM/trapezius (na halsoperatie)' },
+    { rom: 'XII',  naam: 'N. hypoglossus',          functie: 'Motorisch: tongmusculatuur',                                                                          test: 'Tong recht uitsteken — fasciculaties? Deviatie?',                                                       lesie: 'Tong devieert naar de zíjde van de laesie; atrofie + fasciculaties bij chronisch' }
+  ];
+  TOOLS.push({
+    id: 'cranial-nerves',
+    name: 'Hersenzenuwen I–XII',
+    category: 'Neuro & anatomie',
+    tag: 'lookup',
+    metaLabel: 'Functie + test + laesie',
+    desc: 'Functie, klinische test en typisch beeld bij laesie per hersenzenuw',
+    keywords: ['hersenzenuw','craniaal','cranial','nervus','olfactorius','opticus','facialis','vagus','hypoglossus','neurologisch onderzoek'],
+    render() {
+      const rows = CRANIAL_NERVES.map(n => `
+        <div class="matrix-row">
+          <div class="matrix-from-to">${escape(n.rom)} · ${escape(n.naam)}</div>
+          <div class="matrix-strategy">
+            <strong>Functie:</strong> ${escape(n.functie)}<br>
+            <strong>Test:</strong> ${escape(n.test)}<br>
+            <strong>Laesie:</strong> ${escape(n.lesie)}
+          </div>
+        </div>
+      `).join('');
+      return `
+        <div class="tool-view">
+          <h2>Hersenzenuwen</h2>
+          <div class="tool-subtitle">Twaalf hersenzenuwen met hun functie, een korte spreekkamertest en het typisch beeld bij uitval. Ezelsbrug: <em>Op Oma's Onderbroek Trapte Apen Fluitend Vlug In Vrouwen Aan Het Hek</em>.</div>
+
+          ${rows}
+
+          <div class="disclaimer">Vereenvoudigd overzicht — bij verdenking centrale laesie altijd uitgebreid neurologisch onderzoek + tijdige verwijzing naar neuroloog. Acute uitval (bv. acute facialis-parese) is geen huisarts-spoed, tenzij andere neurologische uitvalsverschijnselen of trauma.</div>
+        </div>
+      `;
+    }
+  });
 
   /* ==================================================================
      INIT
