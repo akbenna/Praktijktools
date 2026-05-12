@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
-  <meta name="theme-color" content="#FAFAFA" />
+  <meta name="theme-color" content="#FAFAFA" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
   <meta name="description" content="Klinische rekentools en wijzers voor de Nederlandse huisartsenpraktijk" />
 
   <!-- iOS PWA tags -->
@@ -27,42 +28,50 @@
 
   <style>
     /* ----------------------------------------------------------------
-       Design tokens — Clinical Modern (Geist + cool neutrals + teal accent)
+       Design tokens — Clinical Modern. Light mode default + dark mode via
+       prefers-color-scheme (auto) en data-theme override (manual toggle).
+       Contrast verhoogd: muted darker, borders meer zichtbaar onder
+       spreekkamerlicht en met leesbril.
     ---------------------------------------------------------------- */
     :root {
-      /* Surfaces — cool clinical, replaces warm beige */
+      /* Surfaces — cool clinical */
       --bg: #FAFAFA;
       --surface: #FFFFFF;
-      --surface-2: #F5F5F5;
+      --surface-2: #F4F4F5;
 
-      /* Ink — off-black hierarchy in zinc family */
+      /* Ink — off-black hierarchy in zinc family, contrast-verhoogd */
       --ink: #0A0A0A;
-      --ink-2: #262626;
-      --muted: #525252;
-      --muted-2: #A3A3A3;
-      --border: #E5E5E5;
-      --border-strong: #D4D4D4;
+      --ink-2: #1F1F1F;
+      --muted: #404040;            /* was #525252 — darker voor leesbaarheid */
+      --muted-2: #737373;          /* was #A3A3A3 — duidelijker */
+      --border: #D4D4D4;           /* was #E5E5E5 — meer zichtbaar */
+      --border-strong: #A3A3A3;
 
-      /* Single accent — deep teal: medisch, betrouwbaar, niet schreeuwerig */
+      /* Single accent — deep teal */
       --accent: #0F766E;
       --accent-hover: #115E59;
       --accent-bg: #F0FDFA;
-      --accent-border: #99F6E4;
+      --accent-border: #5EEAD4;
+      --accent-text-on: #FFFFFF;
 
-      /* Status colors — recalibrated to feel aligned with the neutral base */
+      /* Status colors */
       --red-bg: #FEF2F2;
       --red-ink: #B91C1C;
+      --red-border: #FCA5A5;
       --blue-bg: #EFF6FF;
       --blue-ink: #1D4ED8;
+      --blue-border: #93C5FD;
       --green-bg: #F0FDF4;
       --green-ink: #15803D;
+      --green-border: #86EFAC;
       --yellow-bg: #FEFCE8;
       --yellow-ink: #A16207;
+      --yellow-border: #FDE68A;
       --amber-bg: #FFFBEB;
       --amber-ink: #B45309;
+      --amber-border: #FCD34D;
 
-      /* Typography — Geist for everything, JetBrains Mono for numbers.
-         --font-serif retained as alias so existing rules keep working. */
+      /* Typography */
       --font-display: 'Geist', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
       --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
       --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
@@ -72,11 +81,94 @@
       --radius-sm: 8px;
       --radius-lg: 16px;
 
-      --shadow-card: 0 1px 2px rgba(0,0,0,0.04), 0 1px 1px rgba(0,0,0,0.02);
-      --shadow-hover: 0 4px 12px rgba(15,118,110,0.08), 0 2px 4px rgba(0,0,0,0.04);
+      --shadow-card: 0 1px 2px rgba(0,0,0,0.05), 0 1px 1px rgba(0,0,0,0.03);
+      --shadow-hover: 0 4px 12px rgba(15,118,110,0.10), 0 2px 4px rgba(0,0,0,0.06);
+      --shadow-strong: 0 8px 24px rgba(0,0,0,0.08);
 
       --safe-top: env(safe-area-inset-top);
       --safe-bottom: env(safe-area-inset-bottom);
+    }
+
+    /* Dark mode — auto via OS-preference */
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0A0A0A;
+        --surface: #171717;
+        --surface-2: #262626;
+
+        --ink: #FAFAFA;
+        --ink-2: #E5E5E5;
+        --muted: #A3A3A3;
+        --muted-2: #737373;
+        --border: #404040;
+        --border-strong: #525252;
+
+        --accent: #2DD4BF;          /* lichtere teal voor donkere achtergrond */
+        --accent-hover: #5EEAD4;
+        --accent-bg: #134E4A;
+        --accent-border: #0F766E;
+        --accent-text-on: #064E3B;
+
+        --red-bg: #450A0A;
+        --red-ink: #FCA5A5;
+        --red-border: #B91C1C;
+        --blue-bg: #1E3A8A;
+        --blue-ink: #BFDBFE;
+        --blue-border: #1D4ED8;
+        --green-bg: #14532D;
+        --green-ink: #BBF7D0;
+        --green-border: #15803D;
+        --yellow-bg: #422006;
+        --yellow-ink: #FDE68A;
+        --yellow-border: #A16207;
+        --amber-bg: #451A03;
+        --amber-ink: #FCD34D;
+        --amber-border: #B45309;
+
+        --shadow-card: 0 1px 2px rgba(0,0,0,0.4), 0 1px 1px rgba(0,0,0,0.2);
+        --shadow-hover: 0 4px 12px rgba(45,212,191,0.15), 0 2px 4px rgba(0,0,0,0.3);
+        --shadow-strong: 0 8px 24px rgba(0,0,0,0.5);
+      }
+    }
+
+    /* Manual dark override */
+    :root[data-theme="dark"] {
+      --bg: #0A0A0A;
+      --surface: #171717;
+      --surface-2: #262626;
+
+      --ink: #FAFAFA;
+      --ink-2: #E5E5E5;
+      --muted: #A3A3A3;
+      --muted-2: #737373;
+      --border: #404040;
+      --border-strong: #525252;
+
+      --accent: #2DD4BF;
+      --accent-hover: #5EEAD4;
+      --accent-bg: #134E4A;
+      --accent-border: #0F766E;
+      --accent-text-on: #064E3B;
+
+      --red-bg: #450A0A;
+      --red-ink: #FCA5A5;
+      --red-border: #B91C1C;
+      --blue-bg: #1E3A8A;
+      --blue-ink: #BFDBFE;
+      --blue-border: #1D4ED8;
+      --green-bg: #14532D;
+      --green-ink: #BBF7D0;
+      --green-border: #15803D;
+      --yellow-bg: #422006;
+      --yellow-ink: #FDE68A;
+      --yellow-border: #A16207;
+      --amber-bg: #451A03;
+      --amber-ink: #FCD34D;
+      --amber-border: #B45309;
+
+      --shadow-card: 0 1px 2px rgba(0,0,0,0.4), 0 1px 1px rgba(0,0,0,0.2);
+      --shadow-hover: 0 4px 12px rgba(45,212,191,0.15), 0 2px 4px rgba(0,0,0,0.3);
+      --shadow-strong: 0 8px 24px rgba(0,0,0,0.5);
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -916,6 +1008,280 @@
       left: 0;
       color: var(--muted);
     }
+
+    /* ----------------------------------------------------------------
+       Theme toggle — kleine knop in masthead-hoek op home
+    ---------------------------------------------------------------- */
+    .theme-toggle {
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--ink-2);
+      padding: 0;
+      box-shadow: var(--shadow-card);
+      transition: all 150ms ease;
+    }
+    .theme-toggle:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .theme-toggle:active { transform: scale(0.94); }
+    .theme-toggle svg { width: 16px; height: 16px; }
+    .theme-toggle .icon-sun { display: none; }
+    .theme-toggle .icon-moon { display: block; }
+    :root[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+    :root[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .theme-toggle .icon-sun { display: block; }
+      :root:not([data-theme="light"]) .theme-toggle .icon-moon { display: none; }
+    }
+
+    /* ----------------------------------------------------------------
+       Flowchart-patroon — herbruikbaar voor decision trees
+       (anafylaxie, antibiotica-keuze, anticonceptie etc.)
+    ---------------------------------------------------------------- */
+    .flow {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin: 16px 0;
+    }
+    .flow-node {
+      position: relative;
+      padding: 14px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--ink-2);
+    }
+    .flow-node + .flow-node { margin-top: 28px; }
+    .flow-node + .flow-node::before {
+      content: '';
+      position: absolute;
+      top: -22px;
+      left: 50%;
+      width: 2px;
+      height: 16px;
+      background: var(--accent);
+      transform: translateX(-50%);
+    }
+    .flow-node + .flow-node::after {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid var(--accent);
+      transform: translateX(-50%);
+    }
+    .flow-node-label {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    .flow-node-title {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+    .flow-node-body { font-size: 13px; color: var(--ink-2); line-height: 1.55; }
+    .flow-node-body strong { color: var(--ink); font-weight: 600; }
+    /* Variants per priority */
+    .flow-node.flow-critical {
+      border-color: var(--red-border);
+      background: var(--red-bg);
+    }
+    .flow-node.flow-critical .flow-node-label,
+    .flow-node.flow-critical .flow-node-title { color: var(--red-ink); }
+    .flow-node.flow-warn {
+      border-color: var(--amber-border);
+      background: var(--amber-bg);
+    }
+    .flow-node.flow-warn .flow-node-label,
+    .flow-node.flow-warn .flow-node-title { color: var(--amber-ink); }
+    .flow-node.flow-info {
+      border-color: var(--blue-border);
+      background: var(--blue-bg);
+    }
+    .flow-node.flow-info .flow-node-label,
+    .flow-node.flow-info .flow-node-title { color: var(--blue-ink); }
+    /* Branch — twee parallelle paden */
+    .flow-branch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 28px 0 0;
+      position: relative;
+    }
+    .flow-branch::before {
+      content: '';
+      position: absolute;
+      top: -22px;
+      left: 50%;
+      width: 2px;
+      height: 16px;
+      background: var(--accent);
+      transform: translateX(-50%);
+    }
+    .flow-branch::after {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid var(--accent);
+      transform: translateX(-50%);
+    }
+    .flow-branch > .flow-node + .flow-node { margin-top: 0; }
+    .flow-branch > .flow-node + .flow-node::before,
+    .flow-branch > .flow-node + .flow-node::after { content: none; }
+
+    /* ----------------------------------------------------------------
+       Body diagram — voor interactieve dermatomen
+    ---------------------------------------------------------------- */
+    .body-diagram {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 16px 0 8px;
+      padding: 18px 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .body-figure {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .body-figure-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted-2);
+      font-weight: 500;
+    }
+    .body-svg { width: 100%; max-width: 160px; height: auto; }
+    .body-band {
+      fill: var(--surface);
+      stroke: var(--border);
+      stroke-width: 1;
+      cursor: pointer;
+      transition: fill 150ms ease, stroke 150ms ease;
+    }
+    .body-band:hover { fill: var(--accent-bg); stroke: var(--accent); }
+    .body-band.active {
+      fill: var(--accent-bg);
+      stroke: var(--accent);
+      stroke-width: 2;
+    }
+    .body-outline {
+      fill: var(--surface);
+      stroke: var(--border-strong);
+      stroke-width: 1.5;
+    }
+    .body-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      fill: var(--muted);
+      text-anchor: middle;
+      pointer-events: none;
+    }
+    .body-label.active { fill: var(--accent); font-weight: 600; }
+    .body-detail {
+      margin-top: 14px;
+      padding: 16px;
+      background: var(--surface);
+      border: 1px solid var(--accent-border);
+      border-radius: var(--radius);
+      min-height: 80px;
+    }
+    .body-detail-empty {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      text-align: center;
+    }
+    .body-detail-level {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .body-detail-row {
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--ink-2);
+      line-height: 1.5;
+    }
+    .body-detail-row:last-child { border-bottom: none; }
+    .body-detail-row strong {
+      display: inline-block;
+      min-width: 78px;
+      color: var(--muted);
+      font-weight: 500;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* View toggle (diagram / tabel) */
+    .view-toggle {
+      display: flex;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface-2);
+      padding: 3px;
+      margin-bottom: 16px;
+    }
+    .view-toggle button {
+      flex: 1;
+      padding: 8px 10px;
+      border: none;
+      background: transparent;
+      font-size: 13px;
+      color: var(--muted);
+      border-radius: 5px;
+      font-weight: 500;
+      transition: all 150ms ease;
+    }
+    .view-toggle button.active {
+      background: var(--surface);
+      color: var(--accent);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -926,6 +1292,35 @@
      PRAKTIJKTOOLS — Single-file PWA
      Klinische rekentools en wijzers voor de Nederlandse huisarts
      ================================================================== */
+
+  // Toepassen van opgeslagen thema vóór de eerste paint (voorkomt flits)
+  (function applyStoredTheme() {
+    try {
+      const stored = localStorage.getItem('praktijktools.theme');
+      if (stored === 'dark' || stored === 'light') {
+        document.documentElement.setAttribute('data-theme', stored);
+      }
+    } catch (e) {}
+  })();
+
+  const Theme = {
+    KEY: 'praktijktools.theme',
+    current() {
+      const dataAttr = document.documentElement.getAttribute('data-theme');
+      if (dataAttr) return dataAttr;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    },
+    set(value) {
+      document.documentElement.setAttribute('data-theme', value);
+      try { localStorage.setItem(this.KEY, value); } catch (e) {}
+      // Update meta theme-color zodat iOS-statusbar meekleurt
+      const meta = document.querySelector('meta[name="theme-color"]:not([media])');
+      if (meta) meta.setAttribute('content', value === 'dark' ? '#0A0A0A' : '#FAFAFA');
+    },
+    toggle() {
+      this.set(this.current() === 'dark' ? 'light' : 'dark');
+    }
+  };
 
   // ------------------------------------------------------------------
   // App state + routing (hash-based)
@@ -960,6 +1355,10 @@
     },
     toggleFav(toolId) {
       Favs.toggle(toolId);
+      this.render();
+    },
+    toggleTheme() {
+      Theme.toggle();
       this.render();
     },
     render() {
@@ -1058,6 +1457,10 @@
   function renderHome(search) {
     return `
       <header class="masthead fade-in">
+        <button class="theme-toggle" onclick="App.toggleTheme()" aria-label="Wissel licht/donker">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+        </button>
         <div class="masthead-eyebrow">Het Roosendael · Roermond</div>
         <h1>Praktijktools</h1>
         <p>Klinische rekentools, switch-kaarten en wijzers voor de spreekkamer. Werkt offline.</p>
@@ -3211,17 +3614,40 @@
     { lvl: 'S2',     derm: 'Achterzijde dij (midden)',                            myot: 'Intrinsieke voetspieren',                                        refl: '—' },
     { lvl: 'S3–S5',  derm: 'Perineum, perianaal (zadelgebied)',                   myot: 'Bekkenbodem, m. sphincter ani externus',                         refl: 'Anale reflex, bulbocavernosus' }
   ];
+  // Body-regions voor het diagram — gekoppeld aan spinale niveaus
+  // viewBox 200x440. Iedere region is een SVG-path met data-lvl.
+  const BODY_REGIONS = [
+    { lvl: 'C2',     path: 'M 78 12 A 22 22 0 0 1 122 12 L 122 28 L 78 28 Z',                                          label: { x: 100, y: 22, text: 'C2' } },
+    { lvl: 'C3–C4',  path: 'M 78 28 L 122 28 L 130 50 L 132 60 L 68 60 L 70 50 Z',                                     label: { x: 100, y: 48, text: 'C3–4' } },
+    { lvl: 'C5',     path: 'M 50 60 L 68 60 L 68 92 L 50 92 Z M 132 60 L 150 60 L 150 92 L 132 92 Z',                  label: { x: 32, y: 80, text: 'C5' } },
+    { lvl: 'C6',     path: 'M 50 92 L 68 92 L 60 144 L 42 144 Z M 132 92 L 150 92 L 158 144 L 140 144 Z',              label: { x: 26, y: 122, text: 'C6' } },
+    { lvl: 'C7',     path: 'M 42 144 L 60 144 L 56 184 L 38 184 Z M 140 144 L 158 144 L 162 184 L 144 184 Z',          label: { x: 22, y: 168, text: 'C7' } },
+    { lvl: 'C8',     path: 'M 38 184 L 56 184 L 52 212 L 36 212 Z M 144 184 L 162 184 L 164 212 L 148 212 Z',          label: { x: 22, y: 202, text: 'C8' } },
+    { lvl: 'T4',     path: 'M 68 60 L 132 60 L 132 100 L 68 100 Z',                                                    label: { x: 100, y: 84, text: 'T4' } },
+    { lvl: 'T10',    path: 'M 68 100 L 132 100 L 132 144 L 68 144 Z',                                                  label: { x: 100, y: 126, text: 'T10' } },
+    { lvl: 'L1',     path: 'M 68 144 L 132 144 L 138 180 L 62 180 Z',                                                  label: { x: 100, y: 165, text: 'L1' } },
+    { lvl: 'L3',     path: 'M 62 180 L 100 180 L 96 240 L 64 240 Z M 100 180 L 138 180 L 136 240 L 104 240 Z',         label: { x: 100, y: 215, text: 'L3' } },
+    { lvl: 'L4',     path: 'M 64 240 L 96 240 L 92 300 L 66 300 Z M 104 240 L 136 240 L 134 300 L 108 300 Z',          label: { x: 100, y: 275, text: 'L4' } },
+    { lvl: 'L5',     path: 'M 66 300 L 92 300 L 88 360 L 68 360 Z M 108 300 L 134 300 L 132 360 L 112 360 Z',          label: { x: 100, y: 335, text: 'L5' } },
+    { lvl: 'S1',     path: 'M 68 360 L 88 360 L 86 400 L 70 400 Z M 112 360 L 132 360 L 130 400 L 114 400 Z',          label: { x: 100, y: 385, text: 'S1' } }
+  ];
+
   TOOLS.push({
     id: 'dermatomes',
     name: 'Dermatomen & myotomen',
     category: 'Neuro & anatomie',
     tag: 'lookup',
     metaLabel: 'C2 – S5',
-    desc: 'Spinale niveaus met dermatoom, aangestuurde spier en bijhorende reflex',
-    keywords: ['dermatoom','myotoom','reflex','wortel','sensibiliteit','radiculair','wortelcompressie','zenuw','anatomie'],
+    desc: 'Interactief schema — tap een lichaamszone of niveau voor sensorisch, motorisch en reflex',
+    keywords: ['dermatoom','myotoom','reflex','wortel','sensibiliteit','radiculair','wortelcompressie','zenuw','anatomie','beeld','schema'],
     render() {
+      const regions = BODY_REGIONS.map(r => `
+        <path class="body-band" data-lvl="${r.lvl}" d="${r.path}"></path>
+        <text class="body-label" data-lvl="${r.lvl}" x="${r.label.x}" y="${r.label.y}">${r.label.text}</text>
+      `).join('');
+
       const rows = DERMATOMES.map(d => `
-        <div class="matrix-row">
+        <div class="matrix-row dermat-row" data-lvl="${d.lvl}">
           <div class="matrix-from-to">${escape(d.lvl)}</div>
           <div class="matrix-strategy">
             <strong>Dermatoom:</strong> ${escape(d.derm)}<br>
@@ -3230,16 +3656,97 @@
           </div>
         </div>
       `).join('');
+
       return `
         <div class="tool-view">
           <h2>Dermatomen & myotomen</h2>
-          <div class="tool-subtitle">Snelle lookup voor radiculaire klachten en lokalisatie van wortelcompressie. Sensorisch + motorisch + reflex per spinaal niveau.</div>
+          <div class="tool-subtitle">Tap een lichaamszone of niveau voor sensorisch, motorisch en reflex. Voor radiculaire klachten — bilateraal vergelijken bij twijfel.</div>
 
-          ${rows}
+          <div class="view-toggle" id="derm-view-toggle">
+            <button class="active" data-v="diagram">Diagram</button>
+            <button data-v="tabel">Tabel</button>
+          </div>
 
-          <div class="disclaimer">Vereenvoudigde schematische weergave — er bestaat overlap tussen niveaus en interindividuele variatie. Bij twijfel altijd vergelijken met klinisch onderzoek aan beide zijden. Bron: Netter, Kandel.</div>
+          <div id="derm-diagram-view">
+            <div class="body-diagram">
+              <div class="body-figure">
+                <div class="body-figure-label">Tap een zone</div>
+                <svg viewBox="0 0 200 440" class="body-svg" id="body-svg-ant">
+                  <g>
+                    ${regions}
+                  </g>
+                </svg>
+              </div>
+              <div class="body-figure">
+                <div class="body-figure-label">Niveau-knoppen</div>
+                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;width:100%">
+                  ${BODY_REGIONS.map(r => `<button class="btn-ghost derm-level-btn" data-lvl="${r.lvl}" style="text-align:center;padding:9px 6px;font-family:var(--font-mono);font-weight:500">${escape(r.lvl)}</button>`).join('')}
+                </div>
+              </div>
+            </div>
+            <div class="body-detail" id="body-detail">
+              <div class="body-detail-empty">Tap een dermatoom-zone op het lichaam of een niveau-knop om sensorisch + motorisch + reflex te tonen.</div>
+            </div>
+          </div>
+
+          <div id="derm-table-view" style="display:none">
+            ${rows}
+          </div>
+
+          <div class="disclaimer">Vereenvoudigde schematische weergave (anterior view, niet anatomisch precies). Klinische variatie en overlap tussen niveaus is normaal. Bij twijfel altijd bilateraal vergelijken bij neurologisch onderzoek. Bron: Netter, Kandel, NHG-Standaarden lumbosacraal radiculair syndroom.</div>
         </div>
       `;
+    },
+    onMount() {
+      // View toggle
+      document.querySelectorAll('#derm-view-toggle button').forEach(b => {
+        b.addEventListener('click', () => {
+          document.querySelectorAll('#derm-view-toggle button').forEach(x => x.classList.remove('active'));
+          b.classList.add('active');
+          const v = b.dataset.v;
+          document.getElementById('derm-diagram-view').style.display = v === 'diagram' ? '' : 'none';
+          document.getElementById('derm-table-view').style.display = v === 'tabel' ? '' : 'none';
+        });
+      });
+
+      // Klik op body-region of niveau-knop → highlight + detail
+      function selectLevel(lvl) {
+        // Reset alle highlights
+        document.querySelectorAll('.body-band').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.body-label').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.derm-level-btn').forEach(b => b.classList.remove('active'));
+        // Markeer geselecteerd
+        document.querySelectorAll(`.body-band[data-lvl="${lvl}"]`).forEach(p => p.classList.add('active'));
+        document.querySelectorAll(`.body-label[data-lvl="${lvl}"]`).forEach(t => t.classList.add('active'));
+        document.querySelectorAll(`.derm-level-btn[data-lvl="${lvl}"]`).forEach(b => {
+          b.classList.add('active');
+          b.style.background = 'var(--accent-bg)';
+          b.style.borderColor = 'var(--accent)';
+          b.style.color = 'var(--accent)';
+        });
+        document.querySelectorAll(`.derm-level-btn:not(.active)`).forEach(b => {
+          b.style.background = '';
+          b.style.borderColor = '';
+          b.style.color = '';
+        });
+        // Toon detail
+        const data = DERMATOMES.find(d => d.lvl === lvl);
+        if (!data) return;
+        document.getElementById('body-detail').innerHTML = `
+          <div class="body-detail-level">${escape(data.lvl)}</div>
+          <div class="body-detail-row"><strong>Dermatoom</strong> ${escape(data.derm)}</div>
+          <div class="body-detail-row"><strong>Myotoom</strong> ${escape(data.myot)}</div>
+          <div class="body-detail-row"><strong>Reflex</strong> ${escape(data.refl)}</div>
+        `;
+      }
+
+      document.querySelectorAll('.body-band, .body-label').forEach(el => {
+        el.style.cursor = 'pointer';
+        el.addEventListener('click', () => selectLevel(el.dataset.lvl));
+      });
+      document.querySelectorAll('.derm-level-btn').forEach(b => {
+        b.addEventListener('click', () => selectLevel(b.dataset.lvl));
+      });
     }
   });
 
