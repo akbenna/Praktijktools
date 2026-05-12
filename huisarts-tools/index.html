@@ -1,0 +1,2433 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#F7F6F3" />
+  <meta name="description" content="Klinische rekentools en wijzers voor de Nederlandse huisartsenpraktijk" />
+
+  <!-- iOS PWA tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Praktijktools" />
+  <meta name="format-detection" content="telephone=no" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
+
+  <!-- Manifest -->
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="icon-192.png" />
+
+  <title>Praktijktools</title>
+
+  <!-- Editorial typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ----------------------------------------------------------------
+       Design tokens — Editorial Minimalist
+    ---------------------------------------------------------------- */
+    :root {
+      --bg: #F7F6F3;
+      --surface: #FFFFFF;
+      --surface-2: #F9F9F8;
+      --ink: #1A1A1A;
+      --ink-2: #2F3437;
+      --muted: #787774;
+      --muted-2: #9B9A97;
+      --border: #EAEAEA;
+      --border-strong: #D7D6D2;
+
+      --red-bg: #FDEBEC;
+      --red-ink: #9F2F2D;
+      --blue-bg: #E1F3FE;
+      --blue-ink: #1F6C9F;
+      --green-bg: #EDF3EC;
+      --green-ink: #346538;
+      --yellow-bg: #FBF3DB;
+      --yellow-ink: #956400;
+      --amber-bg: #FAEFE0;
+      --amber-ink: #8B5A1E;
+
+      --font-serif: 'Newsreader', 'Lyon Text', Georgia, serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+      --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+
+      --radius: 10px;
+      --radius-sm: 6px;
+      --radius-lg: 14px;
+      --shadow-card: 0 1px 2px rgba(0,0,0,0.02), 0 0 0 1px var(--border);
+
+      --safe-top: env(safe-area-inset-top);
+      --safe-bottom: env(safe-area-inset-bottom);
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); }
+    body {
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overscroll-behavior-y: none;
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+    button { font-family: inherit; cursor: pointer; }
+    input, select, textarea { font-family: inherit; }
+
+    /* ----------------------------------------------------------------
+       App shell
+    ---------------------------------------------------------------- */
+    #app {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: calc(var(--safe-top) + 16px) 20px calc(var(--safe-bottom) + 40px) 20px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 24px;
+      min-height: 36px;
+    }
+    .topbar-title {
+      font-family: var(--font-serif);
+      font-size: 22px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .topbar-back {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--ink);
+      padding: 0;
+    }
+    .topbar-back:active { transform: scale(0.96); }
+
+    /* ----------------------------------------------------------------
+       Home — masthead + search
+    ---------------------------------------------------------------- */
+    .masthead {
+      padding: 8px 0 28px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 28px;
+    }
+    .masthead-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .masthead h1 {
+      font-family: var(--font-serif);
+      font-size: 38px;
+      font-weight: 500;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin: 0 0 8px 0;
+      color: var(--ink);
+    }
+    .masthead h1 em {
+      font-style: italic;
+      font-weight: 400;
+      color: var(--muted);
+    }
+    .masthead p {
+      font-size: 15px;
+      color: var(--muted);
+      margin: 8px 0 0 0;
+      max-width: 28em;
+      line-height: 1.55;
+    }
+
+    .search {
+      position: relative;
+      margin: 18px 0 0 0;
+    }
+    .search input {
+      width: 100%;
+      padding: 12px 14px 12px 40px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--radius);
+      font-size: 15px;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 150ms ease;
+    }
+    .search input:focus {
+      border-color: var(--ink);
+    }
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    /* ----------------------------------------------------------------
+       Category sections
+    ---------------------------------------------------------------- */
+    .section {
+      margin: 0 0 36px 0;
+    }
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      font-weight: 500;
+      letter-spacing: -0.015em;
+      color: var(--ink);
+    }
+    .section-count {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+
+    /* Tool grid */
+    .tool-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (min-width: 540px) {
+      .tool-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    .tool-card {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 16px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      text-align: left;
+      transition: transform 150ms ease, border-color 150ms ease;
+      min-height: 92px;
+    }
+    .tool-card:active {
+      transform: scale(0.98);
+      border-color: var(--border-strong);
+    }
+    .tool-card-meta {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted-2);
+    }
+    .tool-card-name {
+      font-family: var(--font-serif);
+      font-size: 17px;
+      font-weight: 500;
+      letter-spacing: -0.015em;
+      line-height: 1.2;
+      color: var(--ink);
+    }
+    .tool-card-desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.4;
+      margin-top: 2px;
+    }
+    .tool-card.featured {
+      grid-column: span 2;
+      min-height: 110px;
+    }
+    @media (min-width: 540px) {
+      .tool-card.featured { grid-column: span 2; }
+    }
+
+    /* ----------------------------------------------------------------
+       Tool view
+    ---------------------------------------------------------------- */
+    .tool-view {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px 20px;
+      margin-bottom: 24px;
+    }
+    .tool-view h2 {
+      font-family: var(--font-serif);
+      font-size: 26px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin: 0 0 6px 0;
+      color: var(--ink);
+    }
+    .tool-view .tool-subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 22px;
+      line-height: 1.5;
+    }
+
+    /* Form elements */
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .field label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink-2);
+      letter-spacing: -0.005em;
+    }
+    .field .hint {
+      font-size: 12px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+    }
+    .field input[type="number"],
+    .field input[type="text"],
+    .field select,
+    .field textarea {
+      padding: 11px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      font-size: 16px;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 150ms ease;
+    }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus { border-color: var(--ink); }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* Segmented control */
+    .segmented {
+      display: flex;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface-2);
+      padding: 3px;
+    }
+    .segmented button {
+      flex: 1;
+      padding: 8px 10px;
+      border: none;
+      background: transparent;
+      font-size: 13px;
+      color: var(--muted);
+      border-radius: 4px;
+      font-weight: 500;
+      transition: all 150ms ease;
+    }
+    .segmented button.active {
+      background: var(--surface);
+      color: var(--ink);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+
+    /* Checkbox row */
+    .checkrow {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+    .checkrow:last-child { border-bottom: none; }
+    .checkrow input[type="checkbox"] {
+      margin: 3px 0 0 0;
+      width: 18px; height: 18px;
+      accent-color: var(--ink);
+      flex-shrink: 0;
+    }
+    .checkrow-text {
+      flex: 1;
+      font-size: 14px;
+      color: var(--ink-2);
+      line-height: 1.4;
+    }
+    .checkrow-meta {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      flex-shrink: 0;
+      padding-top: 2px;
+    }
+
+    /* Radio scale (PHQ-9 / GAD-7) */
+    .scale-item {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .scale-item:last-child { border-bottom: none; }
+    .scale-q {
+      font-size: 14px;
+      color: var(--ink-2);
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+    .scale-options {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+    .scale-options button {
+      padding: 10px 4px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--ink-2);
+      transition: all 150ms ease;
+      line-height: 1.2;
+      font-family: var(--font-mono);
+    }
+    .scale-options button.active {
+      background: var(--ink);
+      color: var(--surface);
+      border-color: var(--ink);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 13px 18px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 150ms ease;
+    }
+    .btn-primary {
+      background: var(--ink);
+      color: var(--surface);
+      width: 100%;
+    }
+    .btn-primary:active { transform: scale(0.98); background: #333; }
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      font-size: 13px;
+    }
+
+    /* Result card */
+    .result {
+      margin-top: 24px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface-2);
+    }
+    .result-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .result-value {
+      font-family: var(--font-serif);
+      font-size: 44px;
+      font-weight: 500;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+    .result-value .unit {
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--muted);
+      letter-spacing: 0;
+      margin-left: 6px;
+    }
+    .result-interpretation {
+      font-size: 14px;
+      color: var(--ink-2);
+      margin-top: 12px;
+      line-height: 1.55;
+    }
+    .result-detail {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .result-detail strong { color: var(--ink-2); font-weight: 500; }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-weight: 500;
+      margin-right: 6px;
+    }
+    .tag-red { background: var(--red-bg); color: var(--red-ink); }
+    .tag-blue { background: var(--blue-bg); color: var(--blue-ink); }
+    .tag-green { background: var(--green-bg); color: var(--green-ink); }
+    .tag-yellow { background: var(--yellow-bg); color: var(--yellow-ink); }
+    .tag-amber { background: var(--amber-bg); color: var(--amber-ink); }
+    .tag-muted { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
+
+    /* Flag box (warnings) */
+    .flag {
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      line-height: 1.5;
+      margin-top: 12px;
+    }
+    .flag-red { background: var(--red-bg); color: var(--red-ink); }
+    .flag-amber { background: var(--amber-bg); color: var(--amber-ink); }
+    .flag-blue { background: var(--blue-bg); color: var(--blue-ink); }
+    .flag-green { background: var(--green-bg); color: var(--green-ink); }
+    .flag strong { font-weight: 500; }
+
+    /* Lookup tables */
+    .lookup-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+    .lookup-row:last-child { border-bottom: none; }
+    .lookup-row-label { color: var(--ink-2); }
+    .lookup-row-value {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--ink);
+    }
+
+    /* Protocol cards (anafylaxie etc) */
+    .protocol-step {
+      display: flex;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .protocol-step:last-child { border-bottom: none; }
+    .protocol-step-num {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--muted);
+      width: 28px;
+      flex-shrink: 0;
+      padding-top: 1px;
+    }
+    .protocol-step-body { flex: 1; font-size: 14px; color: var(--ink-2); line-height: 1.5; }
+    .protocol-step-body strong { color: var(--ink); font-weight: 500; }
+
+    /* Footer */
+    .app-footer {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+      line-height: 1.6;
+    }
+    .app-footer a { color: var(--ink-2); text-decoration: none; border-bottom: 1px solid var(--border); }
+
+    /* Disclaimer block */
+    .disclaimer {
+      padding: 14px 16px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.55;
+      margin-top: 20px;
+    }
+
+    /* Subtle entry animation */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in {
+      animation: fadeIn 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    /* Description list for switch matrices */
+    .matrix-row {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .matrix-row:last-child { border-bottom: none; }
+    .matrix-from-to {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    .matrix-strategy {
+      font-size: 14px;
+      color: var(--ink-2);
+      line-height: 1.55;
+    }
+    .matrix-strategy strong { color: var(--ink); font-weight: 500; }
+
+    /* Loading / empty states */
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    /* Install hint banner */
+    .install-hint {
+      margin-bottom: 20px;
+      padding: 14px 16px;
+      background: var(--surface);
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--radius);
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .install-hint .close-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 18px;
+      padding: 0 4px;
+      cursor: pointer;
+    }
+
+    /* Lists in protocol view */
+    ul.clean-list {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0;
+    }
+    ul.clean-list li {
+      padding: 6px 0 6px 16px;
+      position: relative;
+      font-size: 14px;
+      color: var(--ink-2);
+      line-height: 1.5;
+    }
+    ul.clean-list li::before {
+      content: "—";
+      position: absolute;
+      left: 0;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+  /* ==================================================================
+     PRAKTIJKTOOLS — Single-file PWA
+     Klinische rekentools en wijzers voor de Nederlandse huisarts
+     ================================================================== */
+
+  // ------------------------------------------------------------------
+  // App state + routing (hash-based)
+  // ------------------------------------------------------------------
+  const App = {
+    el: document.getElementById('app'),
+    state: { view: 'home', toolId: null, search: '', formState: {} },
+    init() {
+      window.addEventListener('hashchange', () => this.handleRoute());
+      this.handleRoute();
+      this.registerSW();
+    },
+    handleRoute() {
+      const hash = location.hash.replace(/^#\/?/, '');
+      if (!hash) {
+        this.state.view = 'home';
+        this.state.toolId = null;
+        this.state.formState = {};
+      } else {
+        this.state.view = 'tool';
+        this.state.toolId = hash;
+        this.state.formState = {};
+      }
+      this.render();
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    },
+    navigate(toolId) {
+      location.hash = '/' + toolId;
+    },
+    back() {
+      location.hash = '';
+    },
+    render() {
+      if (this.state.view === 'home') {
+        this.el.innerHTML = renderHome(this.state.search);
+        const sb = document.getElementById('searchbox');
+        if (sb) {
+          sb.addEventListener('input', (e) => {
+            this.state.search = e.target.value;
+            const grid = document.getElementById('tool-sections');
+            if (grid) grid.innerHTML = renderToolSections(this.state.search);
+          });
+        }
+      } else {
+        const tool = TOOLS.find(t => t.id === this.state.toolId);
+        if (!tool) {
+          this.el.innerHTML = renderShell(`
+            <div class="empty">
+              <p>Tool niet gevonden.</p>
+              <button class="btn-ghost" onclick="App.back()">Terug</button>
+            </div>
+          `, '');
+          return;
+        }
+        this.el.innerHTML = renderShell(tool.render(), tool.name);
+        // Wire up listeners
+        if (tool.onMount) tool.onMount();
+      }
+    },
+    registerSW() {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      }
+    }
+  };
+
+  function renderShell(inner, title) {
+    return `
+      <div class="topbar fade-in">
+        <button class="topbar-back" onclick="App.back()" aria-label="Terug">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        </button>
+        <div class="topbar-title">${escape(title)}</div>
+        <div style="width:36px"></div>
+      </div>
+      <div class="fade-in">${inner}</div>
+      <div class="app-footer">
+        Praktijktools v0.1 · Het Roosendael · Niet bedoeld ter vervanging van klinisch oordeel.
+      </div>
+    `;
+  }
+
+  // ------------------------------------------------------------------
+  // Home view
+  // ------------------------------------------------------------------
+  function renderHome(search) {
+    return `
+      <header class="masthead fade-in">
+        <div class="masthead-eyebrow">Praktijktools · v0.1</div>
+        <h1>Klinische gereedschapskist <em>voor de huisartsenpraktijk</em></h1>
+        <p>Switch-kaarten, rekenformules en wijzers — gebundeld voor het spreekuur. Werkt offline.</p>
+        <div class="search">
+          <span class="search-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          </span>
+          <input id="searchbox" type="search" placeholder="Zoek tool, score, medicatie…" value="${escape(search)}" autocomplete="off" />
+        </div>
+      </header>
+
+      <div id="tool-sections">
+        ${renderToolSections(search)}
+      </div>
+    `;
+  }
+
+  function renderToolSections(search) {
+    const q = search.trim().toLowerCase();
+    const filtered = q ? TOOLS.filter(t =>
+      t.name.toLowerCase().includes(q) ||
+      t.desc.toLowerCase().includes(q) ||
+      (t.keywords || []).some(k => k.toLowerCase().includes(q))
+    ) : TOOLS;
+
+    if (filtered.length === 0) {
+      return `<div class="empty"><p>Geen tools gevonden voor "${escape(search)}".</p></div>`;
+    }
+
+    if (q) {
+      // Flat list when searching
+      return `
+        <section class="section">
+          <div class="section-head">
+            <div class="section-title">Resultaten</div>
+            <div class="section-count">${filtered.length} ${filtered.length === 1 ? 'tool' : 'tools'}</div>
+          </div>
+          <div class="tool-grid">${filtered.map(toolCard).join('')}</div>
+        </section>
+      `;
+    }
+
+    // Grouped by category
+    const cats = {};
+    filtered.forEach(t => {
+      if (!cats[t.category]) cats[t.category] = [];
+      cats[t.category].push(t);
+    });
+    const CAT_ORDER = ['Rekenformules', 'Cardiovasculair', 'GGZ-scores', 'Switch & rotatie', 'Pharmacowijzer', 'Polyfarmacie', 'Gynaecologie & endocrien', 'Acuut'];
+    return CAT_ORDER.filter(c => cats[c]).map(c => `
+      <section class="section">
+        <div class="section-head">
+          <div class="section-title">${escape(c)}</div>
+          <div class="section-count">${cats[c].length}</div>
+        </div>
+        <div class="tool-grid">${cats[c].map(toolCard).join('')}</div>
+      </section>
+    `).join('');
+  }
+
+  function toolCard(t) {
+    return `
+      <button class="tool-card ${t.featured ? 'featured' : ''}" onclick="App.navigate('${t.id}')">
+        <span class="tool-card-meta">${escape(t.metaLabel || t.category)}</span>
+        <span class="tool-card-name">${escape(t.name)}</span>
+        <span class="tool-card-desc">${escape(t.desc)}</span>
+      </button>
+    `;
+  }
+
+  // ------------------------------------------------------------------
+  // Utilities
+  // ------------------------------------------------------------------
+  function escape(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+  function fmt(n, dec = 1) {
+    if (n == null || isNaN(n)) return '—';
+    return Number(n).toFixed(dec).replace('.', ',');
+  }
+  function $(id) { return document.getElementById(id); }
+  function val(id) {
+    const el = $(id);
+    if (!el) return null;
+    if (el.type === 'checkbox') return el.checked;
+    if (el.type === 'number') {
+      const v = parseFloat(el.value);
+      return isNaN(v) ? null : v;
+    }
+    return el.value;
+  }
+
+  /* ==================================================================
+     TOOL DEFINITIONS
+     ================================================================== */
+
+  const TOOLS = [];
+
+  /* ------------------------------------------------------------------
+     1. eGFR (CKD-EPI 2021) + medicatie-flags
+  ------------------------------------------------------------------ */
+  TOOLS.push({
+    id: 'egfr',
+    name: 'eGFR + medicatie-flags',
+    category: 'Rekenformules',
+    metaLabel: 'CKD-EPI 2021',
+    desc: 'Nierfunctie met automatische dosering-waarschuwingen',
+    keywords: ['nierfunctie','egfr','creatinine','metformine','doac','ckd'],
+    featured: true,
+    render() {
+      return `
+        <div class="tool-view">
+          <h2>eGFR</h2>
+          <div class="tool-subtitle">CKD-EPI 2021 (race-vrij). Vul creatinine in μmol/L. De flags zijn richtinggevend, geen vervanging voor KNMP-Kennisbank.</div>
+
+          <div class="field">
+            <label>Geslacht</label>
+            <div class="segmented" id="seg-sex">
+              <button class="active" data-v="m">Man</button>
+              <button data-v="v">Vrouw</button>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Leeftijd</label>
+              <input type="number" id="age" inputmode="numeric" placeholder="65" />
+              <span class="hint">jaar</span>
+            </div>
+            <div class="field">
+              <label>Creatinine</label>
+              <input type="number" id="cr" inputmode="decimal" placeholder="95" />
+              <span class="hint">μmol/L</span>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="computeEGFR()">Berekenen</button>
+          <div id="egfr-out"></div>
+
+          <div class="disclaimer">eGFR is een schatting; bij obesitas, cachexie, eenzijdige nier of acute verandering minder betrouwbaar. Bij grenswaarden cystatine-C of inuline overwegen.</div>
+        </div>
+      `;
+    },
+    onMount() {
+      document.querySelectorAll('#seg-sex button').forEach(b => {
+        b.addEventListener('click', () => {
+          document.querySelectorAll('#seg-sex button').forEach(x => x.classList.remove('active'));
+          b.classList.add('active');
+        });
+      });
+    }
+  });
+  function computeEGFR() {
+    const sex = document.querySelector('#seg-sex button.active').dataset.v;
+    const age = val('age');
+    const cr_umol = val('cr');
+    if (!age || !cr_umol) { $('egfr-out').innerHTML = '<div class="flag flag-amber">Vul leeftijd en creatinine in.</div>'; return; }
+    // Convert μmol/L → mg/dL
+    const cr_mgdl = cr_umol / 88.4;
+    const kappa = sex === 'v' ? 0.7 : 0.9;
+    const alpha = sex === 'v' ? -0.241 : -0.302;
+    const factor = sex === 'v' ? 1.012 : 1.0;
+    const minVal = Math.min(cr_mgdl / kappa, 1);
+    const maxVal = Math.max(cr_mgdl / kappa, 1);
+    const egfr = 142 * Math.pow(minVal, alpha) * Math.pow(maxVal, -1.200) * Math.pow(0.9938, age) * factor;
+
+    let stage, color, interp;
+    if (egfr >= 90) { stage = 'G1 — normaal'; color = 'green'; interp = 'Normale of verhoogde nierfunctie. Altijd in context van albuminurie beoordelen.'; }
+    else if (egfr >= 60) { stage = 'G2 — licht verminderd'; color = 'green'; interp = 'Mild verminderd. Pas CKD als ook albuminurie of structurele afwijking.'; }
+    else if (egfr >= 45) { stage = 'G3a — matig verminderd'; color = 'yellow'; interp = 'Matig verminderd. Begin met medicatie-review.'; }
+    else if (egfr >= 30) { stage = 'G3b — matig-ernstig'; color = 'amber'; interp = 'Verwijzing internist overwegen bij progressie of complicaties.'; }
+    else if (egfr >= 15) { stage = 'G4 — ernstig verminderd'; color = 'red'; interp = 'Verwijs naar nefroloog. Voorbereiden nierfunctievervangende therapie.'; }
+    else { stage = 'G5 — nierfalen'; color = 'red'; interp = 'Nierfalen. Dialyse/transplantatie aan de orde.'; }
+
+    // Medication flags
+    const flags = [];
+    if (egfr < 30) flags.push(`<strong>Metformine:</strong> staken bij eGFR &lt;30 (KNMP). Bij eGFR 30–60: max 2 dd 500 mg overwegen, evalueer.`);
+    else if (egfr < 60) flags.push(`<strong>Metformine:</strong> dosis halveren bij eGFR 30–45, monitor jaarlijks.`);
+
+    if (egfr < 50) flags.push(`<strong>DOAC's:</strong> apixaban en edoxaban dosisaanpassing &lt;50 ml/min; rivaroxaban &lt;50: dosis 15 mg; dabigatran vermijden &lt;30.`);
+
+    if (egfr < 30) flags.push(`<strong>NSAID's:</strong> vermijden. SGLT2-remmers herevalueer (canagliflozine off-label bij eGFR &lt;30).`);
+    else if (egfr < 60) flags.push(`<strong>NSAID's:</strong> kortdurend en met monitoring, vermijd bij hartfalen of RAS-blokkade combo.`);
+
+    if (egfr < 30) flags.push(`<strong>ACE-i/ARB:</strong> herevalueer; staken niet automatisch nodig (renoprotectief), wel kalium en creatinine na 1–2 weken bij dosisverhoging.`);
+
+    if (egfr < 30) flags.push(`<strong>Digoxine:</strong> 50% dosisreductie en spiegelcontrole.`);
+
+    $('egfr-out').innerHTML = `
+      <div class="result">
+        <div class="result-eyebrow">eGFR (CKD-EPI 2021)</div>
+        <div class="result-value">${fmt(egfr, 0)}<span class="unit">ml/min/1,73 m²</span></div>
+        <div><span class="tag tag-${color}">${escape(stage)}</span></div>
+        <div class="result-interpretation">${escape(interp)}</div>
+        ${flags.length > 0 ? `<div class="result-detail"><strong>Medicatie-aandachtspunten</strong><br>${flags.map(f => `<div style="margin-top:8px">${f}</div>`).join('')}</div>` : ''}
+      </div>
+    `;
+  }
+
+  /* ------------------------------------------------------------------
+     2. CHA2DS2-VASc + HAS-BLED (gecombineerd)
+  ------------------------------------------------------------------ */
+  TOOLS.push({
+    id: 'chads-hasbled',
+    name: 'CHA₂DS₂-VASc + HAS-BLED',
+    category: 'Cardiovasculair',
+    metaLabel: 'AF · antistolling',
+    desc: 'Tromboembolierisico en bloedingsrisico in één scherm',
+    keywords: ['atriumfibrilleren','chads','hasbled','antistolling','doac'],
+    featured: true,
+    render() {
+      const chads = [
+        { id: 'c-chf', label: 'Hartfalen / LV-disfunctie', pts: 1 },
+        { id: 'c-htn', label: 'Hypertensie', pts: 1 },
+        { id: 'c-age75', label: 'Leeftijd ≥ 75 jaar', pts: 2 },
+        { id: 'c-dm', label: 'Diabetes mellitus', pts: 1 },
+        { id: 'c-cva', label: 'Eerder CVA / TIA / trombo-embolie', pts: 2 },
+        { id: 'c-vasc', label: 'Vaatlijden (MI, perifeer, aortaplaque)', pts: 1 },
+        { id: 'c-age65', label: 'Leeftijd 65–74 jaar', pts: 1 },
+        { id: 'c-sex', label: 'Vrouwelijk geslacht', pts: 1 }
+      ];
+      const bled = [
+        { id: 'b-htn', label: 'Ongecontroleerde hypertensie (SBP > 160)', pts: 1 },
+        { id: 'b-renal', label: 'Abnormale nierfunctie', pts: 1 },
+        { id: 'b-liver', label: 'Abnormale leverfunctie', pts: 1 },
+        { id: 'b-stroke', label: 'CVA in voorgeschiedenis', pts: 1 },
+        { id: 'b-bleed', label: 'Bloeding in voorgeschiedenis / predispositie', pts: 1 },
+        { id: 'b-inr', label: 'Labiele INR (TTR < 60%)', pts: 1 },
+        { id: 'b-age', label: 'Leeftijd > 65 jaar', pts: 1 },
+        { id: 'b-drug', label: 'Medicatie (NSAID, plaatjesaggreg.)', pts: 1 },
+        { id: 'b-alc', label: 'Alcohol ≥ 8 eenheden/week', pts: 1 }
+      ];
+      return `
+        <div class="tool-view">
+          <h2>CHA₂DS₂-VASc</h2>
+          <div class="tool-subtitle">Tromboembolierisico bij atriumfibrilleren.</div>
+          ${chads.map(c => `
+            <label class="checkrow">
+              <input type="checkbox" data-pts="${c.pts}" data-grp="chads" onchange="updateChadsBled()" />
+              <span class="checkrow-text">${escape(c.label)}</span>
+              <span class="checkrow-meta">+${c.pts}</span>
+            </label>
+          `).join('')}
+          <div id="chads-out"></div>
+        </div>
+
+        <div class="tool-view">
+          <h2>HAS-BLED</h2>
+          <div class="tool-subtitle">Bloedingsrisico bij antistolling.</div>
+          ${bled.map(b => `
+            <label class="checkrow">
+              <input type="checkbox" data-pts="${b.pts}" data-grp="bled" onchange="updateChadsBled()" />
+              <span class="checkrow-text">${escape(b.label)}</span>
+              <span class="checkrow-meta">+${b.pts}</span>
+            </label>
+          `).join('')}
+          <div id="bled-out"></div>
+        </div>
+      `;
+    },
+    onMount() { updateChadsBled(); }
+  });
+  function updateChadsBled() {
+    let chads = 0, bled = 0;
+    document.querySelectorAll('input[data-grp="chads"]').forEach(i => { if (i.checked) chads += parseInt(i.dataset.pts); });
+    document.querySelectorAll('input[data-grp="bled"]').forEach(i => { if (i.checked) bled += parseInt(i.dataset.pts); });
+
+    let chadsAdvice, chadsColor;
+    if (chads === 0) { chadsColor = 'green'; chadsAdvice = 'Geen antistolling geïndiceerd (man met score 0 of vrouw met score 1 = laag risico).'; }
+    else if (chads === 1) { chadsColor = 'yellow'; chadsAdvice = 'Bij man: antistolling overwegen (DOAC voorkeur). Bij vrouw met alleen geslachtspunt: geen antistolling.'; }
+    else { chadsColor = 'amber'; chadsAdvice = 'Antistolling geïndiceerd. DOAC voorkeur boven VKA (ESC 2024).'; }
+
+    let bledAdvice, bledColor;
+    if (bled <= 2) { bledColor = 'green'; bledAdvice = 'Acceptabel bloedingsrisico. Standaard antistolling.'; }
+    else { bledColor = 'amber'; bledAdvice = 'Verhoogd bloedingsrisico. Antistolling niet contra-indicatie, wel intensievere monitoring en aanpak modificeerbare factoren (BD, NSAID, alcohol).'; }
+
+    $('chads-out').innerHTML = `
+      <div class="result" style="margin-top:18px">
+        <div class="result-eyebrow">Score</div>
+        <div class="result-value">${chads}<span class="unit">punten</span></div>
+        <div><span class="tag tag-${chadsColor}">${chads <= 1 ? 'Laag' : chads <= 2 ? 'Matig' : 'Hoog'}</span></div>
+        <div class="result-interpretation">${escape(chadsAdvice)}</div>
+      </div>
+    `;
+    $('bled-out').innerHTML = `
+      <div class="result" style="margin-top:18px">
+        <div class="result-eyebrow">Score</div>
+        <div class="result-value">${bled}<span class="unit">punten</span></div>
+        <div><span class="tag tag-${bledColor}">${bled <= 2 ? 'Laag' : 'Hoog'}</span></div>
+        <div class="result-interpretation">${escape(bledAdvice)}</div>
+      </div>
+    `;
+  }
+
+  /* ------------------------------------------------------------------
+     3. SCORE2 + CV-leeftijd (vereenvoudigde tabellen, low-risk regio NL)
+  ------------------------------------------------------------------ */
+  TOOLS.push({
+    id: 'score2',
+    name: 'SCORE2 + CV-leeftijd',
+    category: 'Cardiovasculair',
+    metaLabel: 'NL low-risk · NHG/ESC',
+    desc: '10-jaars CV-risico met motivationele cardiovasculaire leeftijd',
+    keywords: ['score2','cvrm','cardiovasculair','risico','cv-leeftijd'],
+    render() {
+      return `
+        <div class="tool-view">
+          <h2>SCORE2</h2>
+          <div class="tool-subtitle">10-jaars risico op fataal en niet-fataal CV-event. Voor mensen 40–89 jaar zonder vastgestelde HVZ, DM of CKD.</div>
+
+          <div class="field">
+            <label>Geslacht</label>
+            <div class="segmented" id="seg-sex2">
+              <button class="active" data-v="m">Man</button>
+              <button data-v="v">Vrouw</button>
+            </div>
+          </div>
+          <div class="field">
+            <label>Roken</label>
+            <div class="segmented" id="seg-smk">
+              <button data-v="0">Niet-roker</button>
+              <button class="active" data-v="1">Roker</button>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Leeftijd</label><input type="number" id="age2" placeholder="60"/><span class="hint">40–89 jaar</span></div>
+            <div class="field"><label>SBP</label><input type="number" id="sbp" placeholder="140"/><span class="hint">mmHg</span></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Totaal-cholesterol</label><input type="number" step="0.1" id="tc" placeholder="5,5"/><span class="hint">mmol/L</span></div>
+            <div class="field"><label>HDL-cholesterol</label><input type="number" step="0.1" id="hdl" placeholder="1,2"/><span class="hint">mmol/L</span></div>
+          </div>
+          <button class="btn btn-primary" onclick="computeScore2()">Berekenen</button>
+          <div id="score2-out"></div>
+
+          <div class="disclaimer">Vereenvoudigde implementatie op basis van ESC SCORE2 model voor low-risk regio (Nederland). Voor klinische precisie: officiële SCORE2-tabellen of het rekenmodel op u-prevent.com.</div>
+        </div>
+      `;
+    },
+    onMount() {
+      ['seg-sex2','seg-smk'].forEach(seg => {
+        document.querySelectorAll(`#${seg} button`).forEach(b => {
+          b.addEventListener('click', () => {
+            document.querySelectorAll(`#${seg} button`).forEach(x => x.classList.remove('active'));
+            b.classList.add('active');
+          });
+        });
+      });
+    }
+  });
+  function computeScore2() {
+    const sex = document.querySelector('#seg-sex2 button.active').dataset.v;
+    const smk = parseInt(document.querySelector('#seg-smk button.active').dataset.v);
+    const age = val('age2'), sbp = val('sbp'), tc = val('tc'), hdl = val('hdl');
+    if (!age || !sbp || !tc || !hdl) {
+      $('score2-out').innerHTML = '<div class="flag flag-amber">Vul alle velden in.</div>';
+      return;
+    }
+    if (age < 40 || age > 89) {
+      $('score2-out').innerHTML = '<div class="flag flag-amber">SCORE2 is gevalideerd voor 40–89 jaar.</div>';
+      return;
+    }
+    const nonHDL = tc - hdl;
+
+    // SCORE2 coefficients (low-risk region, simplified)
+    // From: Eur Heart J 2021;42:2439-2454
+    const useOP = age >= 70;
+    let lp;
+    if (!useOP) {
+      // SCORE2 40-69 low-risk
+      const c = sex === 'v'
+        ? { age: 0.7152, smk: 0.6190, sbp: 0.2402, tc: 0.1958, hdl: -0.0934, age_smk: -0.0816, age_sbp: -0.0299, age_tc: -0.0212, age_hdl: 0.0231, baseSurv: 0.9776, scale1: -0.7380, scale2: 0.7019 }
+        : { age: 0.3742, smk: 0.6012, sbp: 0.2777, tc: 0.1458, hdl: -0.2698, age_smk: -0.0755, age_sbp: -0.0255, age_tc: -0.0281, age_hdl: 0.0426, baseSurv: 0.9605, scale1: -0.5699, scale2: 0.7476 };
+      const cage = (age - 60) / 5;
+      const csbp = (sbp - 120) / 20;
+      const ctc = (tc - 6) / 1;
+      const chdl = (hdl - 1.3) / 0.5;
+      const cnonhdl = (nonHDL - 4.7) / 1;
+      lp = c.age * cage + c.smk * smk + c.sbp * csbp + c.tc * cnonhdl + c.hdl * chdl
+         + c.age_smk * cage * smk + c.age_sbp * cage * csbp
+         + c.age_tc * cage * cnonhdl + c.age_hdl * cage * chdl;
+      const tenYr = 1 - Math.pow(c.baseSurv, Math.exp(lp));
+      const calibrated = 1 - Math.exp(-Math.exp(c.scale1 + c.scale2 * Math.log(-Math.log(1 - tenYr))));
+      const risk = calibrated * 100;
+      renderScore2(risk, age, sex);
+    } else {
+      // SCORE2-OP 70-89
+      const c = sex === 'v'
+        ? { age: 0.0789, smk: 0.4921, sbp: 0.0098, tc: 0.0976, hdl: -0.1180, basesurv: 0.6900 }
+        : { age: 0.0634, smk: 0.3524, sbp: 0.0094, tc: 0.0850, hdl: -0.3564, basesurv: 0.7576 };
+      const lpOP = c.age * (age - 73) + c.smk * smk + c.sbp * (sbp - 150) + c.tc * (nonHDL - 4.0) + c.hdl * (hdl - 1.4);
+      const risk = (1 - Math.pow(c.basesurv, Math.exp(lpOP))) * 100;
+      renderScore2(risk, age, sex);
+    }
+  }
+  function renderScore2(risk, age, sex) {
+    let cat, color, advice;
+    if (age < 50) {
+      if (risk < 2.5) { cat = 'Laag tot matig'; color = 'green'; }
+      else if (risk < 7.5) { cat = 'Hoog'; color = 'amber'; }
+      else { cat = 'Zeer hoog'; color = 'red'; }
+    } else if (age < 70) {
+      if (risk < 5) { cat = 'Laag tot matig'; color = 'green'; }
+      else if (risk < 10) { cat = 'Hoog'; color = 'amber'; }
+      else { cat = 'Zeer hoog'; color = 'red'; }
+    } else {
+      if (risk < 7.5) { cat = 'Laag tot matig'; color = 'green'; }
+      else if (risk < 15) { cat = 'Hoog'; color = 'amber'; }
+      else { cat = 'Zeer hoog'; color = 'red'; }
+    }
+    if (color === 'green') advice = 'Leefstijladvies, herevalueren over 5 jaar (of eerder bij risicowijziging).';
+    else if (color === 'amber') advice = 'Behandeling overwegen: leefstijl + statine (en/of BD-behandeling) op indicatie.';
+    else advice = 'Behandelen: statine (LDL-streef &lt;1,8 in primaire preventie hoog risico, &lt;1,4 zeer hoog), BD-behandeling.';
+
+    // CV-leeftijd: vergelijk met risico bij gemiddeld profiel
+    // Vereenvoudigde benadering: matchen op leeftijd bij optimaal profiel
+    let cvAge = age;
+    // Iteratief: hoeveel jaar ouder/jonger geeft jouw risico bij optimaal profiel?
+    // Approximation: 8% relative risk increase per year of age in this band
+    const optimalRisk = Math.max(0.1, risk * Math.pow(0.85, 0)); // placeholder
+    // Simpler: rough age shift derived from risk ratio
+    const refRisk = sex === 'v' ? (age < 60 ? 1.5 : age < 70 ? 3 : 6) : (age < 60 ? 2.5 : age < 70 ? 5 : 9);
+    const ratio = risk / refRisk;
+    const shift = Math.round(Math.log(ratio) / Math.log(1.08));
+    cvAge = age + shift;
+    const diff = cvAge - age;
+
+    let cvMsg, cvColor;
+    if (diff >= 10) { cvColor = 'red'; cvMsg = `Je hart is <strong>${diff} jaar ouder</strong> dan je kalenderleeftijd.`; }
+    else if (diff >= 5) { cvColor = 'amber'; cvMsg = `Je hart is <strong>${diff} jaar ouder</strong> dan je kalenderleeftijd.`; }
+    else if (diff <= -5) { cvColor = 'green'; cvMsg = `Je hart is <strong>${Math.abs(diff)} jaar jonger</strong> — doorgaan zo.`; }
+    else { cvColor = 'green'; cvMsg = `Je hart komt overeen met je kalenderleeftijd.`; }
+
+    $('score2-out').innerHTML = `
+      <div class="result">
+        <div class="result-eyebrow">10-jaars CV-risico</div>
+        <div class="result-value">${fmt(risk, 1)}<span class="unit">%</span></div>
+        <div><span class="tag tag-${color}">${escape(cat)}</span></div>
+        <div class="result-interpretation">${advice}</div>
+      </div>
+      <div class="result" style="margin-top:14px">
+        <div class="result-eyebrow">Cardiovasculaire leeftijd</div>
+        <div class="result-value">${cvAge}<span class="unit">jaar</span></div>
+        <div class="result-interpretation">${cvMsg}</div>
+        <div class="result-detail">Kalenderleeftijd: ${age} jaar. CV-leeftijd is een communicatiehulpmiddel — niet validated als hard klinisch eindpunt.</div>
+      </div>
+    `;
+  }
+
+  /* ------------------------------------------------------------------
+     4. PHQ-9
+  ------------------------------------------------------------------ */
+  const PHQ9_Q = [
+    'Weinig interesse of plezier in dingen doen',
+    'Somber, depressief of hopeloos voelen',
+    'Moeite met inslapen, doorslapen, of te veel slapen',
+    'Vermoeid voelen of weinig energie hebben',
+    'Slechte eetlust of te veel eten',
+    'Slecht over uzelf denken — of dat u faalt / uzelf of familie teleurstelt',
+    'Moeite met concentreren bij krant lezen of tv kijken',
+    'Zo traag bewegen of spreken dat anderen het merken — of juist onrustig',
+    'Gedachten dat u dood zou zijn of dat u zichzelf iets aan zou doen'
+  ];
+  TOOLS.push({
+    id: 'phq9',
+    name: 'PHQ-9',
+    category: 'GGZ-scores',
+    metaLabel: 'Depressie · 9 items',
+    desc: 'Screening en ernstmeting depressie',
+    keywords: ['phq','depressie','screening','ggz'],
+    render() {
+      return `
+        <div class="tool-view">
+          <h2>PHQ-9</h2>
+          <div class="tool-subtitle">Hoe vaak had u in de afgelopen twee weken last van onderstaande klachten?</div>
+          ${PHQ9_Q.map((q, i) => `
+            <div class="scale-item">
+              <div class="scale-q">${i+1}. ${escape(q)}</div>
+              <div class="scale-options" data-q="${i}">
+                <button data-v="0">Helemaal niet</button>
+                <button data-v="1">Enkele dagen</button>
+                <button data-v="2">Meer dan helft</button>
+                <button data-v="3">Bijna elke dag</button>
+              </div>
+            </div>
+          `).join('')}
+          <div id="phq-out" style="margin-top:16px"></div>
+        </div>
+      `;
+    },
+    onMount() {
+      document.querySelectorAll('#app .scale-options').forEach(grp => {
+        grp.querySelectorAll('button').forEach(b => {
+          b.addEventListener('click', () => {
+            grp.querySelectorAll('button').forEach(x => x.classList.remove('active'));
+            b.classList.add('active');
+            computePHQ9();
+          });
+        });
+      });
+    }
+  });
+  function computePHQ9() {
+    let total = 0, answered = 0, q9 = null;
+    PHQ9_Q.forEach((_, i) => {
+      const active = document.querySelector(`.scale-options[data-q="${i}"] button.active`);
+      if (active) {
+        const v = parseInt(active.dataset.v);
+        total += v;
+        answered++;
+        if (i === 8) q9 = v;
+      }
+    });
+    if (answered === 0) { $('phq-out').innerHTML = ''; return; }
+    let cat, color, advice;
+    if (total <= 4) { cat = 'Minimaal'; color = 'green'; advice = 'Geen tot minimale depressieve klachten.'; }
+    else if (total <= 9) { cat = 'Mild'; color = 'green'; advice = 'Milde depressieve klachten. Watchful waiting, leefstijl, kortdurende ondersteuning.'; }
+    else if (total <= 14) { cat = 'Matig'; color = 'yellow'; advice = 'Matige depressie. Behandeling overwegen: psychologische interventie of antidepressivum.'; }
+    else if (total <= 19) { cat = 'Matig-ernstig'; color = 'amber'; advice = 'Matig-ernstige depressie. Actieve behandeling: psychotherapie en/of medicatie.'; }
+    else { cat = 'Ernstig'; color = 'red'; advice = 'Ernstige depressie. Direct actieve behandeling en suïcidaliteit uitvragen.'; }
+
+    const q9flag = q9 != null && q9 > 0 ? `
+      <div class="flag flag-red">
+        <strong>Vraag 9 positief.</strong> Suïcidaliteit en veiligheid actief uitvragen. Vraag direct: gedachten, plannen, middelen, intentie. Bij acuut risico crisisdienst.
+      </div>
+    ` : '';
+
+    $('phq-out').innerHTML = `
+      <div class="result">
+        <div class="result-eyebrow">PHQ-9 totaal · ${answered}/9 beantwoord</div>
+        <div class="result-value">${total}<span class="unit">/ 27</span></div>
+        <div><span class="tag tag-${color}">${escape(cat)}</span></div>
+        <div class="result-interpretation">${advice}</div>
+        ${q9flag}
+      </div>
+    `;
+  }
+
+  /* ------------------------------------------------------------------
+     5. GAD-7
+  ------------------------------------------------------------------ */
+  const GAD7_Q = [
+    'Zenuwachtig, angstig of gespannen voelen',
+    'Zorgen niet kunnen stoppen of beheersen',
+    'Te veel zorgen maken over verschillende dingen',
+    'Moeite met ontspannen',
+    'Zo rusteloos dat het moeilijk is stil te zitten',
+    'Snel geërgerd of geïrriteerd raken',
+    'Bang zijn dat er iets vreselijks gaat gebeuren'
+  ];
+  TOOLS.push({
+    id: 'gad7',
+    name: 'GAD-7',
+    category: 'GGZ-scores',
+    metaLabel: 'Angst · 7 items',
+    desc: 'Screening gegeneraliseerde angststoornis',
+    keywords: ['gad','angst','screening'],
+    render() {
+      return `
+        <div class="tool-view">
+          <h2>GAD-7</h2>
+          <div class="tool-subtitle">Hoe vaak had u in de afgelopen twee weken last van deze problemen?</div>
+          ${GAD7_Q.map((q, i) => `
+            <div class="scale-item">
+              <div class="scale-q">${i+1}. ${escape(q)}</div>
+              <div class="scale-options" data-q="${i}">
+                <button data-v="0">Helemaal niet</button>
+                <button data-v="1">Enkele dagen</button>
+                <button data-v="2">Meer dan helft</button>
+                <button data-v="3">Bijna elke dag</button>
+              </div>
+            </div>
+          `).join('')}
+          <div id="gad-out" style="margin-top:16px"></div>
+        </div>
+      `;
+    },
+    onMount() {
+      document.querySelectorAll('#app .scale-options').forEach(grp => {
+        grp.querySelectorAll('button').forEach(b => {
+          b.addEventListener('click', () => {
+            grp.querySelectorAll('button').forEach(x => x.classList.remove('active'));
+            b.classList.add('active');
+            computeGAD7();
+          });
+        });
+      });
+    }
+  });
+  function computeGAD7() {
+    let total = 0, answered = 0;
+    GAD7_Q.forEach((_, i) => {
+      const active = document.querySelector(`.scale-options[data-q="${i}"] button.active`);
+      if (active) { total += parseInt(active.dataset.v); answered++; }
+    });
+    if (answered === 0) { $('gad-out').innerHTML = ''; return; }
+    let cat, color, advice;
+    if (total <= 4) { cat = 'Minimaal'; color = 'green'; advice = 'Geen tot minimale angstklachten.'; }
+    else if (total <= 9) { cat = 'Mild'; color = 'green'; advice = 'Milde angst. Psycho-educatie, leefstijl, watchful waiting.'; }
+    else if (total <= 14) { cat = 'Matig'; color = 'yellow'; advice = 'Matige angst. CGT of farmacotherapie overwegen.'; }
+    else { cat = 'Ernstig'; color = 'amber'; advice = 'Ernstige angst. Actieve behandeling: psychotherapie en/of SSRI.'; }
+
+    $('gad-out').innerHTML = `
+      <div class="result">
+        <div class="result-eyebrow">GAD-7 totaal · ${answered}/7 beantwoord</div>
+        <div class="result-value">${total}<span class="unit">/ 21</span></div>
+        <div><span class="tag tag-${color}">${escape(cat)}</span></div>
+        <div class="result-interpretation">${advice}</div>
+      </div>
+    `;
+  }
+
+  /* ------------------------------------------------------------------
+     6. Antidepressiva switch
+  ------------------------------------------------------------------ */
+  const AD_GROUPS = {
+    SSRI: ['Sertraline', 'Citalopram', 'Escitalopram', 'Paroxetine', 'Fluoxetine', 'Fluvoxamine'],
+    SNRI: ['Venlafaxine', 'Duloxetine'],
+    Mirtazapine: ['Mirtazapine'],
+    Bupropion: ['Bupropion'],
+    TCA: ['Amitriptyline', 'Nortriptyline', 'Clomipramine', 'Imipramine'],
+    MAOi: ['Tranylcypromine', 'Moclobemide']
+  };
+  TOOLS.push({
+    id: 'ad-switch',
+    name: 'Antidepressiva-switch',
+    category: 'Switch & rotatie',
+    metaLabel: 'SSRI/SNRI/TCA/MAOi',
+    desc: 'Cross-taper of directe switch — washout MAOi',
+    keywords: ['antidepressiva','ssri','snri','switch','cross-taper','mao','maoi'],
+    featured: true,
+    render() {
+      const allDrugs = Object.entries(AD_GROUPS).flatMap(([g, ds]) => ds.map(d => ({ g, d })));
+      const opts = allDrugs.map(x => `<option value="${x.d}|${x.g}">${x.d}</option>`).join('');
+      return `
+        <div class="tool-view">
+          <h2>Antidepressiva-switch</h2>
+          <div class="tool-subtitle">Strategie op basis van Maudsley Prescribing Guidelines en NHG-Standaard Depressie. Bij twijfel: overleg psychiater of consulteer KNMP-Kennisbank.</div>
+
+          <div class="field">
+            <label>Van</label>
+            <select id="ad-from"><option value="">— selecteer —</option>${opts}</select>
+          </div>
+          <div class="field">
+            <label>Naar</label>
+            <select id="ad-to"><option value="">— selecteer —</option>${opts}</select>
+          </div>
+          <button class="btn btn-primary" onclick="computeADSwitch()">Strategie tonen</button>
+          <div id="ad-out"></div>
+
+          <div class="disclaimer">Bij hooge dosis, langdurige duur, of gevoeligheid voor onttrekking: langere cross-taper. Bij ouderen of hartcomorbiditeit voorzichtiger. Citalopram &gt;20 mg en escitalopram &gt;10 mg vermijden bij ouderen vanwege QTc.</div>
+        </div>
+      `;
+    }
+  });
+  function computeADSwitch() {
+    const from = $('ad-from').value, to = $('ad-to').value;
+    if (!from || !to) { $('ad-out').innerHTML = '<div class="flag flag-amber">Selecteer beide middelen.</div>'; return; }
+    const [fd, fg] = from.split('|');
+    const [td, tg] = to.split('|');
+    if (fd === td) { $('ad-out').innerHTML = '<div class="flag flag-blue">Zelfde middel gekozen.</div>'; return; }
+
+    let strategy, color = 'blue';
+
+    if (fg === 'MAOi') {
+      strategy = `<strong>Washout 14 dagen verplicht</strong> na stoppen MAOi voordat met ${escape(td)} kan worden gestart. Bij moclobemide 24 uur volstaat vaak. Risico: hypertensieve crisis en serotoninesyndroom.`;
+      color = 'red';
+    } else if (tg === 'MAOi') {
+      if (fd === 'Fluoxetine') {
+        strategy = `<strong>Washout 5 weken</strong> verplicht na stoppen fluoxetine voordat ${escape(td)} kan worden gestart (lange halfwaardetijd van norfluoxetine). Andere AD: 14 dagen washout.`;
+        color = 'red';
+      } else {
+        strategy = `<strong>Washout 14 dagen</strong> verplicht na stoppen ${escape(fd)} voordat ${escape(td)} (MAOi) kan worden gestart. Risico op serotoninesyndroom.`;
+        color = 'red';
+      }
+    } else if (fg === 'SSRI' && tg === 'SSRI') {
+      strategy = `<strong>Directe switch</strong> meestal mogelijk bij equivalente dosering. Stop ${escape(fd)} 's avonds, start ${escape(td)} de volgende ochtend. Bij paroxetine of fluoxetine: cross-taper over 1–2 weken vanwege onttrekkingsrisico (paroxetine) of accumulatie (fluoxetine).`;
+    } else if (fg === 'SSRI' && tg === 'SNRI') {
+      strategy = `<strong>Directe switch</strong> op equivalente dosering. Venlafaxine starten met 75 mg ER, duloxetine 30–60 mg. Bij overstap vanaf paroxetine: cross-taper over 7–14 dagen om onttrekking te beperken.`;
+    } else if (fg === 'SNRI' && tg === 'SSRI') {
+      strategy = `<strong>Cross-taper of directe switch.</strong> Venlafaxine geleidelijk afbouwen (onttrekkingsgevoelig), tegelijk SSRI titreren. Duloxetine: directe switch meestal mogelijk.`;
+    } else if (tg === 'Mirtazapine' || fg === 'Mirtazapine') {
+      strategy = `<strong>Veilige combinatie tijdens cross-taper.</strong> Mirtazapine en SSRI/SNRI worden vaak gecombineerd ("Californian rocket fuel"). Geen washout vereist. Bouw één middel geleidelijk af terwijl het andere wordt gestart.`;
+      color = 'green';
+    } else if (tg === 'Bupropion' || fg === 'Bupropion') {
+      strategy = `<strong>Cross-taper</strong> over 1–2 weken. Bupropion en SSRI kunnen worden gecombineerd; let op verlaagde convulsiedrempel bij hoge doses (max 300 mg/dag standaard, 450 mg XL).`;
+    } else if (tg === 'TCA' || fg === 'TCA') {
+      strategy = `<strong>Cross-taper</strong> over 2–4 weken. Verhoogd risico op anticholinerge bijwerkingen tijdens overlap. ECG-controle bij start TCA bij &gt;50 jaar of cardiovasculaire comorbiditeit. Spiegelmeting nortriptyline op indicatie.`;
+      color = 'amber';
+    } else {
+      strategy = `<strong>Cross-taper</strong> over 1–2 weken. Geleidelijk ${escape(fd)} afbouwen terwijl ${escape(td)} wordt opgebouwd.`;
+    }
+
+    $('ad-out').innerHTML = `
+      <div class="result">
+        <div class="result-eyebrow">${escape(fg)} → ${escape(tg)}</div>
+        <div class="matrix-strategy" style="font-size:15px; margin-top:8px">${strategy}</div>
+        ${color === 'red' ? '<div class="flag flag-red"><strong>Levensgevaarlijke interactie mogelijk</strong> — strikte washout aanhouden.</div>' : ''}
+        <div class="result-detail">
+          Algemeen geldt: bij hoge dosis, lang gebruik (&gt;8 weken), of bekende onttrekking: langere cross-taper. Bij ouderen of polyfarmacie altijd voorzichtiger. Overweeg overleg met psychiater bij TCA-switch, MAOi, of complexe casus.
+        </div>
+      </div>
+    `;
+  }
+
+  /* ------------------------------------------------------------------
+     7. Opiatenrotatie
+  ------------------------------------------------------------------ */
+  const OPIOID_OME = {
+    // Oral morphine equivalents per mg
+    'Morfine oraal': 1.0,
+    'Morfine SC/IV': 3.0,
+    'Oxycodon oraal': 1.5,
+    'Oxycodon SC/IV': 3.0,
+    'Hydromorfon oraal': 5.0,
+    'Tramadol oraal': 0.1,
+    'Codeïne oraal': 0.13,
+    'Tapentadol oraal': 0.4,
+    'Methadon (rotatie complex)': 4.0
+  };
+  // Fentanyl patch: 25 mcg/h ≈ 60 mg oral morphine / 24h
+  TOOLS.push({
+    id: 'opioid-rotate',
+    name: 'Opiatenrotatie',
+    category: 'Switch & rotatie',
+    metaLabel: 'OME · Pallialine',
+    desc: 'Conversie naar orale morfine-equivalent met 25–30% reductie',
+    keywords: ['opiaten','opioid','morfine','oxycodon','fentanyl','rotatie','pallialine'],
+    featured: true,
+    render() {
+      const fromOpts = Object.keys(OPIOID_OME).map(k => `<option value="${k}">${k}</option>`).join('');
+      const toOpts = Object.keys(OPIOID_OME).filter(k => !k.includes('Methadon')).map(k => `<option value="${k}">${k}</option>`).join('');
+      return `
+        <div class="tool-view">
+          <h2>Opiatenrotatie</h2>
+          <div class="tool-subtitle">Conversie via orale morfine-equivalent (OME) met automatische 30% reductie wegens incomplete kruistolerantie.</div>
+
+          <div class="field"><label>Vanaf — middel</label>
+            <select id="op-from">${fromOpts}</select>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Dosis per 24 uur</label>
+              <input type="number" id="op-dose" placeholder="60" />
+              <span class="hint">mg per dag totaal</span>
+            </div>
+            <div class="field"><label>Naar — middel</label>
+              <select id="op-to">${toOpts}<option value="Fentanyl pleister">Fentanyl pleister (μg/u)</option></select>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="computeOpioidRot()">Bereken</button>
+          <div id="op-out"></div>
+
+          <div class="disclaimer">Bij fentanyl-pleister of methadon altijd overleg met palliatief team. Bij oudere/cachectische patiënt: extra reductie. Spitsdosis = 10–15% van totale dagdosis (oraal morfine snel werkend).</div>
+        </div>
+      `;
+    }
+  });
+  function computeOpioidRot() {
+    const from = $('op-from').value;
+    const to = $('op-to').value;
+    const dose = val('op-dose');
+    if (!dose) { $('op-out').innerHTML = '<div class="flag flag-amber">Vul dagdosis in.</div>'; return; }
+
+    const omePerMg = OPIOID_OME[from];
+    const totalOME = dose * omePerMg;
+    const reducedOME = totalOME * 0.7; // 30% reduction
+    let result, detail;
+
+    if (to === 'Fentanyl pleister') {
+      // 25 mcg/h ≈ 60 mg oral morphine / 24h → 1 mcg/h ≈ 2.4 mg morphine
+      const fentanyl_mcg_h = reducedOME / 2.4;
+      const standardSize = [12, 25, 37, 50, 75, 100].find(s => s >= fentanyl_mcg_h - 6) || 100;
+      result = `${fmt(fentanyl_mcg_h, 0)} μg/u`;
+      detail = `Standaardpleister: <strong>${standardSize} μg/u</strong>. Eerste 12–18 uur nog kortwerkende achtervang nodig. Pleister wisselen elke 72 uur.`;
+    } else {
+      const newOmePerMg = OPIOID_OME[to];
+      const newDose = reducedOME / newOmePerMg;
+      result = `${fmt(newDose, 0)} mg per 24 uur`;
+      let split = '';
+      if (to.includes('oraal')) {
+        if (to === 'Morfine oraal' || to === 'Oxycodon oraal') {
+          split = `Bijvoorbeeld: ${fmt(newDose/2, 0)} mg 2dd (slow-release) plus ${fmt(newDose*0.15, 0)} mg snel werkend zo nodig.`;
+        } else {
+          split = `Verdeel over standaard doseerinterval. Spitsdosis ${fmt(newDose*0.15, 0)} mg snel werkend zo nodig.`;
+        }
+      } else if (to.includes('SC/IV')) {
+        split = `Infuus: ${fmt(newDose/24, 1)} mg/u, of intermitterend ${fmt(newDose/6, 0)} mg per 4 uur.`;
+      }
+      detail = split;
+    }
+
+    $('op-out').innerHTML = `
+      <div class="result">
+        <div class="result-eyebrow">Totale OME (orale morfine-equivalent)</div>
+        <div class="result-value">${fmt(totalOME, 0)}<span class="unit">mg/24u</span></div>
+        <div class="result-interpretation">Na 30% reductie wegens incomplete kruistolerantie: ${fmt(reducedOME, 0)} mg OME.</div>
+        <div class="result-detail">
+          <strong>${escape(from)} ${fmt(dose, 0)} mg/24u → ${escape(to)}: ${result}</strong><br>
+          ${detail}
+        </div>
+      </div>
+    `;
+  }
+
+  /* ------------------------------------------------------------------
+     8. Benzodiazepine-equivalenten + Ashton-afbouw
+  ------------------------------------------------------------------ */
+  const BENZO_EQ = {
+    'Diazepam': 10,
+    'Oxazepam': 30,
+    'Temazepam': 20,
+    'Lorazepam': 1,
+    'Lormetazepam': 1,
+    'Alprazolam': 0.5,
+    'Bromazepam': 6,
+    'Clonazepam': 0.5,
+    'Nitrazepam': 10,
+    'Zolpidem': 20,
+    'Zopiclon': 15,
+    'Midazolam': 7.5
+  };
+  TOOLS.push({
+    id: 'benzo-eq',
+    name: 'Benzodiazepine-equivalenten',
+    category: 'Switch & rotatie',
+    metaLabel: 'Diazepam-equivalent · Ashton',
+    desc: 'Conversie en afbouwschema (12,5% per 2 wk)',
+    keywords: ['benzodiazepine','benzo','afbouw','ashton','diazepam','oxazepam','lorazepam','zolpidem'],
+    render() {
+      const opts = Object.keys(BENZO_EQ).map(k => `<option value="${k}">${k}</option>`).join('');
+      return `
+        <div class="tool-view">
+          <h2>Benzodiazepine-equivalenten</h2>
+          <div class="tool-subtitle">Conversie naar diazepam-equivalent en afbouwschema volgens Ashton-methode (12,5% per twee weken, langer bij langdurig gebruik).</div>
+
+          <div class="field"><label>Middel</label>
+            <select id="bz-from">${opts}</select>
+          </div>
+          <div class="field"><label>Dagdosis (mg)</label>
+            <input type="number" step="0.25" id="bz-dose" placeholder="2" />
+          </div>
+          <button class="btn btn-primary" onclick="computeBenzo()">Equivalent + afbouwschema</button>
+          <div id="bz-out"></div>
+
+          <div class="disclaimer">Bij langdurig gebruik (&gt;6 maanden) of hoge dosis: switch naar diazepam (lange halfwaardetijd) vooraf aan afbouw. Bij gebruik &lt;4 weken meestal direct staken mogelijk.</div>
+        </div>
+      `;
+    }
+  });
+  function computeBenzo() {
+    const from = $('bz-from').value;
+    const dose = val('bz-dose');
+    if (!dose) { $('bz-out').innerHTML = '<div class="flag flag-amber">Vul dosis in.</div>'; return; }
+
+    const eqDose = BENZO_EQ[from];
+    const diazEq = (dose / eqDose) * 10;
+
+    // Afbouwschema: 12.5% per 2 weken (Ashton)
+    const steps = [];
+    let cur = diazEq;
+    let week = 0;
+    while (cur > 0.5 && steps.length < 20) {
+      steps.push({ week, dose: cur });
+      cur = cur * 0.875;
+      week += 2;
+    }
+    steps.push({ week, dose: 0 });
+
+    $('bz-out').innerHTML = `
+      <div class="result">
+        <div class="result-eyebrow">Diazepam-equivalent</div>
+        <div class="result-value">${fmt(diazEq, 1)}<span class="unit">mg/dag</span></div>
+        <div class="result-interpretation">${escape(from)} ${fmt(dose, 2)} mg = ongeveer ${fmt(diazEq, 1)} mg diazepam/dag.</div>
+
+        <div class="result-detail">
+          <strong>Afbouwschema (Ashton, 12,5% per 2 weken):</strong>
+          <div style="margin-top:10px">
+            ${steps.map((s, i) => `
+              <div class="lookup-row">
+                <span class="lookup-row-label">Week ${s.week}–${s.week+1}</span>
+                <span class="lookup-row-value">${s.dose === 0 ? 'STOP' : fmt(s.dose, 1) + ' mg diazepam/dag'}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  /* ------------------------------------------------------------------
+     9. Corticosteroïd-equivalenten
+  ------------------------------------------------------------------ */
+  const STEROID_EQ = {
+    'Hydrocortison': 20,
+    'Cortison-acetaat': 25,
+    'Prednison': 5,
+    'Prednisolon': 5,
+    'Methylprednisolon': 4,
+    'Triamcinolon': 4,
+    'Dexamethason': 0.75,
+    'Betamethason': 0.6
+  };
+  TOOLS.push({
+    id: 'steroid-eq',
+    name: 'Corticosteroïd-equivalenten',
+    category: 'Switch & rotatie',
+    metaLabel: 'Glucocorticoïden',
+    desc: 'Conversie tussen hydrocortison · prednison · dexamethason',
+    keywords: ['corticosteroid','prednison','dexamethason','hydrocortison','stressdosering'],
+    render() {
+      const opts = Object.keys(STEROID_EQ).map(k => `<option value="${k}">${k}</option>`).join('');
+      return `
+        <div class="tool-view">
+          <h2>Corticosteroïd-equivalenten</h2>
+          <div class="tool-subtitle">Anti-inflammatoire equivalentie. Voor mineralocorticoïde activiteit gelden andere ratios — hydrocortison is dan referent.</div>
+          <div class="field"><label>Van</label>
+            <select id="st-from">${opts}</select>
+          </div>
+          <div class="field"><label>Dosis (mg)</label>
+            <input type="number" step="0.5" id="st-dose" placeholder="20" />
+          </div>
+          <button class="btn btn-primary" onclick="computeSteroid()">Toon equivalenten</button>
+          <div id="st-out"></div>
+        </div>
+      `;
+    }
+  });
+  function computeSteroid() {
+    const from = $('st-from').value;
+    const dose = val('st-dose');
+    if (!dose) { $('st-out').innerHTML = '<div class="flag flag-amber">Vul dosis in.</div>'; return; }
+    const fromEq = STEROID_EQ[from];
+    const rows = Object.entries(STEROID_EQ).map(([name, eq]) => {
+      const equiv = (dose / fromEq) * eq;
+      return `
+        <div class="lookup-row">
+          <span class="lookup-row-label">${escape(name)}${name === from ? ' (huidig)' : ''}</span>
+          <span class="lookup-row-value">${fmt(equiv, name === 'Dexamethason' || name === 'Betamethason' ? 2 : 1)} mg</span>
+        </div>
+      `;
+    }).join('');
+    $('st-out').innerHTML = `
+      <div class="result">
+        <div class="result-eyebrow">Equivalente doseringen</div>
+        ${rows}
+        <div class="result-detail">
+          <strong>Klinische ankers:</strong><br>
+          – Fysiologische cortisolproductie ≈ <strong>hydrocortison 20 mg/dag</strong> of <strong>prednison 5 mg/dag</strong>.<br>
+          – Stressdosering (chirurgie, ernstige infectie): <strong>hydrocortison 100 mg IV</strong>, daarna 50–100 mg per 6 uur.<br>
+          – Dexamethason heeft <strong>geen mineralocorticoïde werking</strong> — niet geschikt voor primaire bijnierschorsinsufficiëntie.
+        </div>
+      </div>
+    `;
+  }
+
+  /* ------------------------------------------------------------------
+     10. CYP-interacties (lookup)
+  ------------------------------------------------------------------ */
+  const CYP_DATA = [
+    { drug: 'Simvastatine', cyp: '3A4', role: 'Substraat', inhib: 'Claritromycine, itraconazol, verapamil, amiodaron, diltiazem', induc: 'Rifampicine, carbamazepine, fenytoïne', sip: '0.9', advice: 'Vermijd sterke 3A4-remmers — risico rabdomyolyse. Max 20 mg met amlodipine. Bij claritromycine tijdelijk staken.' },
+    { drug: 'Amlodipine', cyp: '3A4', role: 'Substraat / zwakke remmer', inhib: 'Itraconazol, claritromycine', induc: 'Rifampicine, carbamazepine', sip: '0.4', advice: 'Hypotensie en oedeem bij sterke remmers.' },
+    { drug: 'Metoprolol', cyp: '2D6', role: 'Substraat', inhib: 'Paroxetine, fluoxetine, bupropion, duloxetine', induc: 'Rifampicine', sip: '0.8', advice: 'Bij SSRI-remmers: bradycardie, hypotensie — dosis verlagen 25–50%.' },
+    { drug: 'Omeprazol', cyp: '2C19', role: 'Remmer', inhib: '—', induc: 'Rifampicine, sint-janskruid', sip: '0.7', advice: 'Remt activatie van clopidogrel — vermijd combinatie of switch naar pantoprazol.' },
+    { drug: 'Clopidogrel', cyp: '2C19', role: 'Prodrug', inhib: 'Omeprazol, esomeprazol, fluvoxamine', induc: 'Rifampicine', sip: '0.9', advice: 'Verminderde werking bij 2C19-remmers. Switch naar pantoprazol als PPI nodig.' },
+    { drug: 'Acenocoumarol/fenprocoumon', cyp: '2C9', role: 'Substraat', inhib: 'Fluconazol, amiodaron, miconazol', induc: 'Rifampicine, carbamazepine', sip: '0.95', advice: 'INR-controle binnen 3 dagen na start of stop van interagerend middel.' },
+    { drug: 'Citalopram', cyp: '2C19, 3A4', role: 'Substraat', inhib: 'Omeprazol, erytromycine', induc: 'Rifampicine', sip: '0.6', advice: 'Bij remmers: verhoogd QTc-risico. ECG bij ouderen.' },
+    { drug: 'Tramadol', cyp: '2D6', role: 'Prodrug', inhib: 'Paroxetine, fluoxetine, duloxetine', induc: 'Carbamazepine', sip: '0.8', advice: 'Bij 2D6-remmers verminderde werking; toxisch bij poor metabolizers.' },
+    { drug: 'Codeïne', cyp: '2D6', role: 'Prodrug', inhib: 'Paroxetine, fluoxetine', induc: 'Carbamazepine', sip: '0.85', advice: 'Bij ultra-rapid metabolizers risico op morfine-toxiciteit; bij poor metabolizers geen werking.' },
+    { drug: 'Tamoxifen', cyp: '2D6', role: 'Prodrug', inhib: 'Paroxetine, fluoxetine, bupropion', induc: '—', sip: '0.9', advice: 'Vermijd sterke 2D6-remmers — verminderde endoxifen-vorming en mogelijk verminderde recidiefpreventie.' },
+    { drug: 'Apixaban / rivaroxaban', cyp: '3A4 + P-gp', role: 'Substraat', inhib: 'Ketoconazol, itraconazol, ritonavir, claritromycine', induc: 'Rifampicine, carbamazepine, fenytoïne', sip: '0.85', advice: 'Vermijd sterke 3A4+P-gp-combinaties. Apixaban dosisreductie bij milde remmers.' },
+    { drug: 'Carbamazepine', cyp: '3A4', role: 'Sterke inductor + substraat', inhib: '—', induc: 'Sterke autoinductie + induceert vele andere CYP\'s', sip: '0.85', advice: 'Halveert spiegels van DOAC\'s, orale anticonceptie, statines.' },
+    { drug: 'Warfarine', cyp: '2C9, 3A4', role: 'Substraat', inhib: 'Fluconazol, miconazol, amiodaron', induc: 'Rifampicine, sint-janskruid', sip: '0.95', advice: 'Intensieve INR-monitoring bij elke start/stop.' },
+    { drug: 'Diazepam', cyp: '3A4, 2C19', role: 'Substraat', inhib: 'Omeprazol, claritromycine, fluvoxamine', induc: 'Rifampicine', sip: '0.85', advice: 'Bij remmers: sedatie — dosis verlagen.' },
+    { drug: 'Losartan', cyp: '2C9', role: 'Prodrug', inhib: 'Fluconazol', induc: 'Rifampicine', sip: '0.5', advice: 'Bij sterke inductoren: verminderde werkzaamheid.' }
+  ];
+  TOOLS.push({
+    id: 'cyp',
+    name: 'CYP-interacties',
+    category: 'Pharmacowijzer',
+    metaLabel: 'P450 · SIP-score',
+    desc: 'Substraten, remmers, inductoren — klinisch advies',
+    keywords: ['cyp','interactie','p450','farmacologie','pharmacowijzer','sip'],
+    featured: true,
+    render() {
+      return `
+        <div class="tool-view">
+          <h2>CYP-interacties</h2>
+          <div class="tool-subtitle">Lookup van klinisch relevante CYP450-interacties met SIP-score (Starter Interactie Preventie). Vervangt KNMP-Kennisbank niet.</div>
+          <div class="field">
+            <input type="text" id="cyp-search" placeholder="Zoek middel of CYP-enzym…" oninput="renderCYPTable()" autocomplete="off" />
+          </div>
+          <div id="cyp-table"></div>
+        </div>
+      `;
+    },
+    onMount() { renderCYPTable(); }
+  });
+  function renderCYPTable() {
+    const q = ($('cyp-search') ? $('cyp-search').value : '').toLowerCase();
+    const rows = CYP_DATA.filter(r =>
+      !q || r.drug.toLowerCase().includes(q) || r.cyp.toLowerCase().includes(q) ||
+      r.inhib.toLowerCase().includes(q) || r.induc.toLowerCase().includes(q)
+    );
+    $('cyp-table').innerHTML = rows.length === 0
+      ? '<div class="empty">Geen resultaten.</div>'
+      : rows.map(r => `
+        <div class="matrix-row">
+          <div class="matrix-from-to">${escape(r.drug)} · CYP${escape(r.cyp)} · ${escape(r.role)} · SIP ${escape(r.sip)}</div>
+          <div class="matrix-strategy">
+            <strong>Remmers:</strong> ${escape(r.inhib)}<br>
+            <strong>Inductoren:</strong> ${escape(r.induc)}<br>
+            <strong>Advies:</strong> ${escape(r.advice)}
+          </div>
+        </div>
+      `).join('');
+  }
+
+  /* ------------------------------------------------------------------
+     11. STOPP/START — Quick screener
+  ------------------------------------------------------------------ */
+  const STOPP_ITEMS = [
+    { id: 's1', label: 'NSAID + hartfalen (NYHA II–IV)', advice: 'Stop NSAID — risico decompensatie.' },
+    { id: 's2', label: 'NSAID + eGFR < 50', advice: 'Stop NSAID — risico verdere achteruitgang.' },
+    { id: 's3', label: 'NSAID + DOAC of warfarine', advice: 'Stop NSAID — sterk verhoogd bloedingsrisico.' },
+    { id: 's4', label: 'Benzodiazepine > 4 weken', advice: 'Afbouwen — valrisico, cognitieve achteruitgang.' },
+    { id: 's5', label: 'PPI op standaarddosis > 8 weken zonder indicatie', advice: 'Step-down of staken.' },
+    { id: 's6', label: 'Anticholinergica bij dementie of mictiestoornissen', advice: 'Stop — verergering cognitie en urineretentie.' },
+    { id: 's7', label: 'TCA bij dementie, glaucoom, prostaatproblemen of cardiale geleidingsstoornis', advice: 'Stop — risico delier, retentie, aritmie.' },
+    { id: 's8', label: 'Sulfonylureumderivaat (glibenclamide, glimepiride) met lange halfwaardetijd bij ouderen', advice: 'Switch naar gliclazide of metformine.' },
+    { id: 's9', label: 'Aspirine zonder duidelijke indicatie (geen vastgestelde HVZ)', advice: 'Stop — geen primaire preventie bewezen bij ouderen.' },
+    { id: 's10', label: 'Antipsychoticum bij BPSD > 3 maanden zonder evaluatie', advice: 'Afbouwen — verhoogde mortaliteit.' },
+    { id: 's11', label: 'Drie of meer psychotrope middelen tegelijk', advice: 'Review — valrisico, sedatie, delier.' },
+    { id: 's12', label: 'Digoxine > 125 μg bij eGFR < 30', advice: 'Halveren of staken.' }
+  ];
+  const START_ITEMS = [
+    { id: 't1', label: 'VKA/DOAC indicatie aanwezig (AF, CHA₂DS₂-VASc ≥ 2) maar niet voorgeschreven', advice: 'Start antistolling (DOAC voorkeur).' },
+    { id: 't2', label: 'Statine geïndiceerd (HVZ, DM met risico) maar niet voorgeschreven', advice: 'Start statine.' },
+    { id: 't3', label: 'ACE-i/ARB bij hartfalen of post-MI niet voorgeschreven', advice: 'Start ACE-i/ARB.' },
+    { id: 't4', label: 'Bisfosfonaat + calcium/vitD bij osteoporose niet voorgeschreven', advice: 'Start osteoporose-medicatie.' },
+    { id: 't5', label: 'Inhalatiecorticosteroïd bij matig-ernstig astma/COPD ontbreekt', advice: 'Start inhalatiecorticosteroïd.' },
+    { id: 't6', label: 'Vitamine D-suppletie bij gevallen, fragiele oudere', advice: 'Start vitamine D 800 IE/d.' },
+    { id: 't7', label: 'Laxans bij chronisch opiaatgebruik ontbreekt', advice: 'Start macrogol of natriumpicosulfaat.' }
+  ];
+  TOOLS.push({
+    id: 'stopp-start',
+    name: 'STOPP/START quick screener',
+    category: 'Polyfarmacie',
+    metaLabel: 'Ouderen · medicatiereview',
+    desc: 'Kernpunten voor jaarlijkse polyfarmacie-evaluatie',
+    keywords: ['stopp','start','polyfarmacie','ouderen','medicatiereview'],
+    render() {
+      return `
+        <div class="tool-view">
+          <h2>STOPP — overweeg te stoppen</h2>
+          <div class="tool-subtitle">Vink aan wat van toepassing is. De adviezen verschijnen onder elke regel.</div>
+          ${STOPP_ITEMS.map(it => `
+            <label class="checkrow" onclick="setTimeout(updateStoppStart,0)">
+              <input type="checkbox" data-grp="stopp" data-id="${it.id}" />
+              <span class="checkrow-text">${escape(it.label)}<br><span style="font-size:12px;color:var(--muted)">${escape(it.advice)}</span></span>
+            </label>
+          `).join('')}
+        </div>
+        <div class="tool-view">
+          <h2>START — overweeg te starten</h2>
+          <div class="tool-subtitle">Wat ontbreekt mogelijk?</div>
+          ${START_ITEMS.map(it => `
+            <label class="checkrow" onclick="setTimeout(updateStoppStart,0)">
+              <input type="checkbox" data-grp="start" data-id="${it.id}" />
+              <span class="checkrow-text">${escape(it.label)}<br><span style="font-size:12px;color:var(--muted)">${escape(it.advice)}</span></span>
+            </label>
+          `).join('')}
+        </div>
+        <div id="ss-out"></div>
+      `;
+    }
+  });
+  function updateStoppStart() {
+    const stopp = document.querySelectorAll('input[data-grp="stopp"]:checked').length;
+    const start = document.querySelectorAll('input[data-grp="start"]:checked').length;
+    if (stopp + start === 0) { $('ss-out').innerHTML = ''; return; }
+    $('ss-out').innerHTML = `
+      <div class="result">
+        <div class="result-eyebrow">Samenvatting medicatiereview</div>
+        <div class="result-interpretation"><strong>${stopp}</strong> items om te overwegen te stoppen · <strong>${start}</strong> items om te overwegen te starten.</div>
+        <div class="result-detail">Bespreek met de patiënt aan de hand van een actueel medicatie-overzicht. Documenteer beslissingen in het HIS onder polyfarmacie-evaluatie.</div>
+      </div>
+    `;
+  }
+
+  /* ------------------------------------------------------------------
+     12. Anticonceptie-keuzehulp
+  ------------------------------------------------------------------ */
+  TOOLS.push({
+    id: 'contraception',
+    name: 'Anticonceptie-keuzehulp',
+    category: 'Gynaecologie & endocrien',
+    metaLabel: 'NHG · WHO MEC',
+    desc: 'Geschikte opties op basis van profiel',
+    keywords: ['anticonceptie','pil','spiraal','iud','implanon','migraine','trombose'],
+    render() {
+      return `
+        <div class="tool-view">
+          <h2>Anticonceptie-keuzehulp</h2>
+          <div class="tool-subtitle">Filtert ongeschikte methodes uit op basis van veiligheidsprofiel (WHO Medical Eligibility Criteria, NHG-Standaard Anticonceptie).</div>
+
+          <div class="field"><label>Leeftijd</label><input type="number" id="ac-age" placeholder="32" /></div>
+          <div class="field"><label>Borstvoeding</label>
+            <div class="segmented" id="seg-bf"><button class="active" data-v="0">Nee</button><button data-v="1">Ja, &lt;6 wk pp</button><button data-v="2">Ja, &gt;6 wk pp</button></div>
+          </div>
+          <div class="field"><label>Roken</label>
+            <div class="segmented" id="seg-ac-smk"><button class="active" data-v="0">Nee</button><button data-v="1">Ja</button></div>
+          </div>
+          <div class="field"><label>BMI &gt; 35</label>
+            <div class="segmented" id="seg-bmi"><button class="active" data-v="0">Nee</button><button data-v="1">Ja</button></div>
+          </div>
+          <div class="field"><label>Migraine met aura</label>
+            <div class="segmented" id="seg-mig"><button class="active" data-v="0">Nee</button><button data-v="1">Ja</button></div>
+          </div>
+          <div class="field"><label>VTE in voorgeschiedenis of familie</label>
+            <div class="segmented" id="seg-vte"><button class="active" data-v="0">Nee</button><button data-v="1">Familie</button><button data-v="2">Eigen VTE</button></div>
+          </div>
+          <div class="field"><label>Voorkeur</label>
+            <div class="segmented" id="seg-pref"><button class="active" data-v="any">Geen voorkeur</button><button data-v="long">Lang werkend</button><button data-v="hormone-free">Hormoonvrij</button></div>
+          </div>
+          <button class="btn btn-primary" onclick="computeContraception()">Geschikte opties</button>
+          <div id="ac-out"></div>
+        </div>
+      `;
+    },
+    onMount() {
+      ['seg-bf','seg-ac-smk','seg-bmi','seg-mig','seg-vte','seg-pref'].forEach(id => {
+        document.querySelectorAll(`#${id} button`).forEach(b => {
+          b.addEventListener('click', () => {
+            document.querySelectorAll(`#${id} button`).forEach(x => x.classList.remove('active'));
+            b.classList.add('active');
+          });
+        });
+      });
+    }
+  });
+  function computeContraception() {
+    const age = val('ac-age');
+    const bf = parseInt(document.querySelector('#seg-bf button.active').dataset.v);
+    const smk = parseInt(document.querySelector('#seg-ac-smk button.active').dataset.v);
+    const bmi = parseInt(document.querySelector('#seg-bmi button.active').dataset.v);
+    const mig = parseInt(document.querySelector('#seg-mig button.active').dataset.v);
+    const vte = parseInt(document.querySelector('#seg-vte button.active').dataset.v);
+    const pref = document.querySelector('#seg-pref button.active').dataset.v;
+
+    // Combined hormonal contra-indications
+    const combinedCI = (age >= 35 && smk) || mig === 1 || vte === 2 || bf === 1 || bmi === 1;
+    const combinedCaution = vte === 1 || (age >= 35);
+
+    const options = [];
+
+    if (!combinedCI && pref !== 'hormone-free' && pref !== 'long') {
+      options.push({ name: 'Combinatiepil (levonorgestrel + EE 30 μg)', tier: 'green', note: combinedCaution ? 'Met voorzichtigheid — let op risicofactoren.' : 'Eerste keus combinatiepil bij geschikt profiel.' });
+      options.push({ name: 'Anticonceptiering / pleister', tier: 'green', note: 'Combinatiehormoon, alternatieve toedieningsvorm.' });
+    } else if (combinedCI && pref !== 'long' && pref !== 'hormone-free') {
+      options.push({ name: 'Combinatiepil / ring / pleister', tier: 'red', note: 'Contra-indicatie (' + [
+        age >= 35 && smk ? '≥35 jaar én roken' : null,
+        mig === 1 ? 'migraine met aura' : null,
+        vte === 2 ? 'eerdere VTE' : null,
+        bf === 1 ? 'borstvoeding <6 wk pp' : null,
+        bmi === 1 ? 'BMI >35' : null
+      ].filter(Boolean).join(', ') + ').' });
+    }
+
+    if (pref !== 'hormone-free') {
+      options.push({ name: 'Mini-pil (desogestrel)', tier: 'green', note: 'Alleen progestageen, geschikt bij borstvoeding, migraine met aura, VTE.' });
+      options.push({ name: 'Hormoonspiraal (Mirena, Kyleena)', tier: 'green', note: 'Vijf jaar werkzaam, vermindert menstruatie. Voorkeur bij menorragie, endometriose.' });
+      options.push({ name: 'Implanon NXT (etonogestrel-implantaat)', tier: 'green', note: 'Drie jaar werkzaam, hoogste pearl-index. Onregelmatig bloedverlies veelvoorkomende reden tot verwijdering.' });
+      options.push({ name: 'Prikpil (DMPA)', tier: 'yellow', note: 'Elke 12 weken. Mogelijk gewichtstoename en BMD-afname bij langdurig gebruik.' });
+    }
+
+    options.push({ name: 'Koperspiraal', tier: 'green', note: 'Hormoonvrij, 5–10 jaar werkzaam. Kan menstruatie verzwaren — minder geschikt bij menorragie.' });
+    if (pref === 'hormone-free') {
+      options.push({ name: 'Condoom', tier: 'yellow', note: 'Pearl-index hoger bij gewoon gebruik. Tevens SOA-bescherming.' });
+    }
+
+    $('ac-out').innerHTML = `
+      <div class="result">
+        <div class="result-eyebrow">Aanbevolen opties</div>
+        ${options.map(o => `
+          <div class="matrix-row">
+            <div class="matrix-from-to">
+              ${o.tier === 'green' ? '<span class="tag tag-green">Geschikt</span>' :
+                o.tier === 'yellow' ? '<span class="tag tag-yellow">Met aandacht</span>' :
+                '<span class="tag tag-red">Contra-indicatie</span>'}
+              ${escape(o.name)}
+            </div>
+            <div class="matrix-strategy">${escape(o.note)}</div>
+          </div>
+        `).join('')}
+        <div class="result-detail">
+          Altijd bespreken: SOA-risico (condoom-counseling), wens kinderwens-termijn, bijwerkingenprofiel, kosten. Bij twijfel raadpleeg NHG-Standaard Anticonceptie 2020.
+        </div>
+      </div>
+    `;
+  }
+
+  /* ------------------------------------------------------------------
+     13. Anafylaxie-protocol
+  ------------------------------------------------------------------ */
+  TOOLS.push({
+    id: 'anaphylaxis',
+    name: 'Anafylaxie-protocol',
+    category: 'Acuut',
+    metaLabel: 'NVA · ABCDE',
+    desc: 'Doseringsschema adrenaline en vervolgmedicatie',
+    keywords: ['anafylaxie','adrenaline','epipen','shock','allergie'],
+    featured: true,
+    render() {
+      return `
+        <div class="tool-view">
+          <h2>Anafylaxie</h2>
+          <div class="tool-subtitle">Levensbedreigende allergische reactie. Adrenaline is de enige levensreddende behandeling — eerst geven, dan analyseren.</div>
+
+          <div class="flag flag-red">
+            <strong>Eerste interventie altijd:</strong> adrenaline IM in laterale dij. Niet uitstellen voor IV-toegang of ECG.
+          </div>
+
+          <h3 style="font-family:var(--font-serif);font-size:18px;font-weight:500;margin:24px 0 12px 0;letter-spacing:-0.01em">Adrenaline IM, mid-anterolateraal dijbeen</h3>
+          <div class="lookup-row"><span class="lookup-row-label">Volwassene</span><span class="lookup-row-value">0,5 mg (0,5 ml van 1 mg/ml)</span></div>
+          <div class="lookup-row"><span class="lookup-row-label">Kind &gt;12 jaar of &gt;50 kg</span><span class="lookup-row-value">0,5 mg</span></div>
+          <div class="lookup-row"><span class="lookup-row-label">Kind 6–12 jaar</span><span class="lookup-row-value">0,3 mg</span></div>
+          <div class="lookup-row"><span class="lookup-row-label">Kind 6 mnd–6 jaar</span><span class="lookup-row-value">0,15 mg</span></div>
+          <div class="lookup-row"><span class="lookup-row-label">Kind &lt;6 mnd</span><span class="lookup-row-value">0,1–0,15 mg</span></div>
+          <div class="flag flag-amber" style="margin-top:14px"><strong>Herhalen elke 5–15 minuten</strong> bij persisterende of recidiverende klachten.</div>
+
+          <h3 style="font-family:var(--font-serif);font-size:18px;font-weight:500;margin:24px 0 12px 0;letter-spacing:-0.01em">Vervolgstappen</h3>
+          <div class="protocol-step"><div class="protocol-step-num">1</div><div class="protocol-step-body"><strong>112 bellen</strong> en omgeving alarmeren. Allergeen verwijderen (steek, infusie staken).</div></div>
+          <div class="protocol-step"><div class="protocol-step-num">2</div><div class="protocol-step-body"><strong>Houding:</strong> liggend met benen omhoog (shock), zittend bij respiratoire distress.</div></div>
+          <div class="protocol-step"><div class="protocol-step-num">3</div><div class="protocol-step-body"><strong>Zuurstof</strong> 10–15 l/min non-rebreathing masker.</div></div>
+          <div class="protocol-step"><div class="protocol-step-num">4</div><div class="protocol-step-body"><strong>IV-toegang</strong> en NaCl 0,9% bolus 500–1000 ml bij shock (kind: 20 ml/kg).</div></div>
+          <div class="protocol-step"><div class="protocol-step-num">5</div><div class="protocol-step-body"><strong>Salbutamol</strong> per dosisaerosol of vernevelaar bij bronchospasme.</div></div>
+          <div class="protocol-step"><div class="protocol-step-num">6</div><div class="protocol-step-body"><strong>Tweedelijns medicatie</strong> (na adrenaline en ABCDE-stabilisatie):<br>– Hydrocortison 200 mg IV (kind 4 mg/kg)<br>– Clemastine 2 mg IV (kind 0,025 mg/kg) of cetirizine PO</div></div>
+          <div class="protocol-step"><div class="protocol-step-num">7</div><div class="protocol-step-body"><strong>Observatie 6–24 uur</strong> wegens bifasische reactie. Ontslag met EpiPen-recept en allergoloog-verwijzing.</div></div>
+
+          <div class="disclaimer">Mast cell tryptase-bepaling binnen 1–2 uur na reactie en na 24 uur kan diagnose ondersteunen — vooral bij twijfel.</div>
+        </div>
+      `;
+    }
+  });
+
+  /* ------------------------------------------------------------------
+     14. Centor / McIsaac (keelpijn)
+  ------------------------------------------------------------------ */
+  TOOLS.push({
+    id: 'centor',
+    name: 'Centor / McIsaac',
+    category: 'Rekenformules',
+    metaLabel: 'Keelpijn · antibiotica',
+    desc: 'Kans op streptokokken-faryngitis',
+    keywords: ['centor','mcisaac','keelpijn','tonsillitis','strep'],
+    render() {
+      const items = [
+        { id: 'c1', label: 'Koorts > 38°C' },
+        { id: 'c2', label: 'Geen hoest' },
+        { id: 'c3', label: 'Gezwollen voorste cervicale lymfeklieren' },
+        { id: 'c4', label: 'Tonsilexsudaat of tonsilzwelling' }
+      ];
+      return `
+        <div class="tool-view">
+          <h2>Centor / McIsaac</h2>
+          <div class="tool-subtitle">Kans op groep-A streptokokken bij keelpijn. McIsaac voegt leeftijdsadjustering toe.</div>
+          ${items.map(i => `
+            <label class="checkrow">
+              <input type="checkbox" data-grp="centor" onchange="computeCentor()" />
+              <span class="checkrow-text">${escape(i.label)}</span>
+              <span class="checkrow-meta">+1</span>
+            </label>
+          `).join('')}
+          <div class="field" style="margin-top:14px"><label>Leeftijd</label>
+            <div class="segmented" id="seg-age-c">
+              <button class="active" data-v="0">15–44 jr</button>
+              <button data-v="1">3–14 jr (+1)</button>
+              <button data-v="-1">≥ 45 jr (−1)</button>
+            </div>
+          </div>
+          <div id="centor-out"></div>
+        </div>
+      `;
+    },
+    onMount() {
+      document.querySelectorAll('#seg-age-c button').forEach(b => {
+        b.addEventListener('click', () => {
+          document.querySelectorAll('#seg-age-c button').forEach(x => x.classList.remove('active'));
+          b.classList.add('active');
+          computeCentor();
+        });
+      });
+      computeCentor();
+    }
+  });
+  function computeCentor() {
+    let score = 0;
+    document.querySelectorAll('input[data-grp="centor"]').forEach(i => { if (i.checked) score++; });
+    const ageAdj = document.querySelector('#seg-age-c button.active');
+    if (ageAdj) score += parseInt(ageAdj.dataset.v);
+    let prob, advice, color;
+    if (score <= 1) { prob = '< 10%'; color = 'green'; advice = 'Geen kweek of antibioticum. Symptomatisch behandelen.'; }
+    else if (score === 2) { prob = '11–17%'; color = 'yellow'; advice = 'Eventueel kweek/sneltest overwegen, geen empirisch antibioticum.'; }
+    else if (score === 3) { prob = '28–35%'; color = 'amber'; advice = 'Volgens NHG: zelden antibioticum — alleen bij ernstig zieke, immuuncompromis, of risicogroepen.'; }
+    else { prob = '> 50%'; color = 'amber'; advice = 'Bij ernstig zieke patiënt: feneticilline 500 mg 3dd 7 dagen. NHG raadt afwachten aan bij niet-ernstig zieke patiënt.'; }
+    $('centor-out').innerHTML = `
+      <div class="result">
+        <div class="result-eyebrow">McIsaac-score</div>
+        <div class="result-value">${score}<span class="unit">/ 5</span></div>
+        <div><span class="tag tag-${color}">Kans op GAS: ${prob}</span></div>
+        <div class="result-interpretation">${escape(advice)}</div>
+        <div class="result-detail">NHG-Standaard Acute Keelpijn benadrukt dat antibiotica de ziekteduur slechts met 1–2 dagen verkort en complicaties (acuut reuma) in Nederland zeldzaam zijn.</div>
+      </div>
+    `;
+  }
+
+  /* ------------------------------------------------------------------
+     15. Wells DVT
+  ------------------------------------------------------------------ */
+  TOOLS.push({
+    id: 'wells-dvt',
+    name: 'Wells DVT',
+    category: 'Rekenformules',
+    metaLabel: 'Beenklacht · trombose',
+    desc: 'Voorafkans op diepe veneuze trombose',
+    keywords: ['wells','dvt','trombose','beenklacht'],
+    render() {
+      const items = [
+        { id: 'w1', label: 'Actieve maligniteit (behandeld in afgelopen 6 mnd)', pts: 1 },
+        { id: 'w2', label: 'Paralyse, parese of gipsimmobilisatie van onderste extremiteit', pts: 1 },
+        { id: 'w3', label: 'Bedlegerig > 3 dagen of grote operatie < 12 wk', pts: 1 },
+        { id: 'w4', label: 'Lokale gevoeligheid langs verloop diepe venen', pts: 1 },
+        { id: 'w5', label: 'Volledig been gezwollen', pts: 1 },
+        { id: 'w6', label: 'Kuit > 3 cm dikker dan asymptomatische zijde', pts: 1 },
+        { id: 'w7', label: 'Pitting oedeem in symptomatische been', pts: 1 },
+        { id: 'w8', label: 'Collaterale oppervlakkige venen (niet-variceus)', pts: 1 },
+        { id: 'w9', label: 'Eerder DVT', pts: 1 },
+        { id: 'w10', label: 'Alternatieve diagnose minstens even waarschijnlijk', pts: -2 }
+      ];
+      return `
+        <div class="tool-view">
+          <h2>Wells DVT</h2>
+          <div class="tool-subtitle">Beslisregel bij verdenking diepe veneuze trombose.</div>
+          ${items.map(i => `
+            <label class="checkrow">
+              <input type="checkbox" data-grp="wells" data-pts="${i.pts}" onchange="computeWells()" />
+              <span class="checkrow-text">${escape(i.label)}</span>
+              <span class="checkrow-meta">${i.pts > 0 ? '+' : ''}${i.pts}</span>
+            </label>
+          `).join('')}
+          <div id="wells-out"></div>
+        </div>
+      `;
+    },
+    onMount() { computeWells(); }
+  });
+  function computeWells() {
+    let score = 0;
+    document.querySelectorAll('input[data-grp="wells"]').forEach(i => { if (i.checked) score += parseInt(i.dataset.pts); });
+    let cat, color, advice;
+    if (score <= 1) { cat = 'DVT onwaarschijnlijk'; color = 'green'; advice = 'D-dimeer bepalen — bij normale waarde DVT uitgesloten. Bij verhoogde D-dimeer: echo.'; }
+    else { cat = 'DVT waarschijnlijk'; color = 'amber'; advice = 'Direct echografie compressie of duplex. D-dimeer niet meer nuttig voor uitsluiting.'; }
+    $('wells-out').innerHTML = `
+      <div class="result">
+        <div class="result-eyebrow">Wells-score</div>
+        <div class="result-value">${score}<span class="unit">punten</span></div>
+        <div><span class="tag tag-${color}">${escape(cat)}</span></div>
+        <div class="result-interpretation">${escape(advice)}</div>
+      </div>
+    `;
+  }
+
+  /* ------------------------------------------------------------------
+     16. AUDIT-C (alcohol screening)
+  ------------------------------------------------------------------ */
+  TOOLS.push({
+    id: 'audit-c',
+    name: 'AUDIT-C',
+    category: 'GGZ-scores',
+    metaLabel: 'Alcohol · 3 items',
+    desc: 'Screening problematisch alcoholgebruik',
+    keywords: ['audit','alcohol','screening'],
+    render() {
+      return `
+        <div class="tool-view">
+          <h2>AUDIT-C</h2>
+          <div class="tool-subtitle">Korte versie van de AUDIT — drie vragen over alcoholconsumptie.</div>
+          <div class="scale-item">
+            <div class="scale-q">1. Hoe vaak drinkt u alcohol?</div>
+            <div class="scale-options" data-q="0">
+              <button data-v="0">Nooit</button><button data-v="1">≤1 / mnd</button><button data-v="2">2–4 / mnd</button><button data-v="3">2–3 / wk</button>
+            </div>
+            <div class="scale-options" data-q="0b" style="margin-top:6px;grid-template-columns:1fr">
+              <button data-v="4">4 of meer per week</button>
+            </div>
+          </div>
+          <div class="scale-item">
+            <div class="scale-q">2. Hoeveel glazen alcohol drinkt u op een typische drinkdag?</div>
+            <div class="scale-options" data-q="1">
+              <button data-v="0">1 of 2</button><button data-v="1">3 of 4</button><button data-v="2">5 of 6</button><button data-v="3">7–9</button>
+            </div>
+            <div class="scale-options" data-q="1b" style="margin-top:6px;grid-template-columns:1fr">
+              <button data-v="4">10 of meer</button>
+            </div>
+          </div>
+          <div class="scale-item">
+            <div class="scale-q">3. Hoe vaak drinkt u 6 of meer glazen alcohol bij één gelegenheid?</div>
+            <div class="scale-options" data-q="2">
+              <button data-v="0">Nooit</button><button data-v="1">&lt; 1/mnd</button><button data-v="2">Maandelijks</button><button data-v="3">Wekelijks</button>
+            </div>
+            <div class="scale-options" data-q="2b" style="margin-top:6px;grid-template-columns:1fr">
+              <button data-v="4">Dagelijks</button>
+            </div>
+          </div>
+          <div id="auditc-out" style="margin-top:16px"></div>
+        </div>
+      `;
+    },
+    onMount() {
+      document.querySelectorAll('#app .scale-options').forEach(grp => {
+        grp.querySelectorAll('button').forEach(b => {
+          b.addEventListener('click', () => {
+            // Clear all sibling groups for the same question
+            const qBase = grp.dataset.q.replace('b','');
+            document.querySelectorAll(`.scale-options[data-q^="${qBase}"]`).forEach(g => {
+              g.querySelectorAll('button').forEach(x => x.classList.remove('active'));
+            });
+            b.classList.add('active');
+            computeAuditC();
+          });
+        });
+      });
+    }
+  });
+  function computeAuditC() {
+    let total = 0, answered = 0;
+    [0,1,2].forEach(i => {
+      const active = document.querySelector(`.scale-options[data-q^="${i}"] button.active`);
+      if (active) { total += parseInt(active.dataset.v); answered++; }
+    });
+    if (answered === 0) { $('auditc-out').innerHTML = ''; return; }
+    let cat, color, advice;
+    if (total <= 2) { cat = 'Geen indicatie'; color = 'green'; advice = 'Geen problematisch alcoholgebruik volgens AUDIT-C.'; }
+    else if ((total >= 4 && document.querySelector('input[data-sex="m"]')) || total >= 3) {
+      // simplified: women ≥3, men ≥4 considered positive
+      cat = 'Positief'; color = 'amber'; advice = 'Mogelijk problematisch gebruik. Verdiep met volledige AUDIT-10 en bespreek. Bij score ≥8 (volledige AUDIT): verwijs naar verslavingszorg.';
+    } else {
+      cat = 'Grenswaarde'; color = 'yellow'; advice = 'Bij vrouwen ≥3 / mannen ≥4 al verdacht. Korte interventie overwegen.';
+    }
+    $('auditc-out').innerHTML = `
+      <div class="result">
+        <div class="result-eyebrow">AUDIT-C totaal</div>
+        <div class="result-value">${total}<span class="unit">/ 12</span></div>
+        <div><span class="tag tag-${color}">${escape(cat)}</span></div>
+        <div class="result-interpretation">${escape(advice)}</div>
+        <div class="result-detail">Afkapwaarden: vrouwen ≥3, mannen ≥4. Bij positieve screening volledige AUDIT-10 afnemen.</div>
+      </div>
+    `;
+  }
+
+  /* ------------------------------------------------------------------
+     17. FINDRISC (diabetes screening)
+  ------------------------------------------------------------------ */
+  TOOLS.push({
+    id: 'findrisc',
+    name: 'FINDRISC',
+    category: 'Rekenformules',
+    metaLabel: 'Diabetes · screening',
+    desc: '10-jaars risico op diabetes type 2',
+    keywords: ['findrisc','diabetes','screening','dm2'],
+    render() {
+      return `
+        <div class="tool-view">
+          <h2>FINDRISC</h2>
+          <div class="tool-subtitle">Finnish Diabetes Risk Score. Voorspelt 10-jaars risico op DM type 2.</div>
+
+          <div class="field"><label>Leeftijd</label>
+            <div class="segmented" id="fr-age">
+              <button class="active" data-v="0">&lt;45</button>
+              <button data-v="2">45–54</button>
+              <button data-v="3">55–64</button>
+              <button data-v="4">≥65</button>
+            </div>
+          </div>
+          <div class="field"><label>BMI</label>
+            <div class="segmented" id="fr-bmi">
+              <button class="active" data-v="0">&lt;25</button>
+              <button data-v="1">25–30</button>
+              <button data-v="3">&gt;30</button>
+            </div>
+          </div>
+          <div class="field"><label>Middelomtrek (man / vrouw)</label>
+            <div class="segmented" id="fr-waist">
+              <button class="active" data-v="0">&lt;94 / &lt;80</button>
+              <button data-v="3">94–102 / 80–88</button>
+              <button data-v="4">&gt;102 / &gt;88</button>
+            </div>
+          </div>
+          <div class="field"><label>Lichaamsbeweging &lt; 30 min/dag</label>
+            <div class="segmented" id="fr-act"><button class="active" data-v="0">Nee</button><button data-v="2">Ja</button></div>
+          </div>
+          <div class="field"><label>Dagelijks groente en fruit</label>
+            <div class="segmented" id="fr-veg"><button class="active" data-v="0">Ja</button><button data-v="1">Nee</button></div>
+          </div>
+          <div class="field"><label>Ooit antihypertensiva gebruikt</label>
+            <div class="segmented" id="fr-bp"><button class="active" data-v="0">Nee</button><button data-v="2">Ja</button></div>
+          </div>
+          <div class="field"><label>Ooit verhoogde glucose gemeten</label>
+            <div class="segmented" id="fr-gluc"><button class="active" data-v="0">Nee</button><button data-v="5">Ja</button></div>
+          </div>
+          <div class="field"><label>Familie met diabetes</label>
+            <div class="segmented" id="fr-fam">
+              <button class="active" data-v="0">Nee</button>
+              <button data-v="3">Grootouders/oom/tante/neef-nicht</button>
+              <button data-v="5">Ouders/broer/zus/eigen kind</button>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="computeFINDRISC()">Berekenen</button>
+          <div id="fr-out"></div>
+        </div>
+      `;
+    },
+    onMount() {
+      ['fr-age','fr-bmi','fr-waist','fr-act','fr-veg','fr-bp','fr-gluc','fr-fam'].forEach(id => {
+        document.querySelectorAll(`#${id} button`).forEach(b => {
+          b.addEventListener('click', () => {
+            document.querySelectorAll(`#${id} button`).forEach(x => x.classList.remove('active'));
+            b.classList.add('active');
+          });
+        });
+      });
+    }
+  });
+  function computeFINDRISC() {
+    let total = 0;
+    ['fr-age','fr-bmi','fr-waist','fr-act','fr-veg','fr-bp','fr-gluc','fr-fam'].forEach(id => {
+      const a = document.querySelector(`#${id} button.active`);
+      if (a) total += parseInt(a.dataset.v);
+    });
+    let cat, color, risk;
+    if (total < 7) { cat = 'Laag'; color = 'green'; risk = '1% (1 op 100)'; }
+    else if (total < 12) { cat = 'Licht verhoogd'; color = 'green'; risk = '4% (1 op 25)'; }
+    else if (total < 15) { cat = 'Matig'; color = 'yellow'; risk = '17% (1 op 6)'; }
+    else if (total < 20) { cat = 'Hoog'; color = 'amber'; risk = '33% (1 op 3)'; }
+    else { cat = 'Zeer hoog'; color = 'red'; risk = '50% (1 op 2)'; }
+    $('fr-out').innerHTML = `
+      <div class="result">
+        <div class="result-eyebrow">FINDRISC totaal</div>
+        <div class="result-value">${total}<span class="unit">/ 26</span></div>
+        <div><span class="tag tag-${color}">${escape(cat)} risico</span></div>
+        <div class="result-interpretation">10-jaars risico op DM2: ${risk}.</div>
+        <div class="result-detail">${total >= 15 ? 'Overweeg nuchter glucose of HbA1c-bepaling en leefstijlinterventie.' : 'Leefstijladvies, herhaal screening over 3–5 jaar.'}</div>
+      </div>
+    `;
+  }
+
+  /* ------------------------------------------------------------------
+     18. HRT-stroomschema
+  ------------------------------------------------------------------ */
+  TOOLS.push({
+    id: 'hrt',
+    name: 'Hormonale substitutie (HRT)',
+    category: 'Gynaecologie & endocrien',
+    metaLabel: 'Overgang · NHG',
+    desc: 'Keuze oestrogeen-progestageen-combinatie',
+    keywords: ['hrt','overgang','menopauze','oestrogeen','progestageen'],
+    render() {
+      return `
+        <div class="tool-view">
+          <h2>Hormonale substitutie</h2>
+          <div class="tool-subtitle">Behandeling van klimakterische klachten. Vereist gedeelde besluitvorming over baten en risico's, jaarlijks evalueren.</div>
+
+          <div class="field"><label>Uterus aanwezig</label>
+            <div class="segmented" id="hrt-ut"><button class="active" data-v="1">Ja</button><button data-v="0">Nee (hysterectomie)</button></div>
+          </div>
+          <div class="field"><label>Tijd sinds laatste menstruatie</label>
+            <div class="segmented" id="hrt-meno">
+              <button class="active" data-v="peri">&lt; 1 jaar (perimenopauze)</button>
+              <button data-v="post">≥ 1 jaar (postmenopauze)</button>
+            </div>
+          </div>
+          <div class="field"><label>Belangrijke klacht</label>
+            <div class="segmented" id="hrt-comp">
+              <button class="active" data-v="vasomotor">Opvliegers / zweten</button>
+              <button data-v="uro">Urogenitale atrofie</button>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="computeHRT()">Behandeladvies</button>
+          <div id="hrt-out"></div>
+
+          <div class="disclaimer">Contra-indicaties: oestrogeen-receptor-positief mammacarcinoom, actieve VTE, actieve leverziekte, niet-onderzocht vaginaal bloedverlies. Verhoogde voorzichtigheid bij migraine met aura, hypertensie, eerdere VTE, eerstegraads familiair mammacarcinoom.</div>
+        </div>
+      `;
+    },
+    onMount() {
+      ['hrt-ut','hrt-meno','hrt-comp'].forEach(id => {
+        document.querySelectorAll(`#${id} button`).forEach(b => {
+          b.addEventListener('click', () => {
+            document.querySelectorAll(`#${id} button`).forEach(x => x.classList.remove('active'));
+            b.classList.add('active');
+          });
+        });
+      });
+    }
+  });
+  function computeHRT() {
+    const ut = document.querySelector('#hrt-ut button.active').dataset.v;
+    const meno = document.querySelector('#hrt-meno button.active').dataset.v;
+    const comp = document.querySelector('#hrt-comp button.active').dataset.v;
+
+    let advice = '';
+    if (comp === 'uro') {
+      advice = `
+        <strong>Lokale oestrogeen-therapie</strong>: oestradiol vaginaal (Vagifem 10 μg) 2 weken dagelijks, daarna 2× per week. Lage systemische opname, geen progestageen nodig zelfs bij intacte uterus. Effect na 2–4 weken.
+        <div class="flag flag-blue" style="margin-top:12px">Lokale oestrogeen kan veilig gegeven worden bij vrouwen met mammacarcinoom in voorgeschiedenis — overleg met behandelend oncoloog.</div>
+      `;
+    } else if (ut === '1' && meno === 'peri') {
+      advice = `
+        <strong>Sequentiële combinatietherapie</strong>: oestradiol continu + progestageen 12–14 dagen per maand. Geeft regelmatige onttrekkingsbloeding. Voorkeur in perimenopauze.<br><br>
+        Voorbeeld: oestradiol 1–2 mg/dag + dydrogesteron 10 mg dag 15–28, of een gefixeerde combinatiepreparaat.
+      `;
+    } else if (ut === '1' && meno === 'post') {
+      advice = `
+        <strong>Continu-gecombineerde therapie</strong>: oestradiol + progestageen dagelijks zonder onderbreking. Geen onttrekkingsbloeding. Voorkeur in postmenopauze.<br><br>
+        Voorbeeld: oestradiol 1 mg + dydrogesteron 5 mg combinatietablet, of estradiol pleister + Mirena-spiraal (effectieve progestageen-suppletie).
+      `;
+    } else {
+      advice = `
+        <strong>Alleen oestrogeentherapie</strong>: bij hysterectomie geen progestageen nodig.<br><br>
+        Voorbeeld: oestradiol 1–2 mg oraal dagelijks of pleister 50 μg 2× per week.
+      `;
+    }
+
+    const route = `
+      <div class="result-detail">
+        <strong>Toedieningsroute:</strong><br>
+        – <strong>Transdermaal (pleister/gel):</strong> voorkeur bij verhoogd VTE-risico, hypertriglyceridemie, leverenzymstoornis. Geen first-pass effect.<br>
+        – <strong>Oraal:</strong> goedkoper, geschikt bij laag-risico vrouwen zonder contra-indicaties.<br><br>
+        <strong>Duur:</strong> herevalueer jaarlijks. Niet automatisch staken na 5 jaar — voortzetten zo lang baten boven risico's wegen.
+      </div>
+    `;
+
+    $('hrt-out').innerHTML = `
+      <div class="result">
+        <div class="result-eyebrow">Aanbevolen regime</div>
+        <div class="result-interpretation" style="font-size:15px;margin-top:8px">${advice}</div>
+        ${route}
+      </div>
+    `;
+  }
+
+  /* ==================================================================
+     INIT
+     ================================================================== */
+  App.init();
+  </script>
+</body>
+</html>
