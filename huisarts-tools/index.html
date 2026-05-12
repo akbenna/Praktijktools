@@ -2838,34 +2838,35 @@
       title = 'Methylfenidaat kortwerkend';
       label = 'Ritalin · Medikinet IR';
       if (pop === 'kind') {
-        const startDose = Math.max(2.5, Math.round(w * 0.1 * 2) / 2);
-        const targetLow = Math.round(w * 0.3);
-        const targetHigh = Math.round(w * 1.0);
+        const targetLow = Math.min(60, Math.round(w * 0.5));
+        const targetHigh = Math.min(60, Math.round(w * 1.5));
+        const maxKid = Math.min(60, Math.round(w * 2));
         body = `
-          <strong>Start:</strong> ${fmt(startDose, 1)} mg 's ochtends + ${fmt(startDose, 1)} mg rond lunchtijd (kortwerkend werkt 3–4 uur).<br>
-          <strong>Wekelijks ophogen</strong> met 5 mg/dag op geleide van effect en bijwerkingen.<br>
-          <strong>Streefrange:</strong> ${targetLow}–${targetHigh} mg/dag verdeeld over 2–3 doses.<br>
-          <strong>Maximum:</strong> 60 mg/dag (of 2 mg/kg/dag, wat lager is).
+          <strong>Start:</strong> 5 mg 's ochtends + 5 mg rond lunchtijd, ongeacht gewicht (kortwerkend werkt 3–4 uur).<br>
+          <strong>Titratie:</strong> wekelijks ophogen met 5 mg/dag op geleide van effect en bijwerkingen.<br>
+          <strong>Indicatieve streefdosis voor ${fmt(w, 1)} kg:</strong> ${targetLow}–${targetHigh} mg/dag totaal, verdeeld over 2–3 doses (0,5–1,5 mg/kg/dag).<br>
+          <strong>Maximum:</strong> ${maxKid} mg/dag (laagste van: 60 mg/dag óf 2 mg/kg/dag).
         `;
       } else {
         body = `
           <strong>Start:</strong> 5–10 mg 2–3× per dag.<br>
           <strong>Ophogen</strong> per week met 5–10 mg/dag.<br>
           <strong>Streefrange:</strong> 20–60 mg/dag in 2–3 doses.<br>
-          <strong>Maximum:</strong> 80 mg/dag (off-label boven 60 mg).
+          <strong>Maximum:</strong> 80 mg/dag (off-label boven 60 mg, in overleg).
         `;
       }
     } else if (klass === 'mph-long') {
       title = 'Methylfenidaat verlengd';
       label = 'Concerta · Equasym XL · Medikinet CR';
       if (pop === 'kind') {
-        const targetLow = Math.round(w * 0.5);
-        const targetHigh = Math.round(w * 1.5);
+        const targetLow = Math.min(54, Math.round(w * 0.5));
+        const targetHigh = Math.min(54, Math.round(w * 1.5));
+        const adolescentMax = Math.min(72, Math.round(w * 2));
         body = `
           <strong>Start:</strong> 18 mg Concerta 1×/dag (of equivalent Equasym XL 10 mg / Medikinet CR 10 mg).<br>
           <strong>Wekelijks ophogen</strong> met 9–18 mg/dag.<br>
-          <strong>Streefrange:</strong> ${targetLow}–${targetHigh} mg/dag in 1 dosis 's ochtends.<br>
-          <strong>Maximum:</strong> 54–72 mg/dag (Concerta tot 72 mg toegestaan bij adolescenten).
+          <strong>Indicatieve streefdosis voor ${fmt(w, 1)} kg:</strong> ${targetLow}–${targetHigh} mg/dag in 1 dosis 's ochtends.<br>
+          <strong>Maximum:</strong> 54 mg/dag bij kind, tot ${adolescentMax} mg/dag bij adolescent (Concerta-label toelaat tot 72 mg).
         `;
       } else {
         body = `
@@ -2879,15 +2880,26 @@
       title = 'Atomoxetine';
       label = 'Strattera · non-stimulans';
       if (pop === 'kind') {
-        const startDose = Math.round(w * 0.5);
-        const targetDose = Math.round(w * 1.2);
-        const maxDose = Math.min(100, Math.round(w * 1.4));
-        body = `
-          <strong>Start:</strong> ${startDose} mg/dag (0.5 mg/kg) gedurende ten minste 7 dagen.<br>
-          <strong>Ophogen</strong> naar streefdosis ${targetDose} mg/dag (1.2 mg/kg) in 1 of 2 doses.<br>
-          <strong>Maximum:</strong> ${maxDose} mg/dag (1.4 mg/kg of 100 mg, wat lager is).<br>
-          <strong>Tijdshorizon:</strong> volledig effect pas na 6–8 weken — niet vroeg opgeven.
-        `;
+        if (w > 70) {
+          // SmPC: bij > 70 kg geen mg/kg-formule meer, maar volwassen-schema
+          body = `
+            <strong>Voor ${fmt(w, 1)} kg gelden de volwassen-doseringen</strong> (mg/kg-formule loopt af boven 70 kg, SmPC).<br>
+            <strong>Start:</strong> 40 mg/dag gedurende minimaal 7 dagen.<br>
+            <strong>Ophogen</strong> naar streefdosis 80 mg/dag in 1 of 2 doses.<br>
+            <strong>Maximum:</strong> 100 mg/dag.<br>
+            <strong>Tijdshorizon:</strong> volledig effect na 6–8 weken — niet vroeg opgeven.
+          `;
+        } else {
+          const startDose = Math.round(w * 0.5);
+          const targetDose = Math.min(80, Math.round(w * 1.2));
+          const maxDose = Math.min(100, Math.round(w * 1.4));
+          body = `
+            <strong>Start:</strong> ${startDose} mg/dag (0,5 mg/kg) gedurende ten minste 7 dagen.<br>
+            <strong>Ophogen</strong> naar streefdosis ${targetDose} mg/dag (1,2 mg/kg) in 1 of 2 doses.<br>
+            <strong>Maximum:</strong> ${maxDose} mg/dag (1,4 mg/kg, niet boven 100 mg).<br>
+            <strong>Tijdshorizon:</strong> volledig effect pas na 6–8 weken — niet vroeg opgeven.
+          `;
+        }
       } else {
         body = `
           <strong>Start:</strong> 40 mg/dag gedurende minimaal 7 dagen.<br>
@@ -2992,8 +3004,8 @@
     const w = parseFloat(document.getElementById('ab-weight').value);
 
     let mgBlock = '';
-    // Bereken concrete mg-doses waar mogelijk
-    if (pop === 'kid' && w && w >= 5 && w <= 80) {
+    // Bereken concrete mg-doses waar mogelijk (alleen bij kind + ingevuld gewicht)
+    if (pop === 'kid' && !isNaN(w) && w >= 5 && w <= 80) {
       const calc = AB_KID_CALC[indKey];
       if (calc) {
         mgBlock = `<div class="flag flag-blue"><strong>Voor ${fmt(w, 1)} kg:</strong> ${calc(w)}</div>`;
@@ -3020,7 +3032,7 @@
     'cap':          w => `${Math.round(w * 60 / 3)} mg amoxicilline 3×/dag (60 mg/kg/dag verdeeld).`,
     'erysipelas':   w => `${Math.round(w * 75 / 4)} mg flucloxacilline 4×/dag (75 mg/kg/dag verdeeld).`,
     'faryngitis':   w => `${Math.round(w * 25 / 3)} mg feneticilline 3×/dag (25 mg/kg/dag verdeeld).`,
-    'em':           w => w >= 30 ? `Standaard volwassen-dosering doxycycline 100 mg 2×/dag, mits ≥ 8 jaar.` : `${Math.round(w * 50 / 3)} mg amoxicilline 3×/dag (50 mg/kg/dag) — bij kind < 8 jr of zwangere.`
+    'em':           w => `≥ 8 jaar: doxycycline ${Math.round(w * 2)} mg 2×/dag (4 mg/kg/dag in 2 doses, max 200 mg/dag). &lt; 8 jaar of zwangere: amoxicilline ${Math.round(w * 50 / 3)} mg 3×/dag (50 mg/kg/dag verdeeld, 14 dagen).`
   };
 
   /* ==================================================================
@@ -3270,7 +3282,7 @@
       return `
         <div class="tool-view">
           <h2>Hersenzenuwen</h2>
-          <div class="tool-subtitle">Twaalf hersenzenuwen met hun functie, een korte spreekkamertest en het typisch beeld bij uitval. Ezelsbrug: <em>Op Oma's Onderbroek Trapte Apen Fluitend Vlug In Vrouwen Aan Het Hek</em>.</div>
+          <div class="tool-subtitle">Twaalf hersenzenuwen met hun functie, een korte spreekkamertest en het typisch beeld bij uitval.</div>
 
           ${rows}
 
