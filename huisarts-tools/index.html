@@ -2730,30 +2730,77 @@
       return `
         <div class="tool-view">
           <h2>Anafylaxie</h2>
-          <div class="tool-subtitle">Levensbedreigende allergische reactie. Adrenaline is de enige levensreddende behandeling — eerst geven, dan analyseren.</div>
+          <div class="tool-subtitle">Levensbedreigende allergische reactie. Adrenaline is de enige levensreddende behandeling — eerst geven, dan analyseren. De stappen hieronder lopen sequentieel, maar adrenaline mag nooit wachten.</div>
 
-          <div class="flag flag-red">
-            <strong>Eerste interventie altijd:</strong> adrenaline IM in laterale dij. Niet uitstellen voor IV-toegang of ECG.
+          <div class="flow">
+
+            <div class="flow-node flow-critical">
+              <div class="flow-node-label">Stap 1 · Onmiddellijk</div>
+              <div class="flow-node-title">Adrenaline IM in laterale dij</div>
+              <div class="flow-node-body">
+                Niet uitstellen voor IV-toegang, monitoring of ECG.<br>
+                <strong>Volwassene / kind &gt; 12 jr of &gt; 50 kg:</strong> 0,5 mg (0,5 ml van 1 mg/ml).<br>
+                <strong>Kind 6–12 jr:</strong> 0,3 mg · <strong>6 mnd–6 jr:</strong> 0,15 mg · <strong>&lt; 6 mnd:</strong> 0,1–0,15 mg.<br>
+                <strong>Herhaal elke 5–15 min</strong> bij persistentie. EpiPen-Junior bevat 0,15 mg; standaard EpiPen 0,3 mg.
+              </div>
+            </div>
+
+            <div class="flow-node flow-critical">
+              <div class="flow-node-label">Stap 2 · Parallel</div>
+              <div class="flow-node-title">112 bellen, allergeen verwijderen</div>
+              <div class="flow-node-body">
+                Spoedambulance — anafylaxie is altijd ziekenhuisindicatie wegens bifasische reactie. Vermoede trigger weghalen (insectenangel verwijderen, infusie staken, voedsel uit mond).
+              </div>
+            </div>
+
+            <div class="flow-node flow-warn">
+              <div class="flow-node-label">Stap 3 · ABC-stabilisatie</div>
+              <div class="flow-node-title">Houding + zuurstof</div>
+              <div class="flow-node-body">
+                <strong>Houding:</strong> liggend met benen omhoog bij shock — zittend bij dyspnoe/bronchospasme — recovery-positie bij verlaagd bewustzijn.<br>
+                <strong>Zuurstof</strong> 10–15 l/min via non-rebreathing masker, zo snel als beschikbaar.
+              </div>
+            </div>
+
+            <div class="flow-node flow-warn">
+              <div class="flow-node-label">Stap 4 · Circulatie</div>
+              <div class="flow-node-title">IV-toegang + vulling bij shock</div>
+              <div class="flow-node-body">
+                <strong>NaCl 0,9% bolus 500–1000 ml</strong> in 10 min bij hypotensie (volwassene). Kind: <strong>20 ml/kg</strong> bolus, herhalen tot effect.<br>
+                Bij geen reactie op herhaalde IM adrenaline: overweg adrenaline IV-infuus (alleen door ervaren behandelaar).
+              </div>
+            </div>
+
+            <div class="flow-node flow-info">
+              <div class="flow-node-label">Stap 5 · Bij bronchospasme</div>
+              <div class="flow-node-title">Salbutamol per inhalator/verneveling</div>
+              <div class="flow-node-body">
+                Salbutamol 4–8 puffs via voorzetkamer of 2,5–5 mg verneveling, herhalen z.n. Geen vervanging voor adrenaline — alleen aanvulling op aanhoudend piepen.
+              </div>
+            </div>
+
+            <div class="flow-node flow-info">
+              <div class="flow-node-label">Stap 6 · Tweedelijns (ná adrenaline)</div>
+              <div class="flow-node-title">Corticosteroïd + H1-antihistaminicum</div>
+              <div class="flow-node-body">
+                <strong>Hydrocortison</strong> 200 mg IV (kind 4 mg/kg) — vermindert kans op bifasische reactie.<br>
+                <strong>Clemastine</strong> 2 mg IV (kind 0,025 mg/kg) of cetirizine PO bij milde huidklachten.<br>
+                Deze medicatie behandelt geen bronchospasme of shock — adrenaline blijft hoekstuk.
+              </div>
+            </div>
+
+            <div class="flow-node">
+              <div class="flow-node-label">Stap 7 · Observatie + nazorg</div>
+              <div class="flow-node-title">6–24 uur klinisch observeren</div>
+              <div class="flow-node-body">
+                Bifasische reactie tot 24 uur na initiale episode mogelijk. <strong>Bij ontslag verplicht:</strong> EpiPen-recept (2 stuks), schriftelijke noodplan, verwijzing allergoloog of klinisch-immunoloog, en bij voedselallergie diëtist.<br>
+                <strong>Tryptase-bepaling</strong> binnen 1–2 uur en na 24 uur ondersteunt diagnose bij twijfel.
+              </div>
+            </div>
+
           </div>
 
-          <h3 style="font-family:var(--font-serif);font-size:18px;font-weight:500;margin:24px 0 12px 0;letter-spacing:-0.01em">Adrenaline IM, mid-anterolateraal dijbeen</h3>
-          <div class="lookup-row"><span class="lookup-row-label">Volwassene</span><span class="lookup-row-value">0,5 mg (0,5 ml van 1 mg/ml)</span></div>
-          <div class="lookup-row"><span class="lookup-row-label">Kind &gt;12 jaar of &gt;50 kg</span><span class="lookup-row-value">0,5 mg</span></div>
-          <div class="lookup-row"><span class="lookup-row-label">Kind 6–12 jaar</span><span class="lookup-row-value">0,3 mg</span></div>
-          <div class="lookup-row"><span class="lookup-row-label">Kind 6 mnd–6 jaar</span><span class="lookup-row-value">0,15 mg</span></div>
-          <div class="lookup-row"><span class="lookup-row-label">Kind &lt;6 mnd</span><span class="lookup-row-value">0,1–0,15 mg</span></div>
-          <div class="flag flag-amber" style="margin-top:14px"><strong>Herhalen elke 5–15 minuten</strong> bij persisterende of recidiverende klachten.</div>
-
-          <h3 style="font-family:var(--font-serif);font-size:18px;font-weight:500;margin:24px 0 12px 0;letter-spacing:-0.01em">Vervolgstappen</h3>
-          <div class="protocol-step"><div class="protocol-step-num">1</div><div class="protocol-step-body"><strong>112 bellen</strong> en omgeving alarmeren. Allergeen verwijderen (steek, infusie staken).</div></div>
-          <div class="protocol-step"><div class="protocol-step-num">2</div><div class="protocol-step-body"><strong>Houding:</strong> liggend met benen omhoog (shock), zittend bij respiratoire distress.</div></div>
-          <div class="protocol-step"><div class="protocol-step-num">3</div><div class="protocol-step-body"><strong>Zuurstof</strong> 10–15 l/min non-rebreathing masker.</div></div>
-          <div class="protocol-step"><div class="protocol-step-num">4</div><div class="protocol-step-body"><strong>IV-toegang</strong> en NaCl 0,9% bolus 500–1000 ml bij shock (kind: 20 ml/kg).</div></div>
-          <div class="protocol-step"><div class="protocol-step-num">5</div><div class="protocol-step-body"><strong>Salbutamol</strong> per dosisaerosol of vernevelaar bij bronchospasme.</div></div>
-          <div class="protocol-step"><div class="protocol-step-num">6</div><div class="protocol-step-body"><strong>Tweedelijns medicatie</strong> (na adrenaline en ABCDE-stabilisatie):<br>– Hydrocortison 200 mg IV (kind 4 mg/kg)<br>– Clemastine 2 mg IV (kind 0,025 mg/kg) of cetirizine PO</div></div>
-          <div class="protocol-step"><div class="protocol-step-num">7</div><div class="protocol-step-body"><strong>Observatie 6–24 uur</strong> wegens bifasische reactie. Ontslag met EpiPen-recept en allergoloog-verwijzing.</div></div>
-
-          <div class="disclaimer">Mast cell tryptase-bepaling binnen 1–2 uur na reactie en na 24 uur kan diagnose ondersteunen — vooral bij twijfel.</div>
+          <div class="disclaimer">Bron: NVA-Richtlijn Anafylaxie (Nederlandse Vereniging voor Allergologie) · ESC/ERC-richtlijnen reanimatie. Bij twijfel over diagnose: adrenaline geven is veiliger dan afwachten — bijwerkingen van een onterechte gift zijn beperkt en self-limiting, niet-behandelde anafylaxie is letaal.</div>
         </div>
       `;
     }
