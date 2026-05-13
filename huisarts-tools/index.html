@@ -527,6 +527,65 @@
       .tool-card.featured { grid-column: span 2; }
     }
 
+    /* Categorie-jump-strip — quick scroll-naar-sectie voor mobile */
+    .cat-jump {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      margin: 0 -20px 24px;
+      padding: 4px 20px 8px;
+      scroll-behavior: smooth;
+    }
+    .cat-jump::-webkit-scrollbar { display: none; }
+    .cat-jump-chip {
+      flex: 0 0 auto;
+      scroll-snap-align: start;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--ink-2);
+      transition: all 150ms ease;
+      cursor: pointer;
+      box-shadow: var(--shadow-card);
+      white-space: nowrap;
+    }
+    .cat-jump-chip:active { transform: scale(0.96); }
+    .cat-jump-chip .chip-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      flex-shrink: 0;
+    }
+    .cat-jump-chip .chip-icon svg { width: 12px; height: 12px; }
+    .cat-jump-chip .chip-count {
+      font-size: 9px;
+      color: var(--muted);
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+    /* Categorie-kleuren op chips */
+    .cat-jump-chip.cat-acuut     .chip-icon { background: var(--cat-acuut-bg);     color: var(--cat-acuut-ink); }
+    .cat-jump-chip.cat-hart      .chip-icon { background: var(--cat-hart-bg);      color: var(--cat-hart-ink); }
+    .cat-jump-chip.cat-infectie  .chip-icon { background: var(--cat-infectie-bg);  color: var(--cat-infectie-ink); }
+    .cat-jump-chip.cat-psyche    .chip-icon { background: var(--cat-psyche-bg);    color: var(--cat-psyche-ink); }
+    .cat-jump-chip.cat-medicatie .chip-icon { background: var(--cat-medicatie-bg); color: var(--cat-medicatie-ink); }
+    .cat-jump-chip.cat-endocrien .chip-icon { background: var(--cat-endocrien-bg); color: var(--cat-endocrien-ink); }
+    .cat-jump-chip.cat-neuro     .chip-icon { background: var(--cat-neuro-bg);     color: var(--cat-neuro-ink); }
+
     /* Favorites strip — horizontal scroll, top of home */
     .favorites {
       margin: 0 0 28px 0;
@@ -1405,6 +1464,17 @@
       Theme.toggle();
       this.render();
     },
+    scrollToCategory(catName) {
+      const klass = (catName === 'Acuut & spoed' ? 'cat-acuut' :
+                     catName === 'Hart & vaten' ? 'cat-hart' :
+                     catName === 'Infectie & antibiotica' ? 'cat-infectie' :
+                     catName === 'Psyche & GGZ' ? 'cat-psyche' :
+                     catName === 'Medicatie & rotatie' ? 'cat-medicatie' :
+                     catName === 'Endocrien & metabool' ? 'cat-endocrien' :
+                     catName === 'Neuro & anatomie' ? 'cat-neuro' : '');
+      const sec = document.getElementById('sec-' + klass);
+      if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    },
     render() {
       if (this.state.view === 'home') {
         this.el.innerHTML = renderHome(this.state.search);
@@ -1490,7 +1560,7 @@
       </div>
       <div class="fade-in">${inner}</div>
       <div class="app-footer">
-        Praktijktools v0.6 · Het Roosendael, Roermond · Niet bedoeld ter vervanging van klinisch oordeel.
+        Praktijktools v0.11 · Het Roosendael, Roermond · Niet bedoeld ter vervanging van klinisch oordeel.
       </div>
     `;
   }
@@ -1518,11 +1588,29 @@
       </div>
 
       ${search.trim() ? '' : renderFavorites()}
+      ${search.trim() ? '' : renderCategoryJump()}
 
       <div id="tool-sections">
         ${renderToolSections(search)}
       </div>
     `;
+  }
+
+  function renderCategoryJump() {
+    const cats = {};
+    TOOLS.forEach(t => {
+      if (!cats[t.category]) cats[t.category] = 0;
+      cats[t.category]++;
+    });
+    const CAT_ORDER = ['Acuut & spoed', 'Hart & vaten', 'Infectie & antibiotica', 'Psyche & GGZ', 'Medicatie & rotatie', 'Endocrien & metabool', 'Neuro & anatomie'];
+    const chips = CAT_ORDER.filter(c => cats[c]).map(c => {
+      const klass = catClass(c);
+      const iconSvg = CATEGORY_ICONS[c] ? `<span class="chip-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${CATEGORY_ICONS[c]}</svg></span>` : '';
+      // Korte labels voor compactheid
+      const shortLabel = c.split(' ')[0];
+      return `<button class="cat-jump-chip ${klass}" onclick="App.scrollToCategory('${escape(c)}')">${iconSvg}<span>${escape(shortLabel)}</span><span class="chip-count">${cats[c]}</span></button>`;
+    }).join('');
+    return `<div class="cat-jump fade-in">${chips}</div>`;
   }
 
   function renderFavorites() {
@@ -1616,7 +1704,7 @@
     });
     const CAT_ORDER = ['Acuut & spoed', 'Hart & vaten', 'Infectie & antibiotica', 'Psyche & GGZ', 'Medicatie & rotatie', 'Endocrien & metabool', 'Neuro & anatomie'];
     return CAT_ORDER.filter(c => cats[c]).map(c => `
-      <section class="section ${catClass(c)}">
+      <section class="section ${catClass(c)}" id="sec-${catClass(c)}" data-category="${escape(c)}">
         <div class="section-head">
           <div class="section-title">${categoryIcon(c)}${escape(c)}</div>
           <div class="section-count">${cats[c].length}</div>
@@ -3717,10 +3805,10 @@
     { lvl: 'S2',     derm: 'Achterzijde dij (midden)',                            myot: 'Intrinsieke voetspieren',                                        refl: '—' },
     { lvl: 'S3–S5',  derm: 'Perineum, perianaal (zadelgebied)',                   myot: 'Bekkenbodem, m. sphincter ani externus',                         refl: 'Anale reflex, bulbocavernosus' }
   ];
-  // Body-regions voor het diagram — gekoppeld aan spinale niveaus
-  // viewBox 200x440. Iedere region is een SVG-path met data-lvl.
-  const BODY_REGIONS = [
-    { lvl: 'C2',     path: 'M 78 12 A 22 22 0 0 1 122 12 L 122 28 L 78 28 Z',                                          label: { x: 100, y: 22, text: 'C2' } },
+  // Body-regions voor het diagram — anterior + posterior view.
+  // viewBox 200x440 per view; gekoppeld via data-lvl zodat klik in
+  // één view de andere ook hooglicht. Schematisch — niet anatomisch precies.
+  const BODY_ANT = [
     { lvl: 'C3–C4',  path: 'M 78 28 L 122 28 L 130 50 L 132 60 L 68 60 L 70 50 Z',                                     label: { x: 100, y: 48, text: 'C3–4' } },
     { lvl: 'C5',     path: 'M 50 60 L 68 60 L 68 92 L 50 92 Z M 132 60 L 150 60 L 150 92 L 132 92 Z',                  label: { x: 32, y: 80, text: 'C5' } },
     { lvl: 'C6',     path: 'M 50 92 L 68 92 L 60 144 L 42 144 Z M 132 92 L 150 92 L 158 144 L 140 144 Z',              label: { x: 26, y: 122, text: 'C6' } },
@@ -3734,6 +3822,27 @@
     { lvl: 'L5',     path: 'M 66 300 L 92 300 L 88 360 L 68 360 Z M 108 300 L 134 300 L 132 360 L 112 360 Z',          label: { x: 100, y: 335, text: 'L5' } },
     { lvl: 'S1',     path: 'M 68 360 L 88 360 L 86 400 L 70 400 Z M 112 360 L 132 360 L 130 400 L 114 400 Z',          label: { x: 100, y: 385, text: 'S1' } }
   ];
+  // Posterior — C2 prominent (achterhoofd), T-bands lopen door op rug,
+  // S-regions zichtbaar op billen + perineum
+  const BODY_POST = [
+    { lvl: 'C2',     path: 'M 78 12 A 22 22 0 0 1 122 12 L 122 36 L 78 36 Z',                                          label: { x: 100, y: 26, text: 'C2' } },
+    { lvl: 'C3–C4',  path: 'M 78 36 L 122 36 L 130 56 L 132 64 L 68 64 L 70 56 Z',                                     label: { x: 100, y: 52, text: 'C3–4' } },
+    { lvl: 'C5',     path: 'M 50 64 L 68 64 L 68 96 L 50 96 Z M 132 64 L 150 64 L 150 96 L 132 96 Z',                  label: { x: 32, y: 84, text: 'C5' } },
+    { lvl: 'C6',     path: 'M 50 96 L 68 96 L 60 148 L 42 148 Z M 132 96 L 150 96 L 158 148 L 140 148 Z',              label: { x: 26, y: 126, text: 'C6' } },
+    { lvl: 'C7',     path: 'M 42 148 L 60 148 L 56 188 L 38 188 Z M 140 148 L 158 148 L 162 188 L 144 188 Z',          label: { x: 22, y: 172, text: 'C7' } },
+    { lvl: 'C8',     path: 'M 38 188 L 56 188 L 52 216 L 36 216 Z M 144 188 L 162 188 L 164 216 L 148 216 Z',          label: { x: 22, y: 206, text: 'C8' } },
+    // Rug-bands T2–T12 als continuous strip
+    { lvl: 'T4',     path: 'M 68 64 L 132 64 L 132 104 L 68 104 Z',                                                    label: { x: 100, y: 88, text: 'T4' } },
+    { lvl: 'T10',    path: 'M 68 104 L 132 104 L 132 148 L 68 148 Z',                                                  label: { x: 100, y: 128, text: 'T10' } },
+    { lvl: 'L1',     path: 'M 68 148 L 132 148 L 138 182 L 62 182 Z',                                                  label: { x: 100, y: 168, text: 'L1' } },
+    // Billen + perineum: S3-S5 centraal, S2 lateraal
+    { lvl: 'S3–S5',  path: 'M 88 182 L 112 182 L 112 220 L 88 220 Z',                                                  label: { x: 100, y: 202, text: 'S3–5' } },
+    { lvl: 'S2',     path: 'M 62 182 L 88 182 L 88 220 L 64 220 Z M 112 182 L 138 182 L 136 220 L 112 220 Z',          label: { x: 100, y: 202, text: 'S2' } },
+    // Posterior leg — L3 boven, L4 midden, S1 onder (kuit), L5 alleen voet lateraal
+    { lvl: 'L3',     path: 'M 64 220 L 100 220 L 96 280 L 66 280 Z M 100 220 L 136 220 L 134 280 L 104 280 Z',         label: { x: 100, y: 252, text: 'L3' } },
+    { lvl: 'S2',     path: 'M 66 280 L 96 280 L 92 340 L 68 340 Z M 104 280 L 134 280 L 132 340 L 108 340 Z',          label: { x: 100, y: 312, text: 'S2' } },
+    { lvl: 'S1',     path: 'M 68 340 L 92 340 L 88 400 L 70 400 Z M 108 340 L 132 340 L 130 400 L 112 400 Z',          label: { x: 100, y: 372, text: 'S1' } }
+  ];
 
   TOOLS.push({
     id: 'dermatomes',
@@ -3744,10 +3853,18 @@
     desc: 'Interactief schema — tap een lichaamszone of niveau voor sensorisch, motorisch en reflex',
     keywords: ['dermatoom','myotoom','reflex','wortel','sensibiliteit','radiculair','wortelcompressie','zenuw','anatomie','beeld','schema'],
     render() {
-      const regions = BODY_REGIONS.map(r => `
+      const renderRegions = (regions) => regions.map(r => `
         <path class="body-band" data-lvl="${r.lvl}" d="${r.path}"></path>
         <text class="body-label" data-lvl="${r.lvl}" x="${r.label.x}" y="${r.label.y}">${r.label.text}</text>
       `).join('');
+
+      // Unieke niveaus voor de knoppen-grid
+      const allLvls = [];
+      [...BODY_ANT, ...BODY_POST].forEach(r => {
+        if (!allLvls.includes(r.lvl)) allLvls.push(r.lvl);
+      });
+      const lvlOrder = ['C2','C3–C4','C5','C6','C7','C8','T1','T4','T10','L1','L2','L3','L4','L5','S1','S2','S3–S5'];
+      const orderedLvls = lvlOrder.filter(l => allLvls.includes(l));
 
       const rows = DERMATOMES.map(d => `
         <div class="matrix-row dermat-row" data-lvl="${d.lvl}">
@@ -3763,7 +3880,7 @@
       return `
         <div class="tool-view">
           <h2>Dermatomen & myotomen</h2>
-          <div class="tool-subtitle">Tap een lichaamszone of niveau voor sensorisch, motorisch en reflex. Voor radiculaire klachten — bilateraal vergelijken bij twijfel.</div>
+          <div class="tool-subtitle">Tap een lichaamszone of niveau voor sensorisch + motorisch + reflex. Anterior + posterior view — bij radiculaire klachten bilateraal vergelijken.</div>
 
           <div class="view-toggle" id="derm-view-toggle">
             <button class="active" data-v="diagram">Diagram</button>
@@ -3773,22 +3890,28 @@
           <div id="derm-diagram-view">
             <div class="body-diagram">
               <div class="body-figure">
-                <div class="body-figure-label">Tap een zone</div>
-                <svg viewBox="0 0 200 440" class="body-svg" id="body-svg-ant">
-                  <g>
-                    ${regions}
-                  </g>
+                <div class="body-figure-label">Voor (anterior)</div>
+                <svg viewBox="0 0 200 440" class="body-svg">
+                  <g>${renderRegions(BODY_ANT)}</g>
                 </svg>
               </div>
               <div class="body-figure">
-                <div class="body-figure-label">Niveau-knoppen</div>
-                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;width:100%">
-                  ${BODY_REGIONS.map(r => `<button class="btn-ghost derm-level-btn" data-lvl="${r.lvl}" style="text-align:center;padding:9px 6px;font-family:var(--font-mono);font-weight:500">${escape(r.lvl)}</button>`).join('')}
-                </div>
+                <div class="body-figure-label">Achter (posterior)</div>
+                <svg viewBox="0 0 200 440" class="body-svg">
+                  <g>${renderRegions(BODY_POST)}</g>
+                </svg>
               </div>
             </div>
+
+            <div style="margin:14px 0 16px">
+              <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Of selecteer een niveau:</div>
+              <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px">
+                ${orderedLvls.map(l => `<button class="btn-ghost derm-level-btn" data-lvl="${escape(l)}" style="text-align:center;padding:9px 4px;font-family:var(--font-mono);font-weight:500;font-size:11px">${escape(l)}</button>`).join('')}
+              </div>
+            </div>
+
             <div class="body-detail" id="body-detail">
-              <div class="body-detail-empty">Tap een dermatoom-zone op het lichaam of een niveau-knop om sensorisch + motorisch + reflex te tonen.</div>
+              <div class="body-detail-empty">Tap een zone op een van de body-views of een niveau-knop om sensorisch + motorisch + reflex te tonen.</div>
             </div>
           </div>
 
@@ -3796,7 +3919,7 @@
             ${rows}
           </div>
 
-          <div class="disclaimer">Vereenvoudigde schematische weergave (anterior view, niet anatomisch precies). Klinische variatie en overlap tussen niveaus is normaal. Bij twijfel altijd bilateraal vergelijken bij neurologisch onderzoek. Bron: Netter, Kandel, NHG-Standaarden lumbosacraal radiculair syndroom.</div>
+          <div class="disclaimer">Schematische weergave (niet anatomisch precies — limb-dermatomen zijn in werkelijkheid longitudinaal/spiraal, niet horizontaal). Klinische variatie en overlap tussen niveaus is normaal. Bij twijfel altijd bilateraal vergelijken bij neurologisch onderzoek. Bron: Netter, Kandel, NHG-Standaard Lumbosacraal radiculair syndroom.</div>
         </div>
       `;
     },
@@ -4585,6 +4708,1121 @@
         <div class="result-detail" style="margin-top:16px">
           <strong>Item-uitslag:</strong>
           ${itemDetail}
+        </div>
+      </div>
+    `;
+  }
+
+  /* ==================================================================
+     28. Spieren & innervatie — lookup voor neurologisch onderzoek
+     ================================================================== */
+  const MUSCLES = [
+    // Schouder + bovenarm
+    { name: 'M. deltoideus',                  region: 'schouder',  roots: ['C5','C6'],    nerve: 'N. axillaris',                fn: 'Abductie schouder 15–90°',                       test: 'Patiënt heft arm zijwaarts tegen weerstand' },
+    { name: 'M. supraspinatus',               region: 'schouder',  roots: ['C5','C6'],    nerve: 'N. suprascapularis',          fn: 'Abductie schouder eerste 30°',                   test: 'Empty can test — arm abductie tegen weerstand met pronatie' },
+    { name: 'M. infraspinatus',               region: 'schouder',  roots: ['C5','C6'],    nerve: 'N. suprascapularis',          fn: 'Exorotatie schouder',                            test: 'Exorotatie tegen weerstand, elleboog 90° gebogen tegen lichaam' },
+    { name: 'M. subscapularis',               region: 'schouder',  roots: ['C5','C6','C7'], nerve: 'N. subscapularis',          fn: 'Endorotatie schouder',                           test: 'Lift-off test — hand op rug, hand wegduwen' },
+    { name: 'M. biceps brachii',              region: 'bovenarm',  roots: ['C5','C6'],    nerve: 'N. musculocutaneus',          fn: 'Flexie elleboog + supinatie voorarm',            test: 'Elleboogflexie tegen weerstand met supinatie', reflex: 'Bicepspeesreflex (C5/C6)' },
+    { name: 'M. brachioradialis',             region: 'bovenarm',  roots: ['C5','C6'],    nerve: 'N. radialis',                 fn: 'Flexie elleboog (semi-prone positie)',           test: 'Elleboogflexie in mid-positie tegen weerstand', reflex: 'Brachioradialisreflex (C6)' },
+    { name: 'M. triceps brachii',             region: 'bovenarm',  roots: ['C6','C7','C8'], nerve: 'N. radialis',                fn: 'Extensie elleboog',                              test: 'Elleboog strekken tegen weerstand', reflex: 'Tricepspeesreflex (C7)' },
+    // Voorarm + hand
+    { name: 'Mm. extensores carpi (radialis)', region: 'voorarm',   roots: ['C6','C7'],    nerve: 'N. radialis',                 fn: 'Extensie pols + radiaal devieren',               test: 'Pols-extensie tegen weerstand' },
+    { name: 'M. extensor digitorum',          region: 'voorarm',   roots: ['C7','C8'],    nerve: 'N. radialis',                 fn: 'Extensie MCP-gewrichten vingers',                test: 'Vingers strekken tegen weerstand' },
+    { name: 'M. extensor pollicis longus',    region: 'voorarm',   roots: ['C7','C8'],    nerve: 'N. radialis',                 fn: 'Extensie + retropositie duim',                   test: 'Duim van handpalm omhoog tegen weerstand' },
+    { name: 'M. flexor carpi radialis',       region: 'voorarm',   roots: ['C6','C7'],    nerve: 'N. medianus',                 fn: 'Flexie pols + radiaal devieren',                 test: 'Pols-flexie tegen weerstand' },
+    { name: 'M. flexor digitorum superficialis', region: 'voorarm', roots: ['C7','C8','T1'], nerve: 'N. medianus',              fn: 'Flexie PIP-gewrichten',                          test: 'Vingertopflexie met isoleerde PIP-test' },
+    { name: 'M. flexor digitorum profundus',  region: 'voorarm',   roots: ['C7','C8','T1'], nerve: 'N. medianus (II–III) + ulnaris (IV–V)', fn: 'Flexie DIP-gewrichten',          test: 'DIP-flexie geïsoleerd per vinger' },
+    { name: 'M. abductor pollicis brevis',    region: 'hand',      roots: ['C8','T1'],    nerve: 'N. medianus',                 fn: 'Abductie duim loodrecht op handpalm',            test: 'APB-test — duim omhoog tegen weerstand, klassiek bij CTS' },
+    { name: 'M. opponens pollicis',           region: 'hand',      roots: ['C8','T1'],    nerve: 'N. medianus',                 fn: 'Opponeren duim (top tegen pink)',                test: 'Duim-pink-tip-test tegen weerstand' },
+    { name: 'M. flexor carpi ulnaris',        region: 'voorarm',   roots: ['C7','C8','T1'], nerve: 'N. ulnaris',                fn: 'Flexie pols + ulnair devieren',                  test: 'Pols-flexie naar ulnair tegen weerstand' },
+    { name: 'Mm. interossei dorsales',        region: 'hand',      roots: ['C8','T1'],    nerve: 'N. ulnaris',                  fn: 'Abductie vingers (vanaf middenas)',              test: 'Spreid vingers tegen weerstand' },
+    { name: 'Mm. interossei palmares',        region: 'hand',      roots: ['C8','T1'],    nerve: 'N. ulnaris',                  fn: 'Adductie vingers (naar middenas)',               test: 'Knijp papiertje tussen vingers vast (Froment)' },
+    { name: 'M. adductor pollicis',           region: 'hand',      roots: ['C8','T1'],    nerve: 'N. ulnaris',                  fn: 'Adductie duim naar handpalm',                    test: 'Froment-teken — papiertje vasthouden tussen duim en wijsvinger' },
+    // Romp
+    { name: 'Diafragma',                      region: 'romp',      roots: ['C3','C4','C5'], nerve: 'N. phrenicus',              fn: 'Inademing (hoofdspier)',                         test: 'Niet routinematig getest in spreekkamer — paradox bij parese' },
+    // Heup + bovenbeen
+    { name: 'M. iliopsoas',                   region: 'heup',      roots: ['L1','L2','L3'], nerve: 'N. femoralis (+ plexus lumbalis)', fn: 'Heupflexie',                            test: 'Bovenbeen heffen tegen weerstand, liggend of zittend' },
+    { name: 'M. quadriceps femoris',          region: 'bovenbeen', roots: ['L2','L3','L4'], nerve: 'N. femoralis',              fn: 'Extensie knie',                                  test: 'Knie strekken tegen weerstand', reflex: 'Patellareflex (L3/L4)' },
+    { name: 'Heupadductoren',                 region: 'heup',      roots: ['L2','L3','L4'], nerve: 'N. obturatorius',           fn: 'Adductie heup',                                  test: 'Benen naar elkaar drukken tegen weerstand' },
+    { name: 'M. gluteus medius / minimus',    region: 'heup',      roots: ['L4','L5','S1'], nerve: 'N. gluteus superior',       fn: 'Abductie heup + bekkenstabilisatie',             test: 'Trendelenburg-test (bekken zakt door bij staan op één been)' },
+    { name: 'M. gluteus maximus',             region: 'heup',      roots: ['L5','S1','S2'], nerve: 'N. gluteus inferior',       fn: 'Extensie heup',                                  test: 'Buikligging — bovenbeen optillen tegen weerstand' },
+    { name: 'Hamstrings (semi-tendinosus, biceps femoris, semi-membranosus)', region: 'bovenbeen', roots: ['L5','S1','S2'], nerve: 'N. ischiadicus (tibialis + peroneus)', fn: 'Flexie knie + heupextensie', test: 'Buikligging — hiel naar bil tegen weerstand' },
+    // Onderbeen + voet
+    { name: 'M. tibialis anterior',           region: 'onderbeen', roots: ['L4','L5'],    nerve: 'N. peroneus profundus',        fn: 'Dorsoflexie + inversie voet',                    test: 'Hielloop / voet omhoog tegen weerstand — klassiek bij L5-radiculopathie' },
+    { name: 'M. extensor hallucis longus',    region: 'voet',      roots: ['L5'],         nerve: 'N. peroneus profundus',        fn: 'Extensie hallux + dorsoflexie',                  test: 'Grote teen omhoog tegen weerstand — sterke indicator L5' },
+    { name: 'M. extensor digitorum longus',   region: 'voet',      roots: ['L5','S1'],    nerve: 'N. peroneus profundus',        fn: 'Extensie tenen II–V',                            test: 'Tenen omhoog tegen weerstand' },
+    { name: 'Mm. peronei (longus + brevis)',  region: 'onderbeen', roots: ['L5','S1'],    nerve: 'N. peroneus superficialis',     fn: 'Eversie voet',                                   test: 'Voet naar buiten tegen weerstand' },
+    { name: 'M. gastrocnemius + soleus',      region: 'onderbeen', roots: ['S1','S2'],    nerve: 'N. tibialis',                  fn: 'Plantarflexie voet (+ knieflexie gastroc)',      test: 'Teenstand / hakken optillen — vroegste teken S1-parese', reflex: 'Achillespeesreflex (S1)' },
+    { name: 'M. tibialis posterior',          region: 'onderbeen', roots: ['L5','S1'],    nerve: 'N. tibialis',                  fn: 'Plantarflexie + inversie voet',                  test: 'Voet naar binnen-onder tegen weerstand' },
+    { name: 'M. flexor hallucis longus',      region: 'voet',      roots: ['L5','S1','S2'], nerve: 'N. tibialis',                fn: 'Flexie hallux + plantarflexie',                  test: 'Grote teen krachtig omlaag tegen weerstand' }
+  ];
+
+  // Unieke wortels + zenuwen voor browse-views
+  function uniqueSortedRoots() {
+    const set = new Set();
+    MUSCLES.forEach(m => m.roots.forEach(r => set.add(r)));
+    const order = ['C2','C3','C4','C5','C6','C7','C8','T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12','L1','L2','L3','L4','L5','S1','S2','S3','S4','S5'];
+    return order.filter(r => set.has(r));
+  }
+  function uniqueNerves() {
+    const set = new Set();
+    MUSCLES.forEach(m => set.add(m.nerve.split(' (')[0]));
+    return Array.from(set).sort();
+  }
+
+  TOOLS.push({
+    id: 'muscles',
+    name: 'Spieren & innervatie',
+    category: 'Neuro & anatomie',
+    tag: 'lookup',
+    metaLabel: 'Wortel + perifere zenuw',
+    desc: 'Klinisch onderzoek per spier — functie, wortel, zenuw, test en reflex',
+    keywords: ['spier','spieren','myotoom','innervatie','radiculopathie','plexus','wortel','perifeer','zenuw','medianus','ulnaris','radialis','femoralis','ischiadicus','peroneus','tibialis','axillaris','phrenicus','test','reflex','quadriceps','biceps','triceps','deltoideus','iliopsoas','gastrocnemius','tibialis anterior','extensor hallucis','interossei'],
+    render() {
+      return `
+        <div class="tool-view">
+          <h2>Spieren & innervatie</h2>
+          <div class="tool-subtitle">Klinisch onderzoek per spier — functie, spinale wortel, perifere zenuw, en de korte spreekkamertest. Reflexen waar toepasselijk. Browse op spier, wortel of zenuw afhankelijk van wat je zoekt.</div>
+
+          <div class="view-toggle" id="musc-view-toggle">
+            <button class="active" data-v="alfa">Per spier</button>
+            <button data-v="wortel">Per wortel</button>
+            <button data-v="zenuw">Per zenuw</button>
+          </div>
+
+          <div class="search" style="margin:8px 0 16px 0;position:static">
+            <span class="search-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            </span>
+            <input id="musc-search" type="search" placeholder="Zoek spier, wortel of zenuw…" autocomplete="off" />
+          </div>
+
+          <div id="musc-list"></div>
+
+          <div class="disclaimer">Vereenvoudigd overzicht voor radiculopathie- en plexusonderzoek in de eerste lijn. Bij verdenking centrale of complexe perifere laesie altijd uitgebreid neurologisch onderzoek en tijdige verwijzing naar neuroloog. Bron: Brodal, Kandel, NHG-Standaard Lumbosacraal radiculair syndroom.</div>
+        </div>
+      `;
+    },
+    onMount() {
+      let mode = 'alfa';
+      let q = '';
+
+      function muscleRow(m) {
+        const reflexBadge = m.reflex ? `<span class="tag tag-amber" style="margin-left:6px;font-size:9px">${escape(m.reflex)}</span>` : '';
+        return `
+          <div class="matrix-row">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+              <strong style="font-family:var(--font-display);font-size:14px;font-weight:600;color:var(--ink);letter-spacing:-0.01em">${escape(m.name)}</strong>
+              <div style="font-family:var(--font-mono);font-size:10px;color:var(--accent);font-weight:500;letter-spacing:0.04em">${m.roots.join(' · ')}</div>
+            </div>
+            <div style="font-size:12px;color:var(--ink-2);margin-bottom:4px"><strong style="color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:0.06em;display:inline-block;min-width:60px">Functie</strong> ${escape(m.fn)}</div>
+            <div style="font-size:12px;color:var(--ink-2);margin-bottom:4px"><strong style="color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:0.06em;display:inline-block;min-width:60px">Zenuw</strong> ${escape(m.nerve)}</div>
+            <div style="font-size:12px;color:var(--ink-2);margin-bottom:4px"><strong style="color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:0.06em;display:inline-block;min-width:60px">Test</strong> ${escape(m.test)}</div>
+            ${reflexBadge ? `<div style="margin-top:6px">${reflexBadge}</div>` : ''}
+          </div>
+        `;
+      }
+
+      function filterBy(predicate) {
+        return MUSCLES.filter(predicate).filter(m => {
+          if (!q) return true;
+          const search = q.toLowerCase();
+          return m.name.toLowerCase().includes(search) ||
+                 m.fn.toLowerCase().includes(search) ||
+                 m.nerve.toLowerCase().includes(search) ||
+                 m.roots.some(r => r.toLowerCase().includes(search));
+        });
+      }
+
+      function renderAlfa() {
+        const sorted = [...filterBy(() => true)].sort((a, b) => a.name.localeCompare(b.name));
+        if (sorted.length === 0) {
+          $('musc-list').innerHTML = `<div class="empty"><p>Geen spier gevonden.</p></div>`;
+          return;
+        }
+        $('musc-list').innerHTML = sorted.map(muscleRow).join('');
+      }
+
+      function renderByRoot() {
+        const roots = uniqueSortedRoots();
+        const blocks = roots.map(root => {
+          const group = filterBy(m => m.roots.includes(root));
+          if (group.length === 0) return '';
+          return `
+            <div style="margin-bottom:24px">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border)">
+                <span style="font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--accent);letter-spacing:-0.02em">${escape(root)}</span>
+                <span style="font-size:11px;color:var(--muted);font-family:var(--font-mono)">${group.length} ${group.length === 1 ? 'spier' : 'spieren'}</span>
+              </div>
+              ${group.map(muscleRow).join('')}
+            </div>
+          `;
+        }).filter(Boolean).join('');
+        $('musc-list').innerHTML = blocks || `<div class="empty"><p>Geen resultaten.</p></div>`;
+      }
+
+      function renderByNerve() {
+        const nerves = uniqueNerves();
+        const blocks = nerves.map(nerve => {
+          const group = filterBy(m => m.nerve.startsWith(nerve));
+          if (group.length === 0) return '';
+          return `
+            <div style="margin-bottom:24px">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border)">
+                <span style="font-family:var(--font-display);font-size:15px;font-weight:600;color:var(--accent);letter-spacing:-0.015em">${escape(nerve)}</span>
+                <span style="font-size:11px;color:var(--muted);font-family:var(--font-mono)">${group.length} ${group.length === 1 ? 'spier' : 'spieren'}</span>
+              </div>
+              ${group.map(muscleRow).join('')}
+            </div>
+          `;
+        }).filter(Boolean).join('');
+        $('musc-list').innerHTML = blocks || `<div class="empty"><p>Geen resultaten.</p></div>`;
+      }
+
+      function rerender() {
+        if (mode === 'alfa') renderAlfa();
+        else if (mode === 'wortel') renderByRoot();
+        else renderByNerve();
+      }
+
+      document.querySelectorAll('#musc-view-toggle button').forEach(b => {
+        b.addEventListener('click', () => {
+          document.querySelectorAll('#musc-view-toggle button').forEach(x => x.classList.remove('active'));
+          b.classList.add('active');
+          mode = b.dataset.v;
+          rerender();
+        });
+      });
+      document.getElementById('musc-search').addEventListener('input', (e) => {
+        q = e.target.value;
+        rerender();
+      });
+      rerender();
+    }
+  });
+
+  /* ==================================================================
+     29. Ramadan-medicatie aide — vasten met chronische medicatie
+     ================================================================== */
+  // advies-codes: ok = doorgaan, schema = schema aanpassen, halveer = dosis verlagen,
+  // overleg = specialist/individueel, mijden = stoppen of switchen
+  const RAMADAN_MEDS = [
+    // Diabetes
+    { klasse: 'Diabetes (oraal)', name: 'Metformine',                          advies: 'schema',  body: 'Voortzetten. Schuif schema: 1/3 bij suhoor (zonsopgang), 2/3 bij iftar (zonsondergang). Bij 1×/dag: bij iftar. Hypoglycemie-risico verwaarloosbaar.' },
+    { klasse: 'Diabetes (oraal)', name: 'Gliclazide MR / glimepiride (SU)',   advies: 'halveer', body: 'Hypoglycemie-risico tijdens vastendag. Halveer ochtenddosis en geef bij iftar — bij voorkeur switch naar gliclazide MR 1×/dag bij iftar. Bij meermaals hypoglycemie: vasten ontmoedigen of staken SU.' },
+    { klasse: 'Diabetes (oraal)', name: 'Linagliptine / sitagliptine (DPP4)', advies: 'ok',      body: 'Veilig — laag hypoglycemie-risico. Tijdstip-aanpassing niet nodig, maar bij voorkeur bij iftar.' },
+    { klasse: 'Diabetes (oraal)', name: 'Empagliflozine / dapagliflozine (SGLT2)', advies: 'overleg', body: 'Dehydratie + ketoacidose-risico tijdens vasten. NHG-advies: overweeg tijdelijk staken tijdens Ramadan, of zeer goede hydratatie tijdens iftar/suhoor benadrukken. Bij type 1 of euglycemische DKA-historie: niet vasten.' },
+    { klasse: 'Diabetes (oraal)', name: 'Semaglutide / liraglutide (GLP1)',   advies: 'ok',      body: 'Wekelijkse semaglutide-injectie: tijdstip onveranderd. Dagelijkse liraglutide: bij iftar. Misselijkheid-bijwerking soms erger bij vasten — patiënt waarschuwen.' },
+    { klasse: 'Diabetes (oraal)', name: 'Pioglitazon',                         advies: 'ok',      body: 'Geen aanpassing nodig — geen hypoglycemie-risico. Bij iftar innemen.' },
+    // Insuline
+    { klasse: 'Insuline',         name: 'Basale insuline (Lantus, Tresiba, Levemir)', advies: 'halveer', body: 'Verlaag basale insuline met 15–30% tijdens Ramadan. Geef bij iftar in plaats van vaste tijd. Frequente zelfcontrole (4×/dag) essentieel. Bij type 1 diabetes: altijd overleg endocrinoloog.' },
+    { klasse: 'Insuline',         name: 'Snelwerkende insuline bij maaltijden',      advies: 'overleg', body: 'Geef bij iftar + suhoor; sla middag-dosis over. Doseringen aanpassen op basis van koolhydraatinhoud van maaltijden. Type 1 of insuline-pomp: endocrinoloog raadplegen vooraf.' },
+    { klasse: 'Insuline',         name: 'Mix-insuline (NovoMix, Humalog Mix)',       advies: 'schema',  body: 'Switch tijdens Ramadan: ochtenddosis (volwaardig) bij iftar, avonddosis (verlaagd ~50%) bij suhoor. Frequente glucose-controle.' },
+    // Hypertensie / cardiovasculair
+    { klasse: 'Hypertensie',      name: 'ACE-i / ARB (perindopril, losartan)',advies: 'schema',  body: 'Schuif van ochtend naar iftar (orthostatische hypotensie tijdens vasten voorkomen). Bij volumedepletie: dosering soms verlagen. Bij koorts/diarree tijdens vasten: tijdelijk pauzeren — risico op acute nierinsufficiëntie.' },
+    { klasse: 'Hypertensie',      name: 'Calciumblokker (amlodipine, nifedipine)', advies: 'ok', body: 'Eenmaal daagse dosering bij iftar. Geen specifieke risico tijdens vasten.' },
+    { klasse: 'Hypertensie',      name: 'Bètablokker (metoprolol, bisoprolol)', advies: 'ok',     body: 'Voortzetten op gebruikelijk schema; bij 1×/dag bij iftar. Geen verhoogd risico tijdens vasten.' },
+    { klasse: 'Hypertensie',      name: 'Thiazide-diureticum (hydrochloorthiazide)', advies: 'overleg', body: 'Dehydratie-risico — overweeg pauzeren of switchen naar andere klasse tijdens Ramadan. Bij verplichte voortzetting: bij iftar geven en hydratatie strikt monitoren.' },
+    { klasse: 'Hypertensie',      name: 'Lisdiureticum (furosemide, bumetanide)', advies: 'overleg', body: 'Bij hartfalen: voortzetting nodig. Geef bij iftar; pas dosering aan o.b.v. gewichtsverlies/elektrolyten. Bij hypovolemie tijdens vasten: dosering halveren of pauzeren — overleg cardioloog.' },
+    // Anticoagulantia
+    { klasse: 'Anticoagulantia',  name: 'DOAC (apixaban, rivaroxaban, edoxaban, dabigatran)', advies: 'ok', body: 'Voortzetten — tijdsverschuiving heeft minimale invloed op werking. 2×/dag (apixaban, dabigatran): bij iftar + suhoor. 1×/dag (rivaroxaban, edoxaban): bij iftar met voedsel (rivaroxaban absorbeert beter met maaltijd).' },
+    { klasse: 'Anticoagulantia',  name: 'VKA (acenocoumarol, fenprocoumon)',  advies: 'ok',     body: 'Voortzetten — innamemoment minder kritisch. INR-controle als gebruikelijk. Voedingsverandering tijdens iftar (meer vetinname, vit-K-houdende groenten) kan INR-fluctuatie geven — frequentere controle in eerste weken Ramadan.' },
+    { klasse: 'Anticoagulantia',  name: 'Acetylsalicylzuur 80 mg',            advies: 'ok',     body: 'Voortzetten bij iftar. Geen specifieke risico.' },
+    // Lipiden
+    { klasse: 'Lipiden',          name: 'Statine (atorvastatine, rosuvastatine, simvastatine)', advies: 'ok', body: 'Bij iftar of voor het slapen na suhoor. Geen risico tijdens vasten. Simvastatine bij voorkeur ´s avonds — bij iftar past goed.' },
+    { klasse: 'Lipiden',          name: 'Ezetimib',                           advies: 'ok',     body: 'Bij iftar. Geen aanpassing.' },
+    // Inhalatie (longziekten)
+    { klasse: 'Inhalatie',        name: 'Inhalatie-corticosteroïd (ICS) / LABA', advies: 'schema', body: 'Doseringen schuiven naar iftar + suhoor (in plaats van ochtend/avond). De meeste Islamitische geleerden accepteren inhalaties tijdens vasten (geen voedsel/drank), maar bespreek met patiënt — sommigen prefereren strict vasten en willen schema aangepast.' },
+    { klasse: 'Inhalatie',        name: 'SABA (salbutamol) — zo nodig',       advies: 'ok',     body: 'Tijdens vasten gebruik bij dyspnoe is medisch noodzakelijk en breekt vasten niet volgens de meeste geleerden. Bij twijfel: aerosol-vorm i.p.v. droogpoeder (minder smaakperceptie).' },
+    // Antibiotica
+    { klasse: 'Antibiotica',      name: 'Korte kuur 1–2×/dag (amoxicilline, azitromycine)', advies: 'schema', body: 'Schuif naar iftar + suhoor. Compleet de kuur ongeacht vasten — ziekte is religieuze uitzondering voor vasten.' },
+    { klasse: 'Antibiotica',      name: 'Frequentere kuren 3–4×/dag (flucloxacilline, feneticilline)', advies: 'overleg', body: 'Schema lastig in te passen — bespreek met patiënt of vasten medisch verantwoord is. Ziekte zelf is reden om niet te vasten (Q 2:185). Alternatief: middel met langere halfwaardetijd of breder doseringsinterval.' },
+    { klasse: 'Antibiotica',      name: 'Doxycycline (1×/dag)',               advies: 'ok',     body: 'Bij iftar met voedsel (verminderd misselijkheid). Geen specifieke aanpassing.' },
+    // Pijn
+    { klasse: 'Pijn',             name: 'Paracetamol',                        advies: 'schema', body: 'Schuif schema naar iftar + suhoor. Bij chronische pijn buiten medische noodzaak: bespreek of vasten haalbaar is.' },
+    { klasse: 'Pijn',             name: 'NSAID (ibuprofen, naproxen, diclofenac)', advies: 'overleg', body: 'Dehydratie + NSAID = renale risico tijdens vasten. Geef bij iftar met maaltijd. Liever paracetamol als alternatief tijdens Ramadan, vooral bij ouderen of nierfunctie-stoornis.' },
+    { klasse: 'Pijn',             name: 'Tramadol, opioïden',                 advies: 'schema', body: 'Schuif naar iftar + suhoor. Obstipatie-risico (mede door verminderde vochtinname): laxans-advies.' },
+    // Maag
+    { klasse: 'Maag',             name: 'Protonpompremmer (omeprazol, pantoprazol)', advies: 'schema', body: '30 min vóór suhoor — werkt 24 uur, dekt dan ook iftar-periode. Bij reflux-klachten ondanks PPI: tweede dosis vlak vóór iftar overwegen.' },
+    { klasse: 'Maag',             name: 'H2-blokker (famotidine) of antacidum', advies: 'ok',  body: 'Bij iftar of suhoor. Antacidum zo nodig na iftar.' },
+    // Schildklier
+    { klasse: 'Schildklier',      name: 'Levothyroxine',                      advies: 'schema', body: '30–60 min vóór suhoor op nuchtere maag (geen koffie, kalkrijke producten of ijzer-supplementen). Bij iftar minder ideaal door voedselinteractie. TSH na 6 weken Ramadan controleren als beleid wijzigt.' },
+    // Psyche
+    { klasse: 'Psyche',           name: 'SSRI (sertraline, citalopram, fluoxetine)', advies: 'ok', body: 'Schuif van ochtend naar iftar. Geen specifieke risico tijdens vasten. Slaapfragmentatie tijdens Ramadan kan stemming beïnvloeden — extra monitoring eerste 1–2 weken.' },
+    { klasse: 'Psyche',           name: 'Antipsychoticum (olanzapine, risperidon)', advies: 'overleg', body: 'Geef bij iftar. Bij stabiele patiënt veilig; bij psychiatrische instabiliteit: psychiater betrekken vóór Ramadan over vasten-veiligheid.' },
+    { klasse: 'Psyche',           name: 'Benzodiazepine, lorazepam, oxazepam', advies: 'schema', body: 'Schuif naar iftar (overdag minder sedatie nodig). Bij angststoornis: combinatie van vasten + slaaptekort kan klachten verergeren.' }
+  ];
+
+  // Klasse-advies-codes voor visuele coding
+  const RAMADAN_BADGES = {
+    ok:      { tag: 'green',  label: '✓ Veilig' },
+    schema:  { tag: 'blue',   label: '↻ Schema aanpassen' },
+    halveer: { tag: 'amber',  label: '↓ Dosis verlagen' },
+    overleg: { tag: 'amber',  label: '⚠ Individueel afwegen' },
+    mijden:  { tag: 'red',    label: '✕ Mijden / staken' }
+  };
+
+  TOOLS.push({
+    id: 'ramadan-med',
+    name: 'Ramadan & medicatie',
+    category: 'Medicatie & rotatie',
+    metaLabel: 'Vasten · NHG + DAR',
+    desc: 'Adviezen per medicatieklasse voor patiënten die vasten — schema, dosis, alternatieven',
+    keywords: ['ramadan','vasten','islam','moslim','suhoor','iftar','marokko','turks','diabetes','antidiabetica','insuline','metformine','hypertensie','ace','arb','diureticum','statine','doac','ics','salbutamol','antibiotica','levothyroxine','ppi','ssri','dar','donderberg'],
+    render() {
+      // Groep per klasse
+      const klassen = {};
+      RAMADAN_MEDS.forEach(m => {
+        if (!klassen[m.klasse]) klassen[m.klasse] = [];
+        klassen[m.klasse].push(m);
+      });
+      const klasseOrder = Object.keys(klassen);
+
+      return `
+        <div class="tool-view">
+          <h2>Ramadan & medicatie</h2>
+          <div class="tool-subtitle">Adviezen voor het aanpassen van chronische medicatie tijdens het vasten. Gericht op de Donderberg-populatie waar Ramadan klinisch relevant is in een groot deel van de praktijk.</div>
+
+          <div class="flow" style="margin-bottom:20px">
+            <div class="flow-node flow-info">
+              <div class="flow-node-label">Algemene principes</div>
+              <div class="flow-node-title">Bespreek vóór de Ramadan, niet tijdens</div>
+              <div class="flow-node-body">
+                <strong>Risicostratificatie eerst</strong> volgens IDF/DAR-criteria — hoog-risico patiënten (type 1 diabetes, recente hypoglycemie, gevorderde nierinsufficiëntie, instabiele angina, zwangerschap) krijgen het advies <em>niet</em> te vasten. Ziekte is in de Koran (Q 2:185) een geldige reden om vasten te onderbreken; religieuze ondersteuning blijft belangrijk, maar de medische afweging valt onder de huisarts.<br><br>
+                <strong>Hydratatie</strong> tussen iftar en suhoor strikt — water boven suikerwater. <strong>Maaltijden</strong> verdelen over iftar + tussen-maaltijd + suhoor i.p.v. één grote iftar-vreetbui. <strong>Slaaphygiëne</strong> uitleg geven — slaapfragmentatie verergert stemming + insulineresistentie.
+              </div>
+            </div>
+          </div>
+
+          <div class="search" style="margin:8px 0 16px 0;position:static">
+            <span class="search-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            </span>
+            <input id="ram-search" type="search" placeholder="Zoek middel of klasse — bv. metformine, statine, ICS…" autocomplete="off" />
+          </div>
+
+          <div id="ram-legend" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;padding:10px 12px;background:var(--surface-2);border-radius:8px;font-size:11px">
+            <span style="display:inline-flex;align-items:center;gap:4px"><span class="tag tag-green" style="margin:0;font-size:9px">✓</span> doorgaan</span>
+            <span style="display:inline-flex;align-items:center;gap:4px"><span class="tag tag-blue" style="margin:0;font-size:9px">↻</span> schema aanpassen</span>
+            <span style="display:inline-flex;align-items:center;gap:4px"><span class="tag tag-amber" style="margin:0;font-size:9px">↓</span> dosis verlagen</span>
+            <span style="display:inline-flex;align-items:center;gap:4px"><span class="tag tag-amber" style="margin:0;font-size:9px">⚠</span> individueel</span>
+            <span style="display:inline-flex;align-items:center;gap:4px"><span class="tag tag-red" style="margin:0;font-size:9px">✕</span> mijden</span>
+          </div>
+
+          <div id="ram-list">
+            ${klasseOrder.map(k => `
+              <div class="ram-klasse" data-klasse="${escape(k)}" style="margin-bottom:22px">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)">
+                  <span style="font-family:var(--font-display);font-size:14px;font-weight:600;color:var(--ink);letter-spacing:-0.01em">${escape(k)}</span>
+                  <span style="font-size:11px;color:var(--muted);font-family:var(--font-mono)">${klassen[k].length} ${klassen[k].length === 1 ? 'middel' : 'middelen'}</span>
+                </div>
+                ${klassen[k].map(m => `
+                  <div class="ram-item matrix-row" data-name="${escape(m.name.toLowerCase())}" data-klasse-low="${escape(m.klasse.toLowerCase())}">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:6px">
+                      <strong style="font-family:var(--font-display);font-size:14px;font-weight:600;color:var(--ink);letter-spacing:-0.01em">${escape(m.name)}</strong>
+                      <span class="tag tag-${RAMADAN_BADGES[m.advies].tag}" style="margin:0;font-size:10px;white-space:nowrap">${RAMADAN_BADGES[m.advies].label}</span>
+                    </div>
+                    <div style="font-size:12px;color:var(--ink-2);line-height:1.55">${m.body}</div>
+                  </div>
+                `).join('')}
+              </div>
+            `).join('')}
+          </div>
+
+          <div id="ram-empty" style="display:none" class="empty"><p>Geen middel gevonden.</p></div>
+
+          <div class="disclaimer">Bron: NHG-Standpunt Ramadan en vasten (2018) · DAR-IDF Practical Guidelines (Diabetes and Ramadan Alliance, 2021) · NIV-richtlijn diabetes in Ramadan. Adviezen zijn <strong>algemeen</strong>; per patiënt individueel afwegen op risicogroep, nierfunctie, comorbiditeit en patiëntvoorkeur. Bij twijfel laagdrempelig overleg specialist of klinisch farmacoloog.</div>
+        </div>
+      `;
+    },
+    onMount() {
+      document.getElementById('ram-search').addEventListener('input', (e) => {
+        const q = e.target.value.trim().toLowerCase();
+        let visible = 0;
+        document.querySelectorAll('.ram-klasse').forEach(klasseEl => {
+          let klasseVisible = 0;
+          klasseEl.querySelectorAll('.ram-item').forEach(item => {
+            const matches = !q ||
+              item.dataset.name.includes(q) ||
+              item.dataset.klasseLow.includes(q) ||
+              item.textContent.toLowerCase().includes(q);
+            item.style.display = matches ? '' : 'none';
+            if (matches) klasseVisible++;
+          });
+          klasseEl.style.display = klasseVisible > 0 ? '' : 'none';
+          if (klasseVisible > 0) visible += klasseVisible;
+        });
+        document.getElementById('ram-empty').style.display = visible === 0 ? '' : 'none';
+      });
+    }
+  });
+
+  /* ==================================================================
+     30. qSOFA — quick sepsis-triage
+     ================================================================== */
+  TOOLS.push({
+    id: 'qsofa',
+    name: 'qSOFA',
+    category: 'Acuut & spoed',
+    metaLabel: 'Sepsis · bedside-score',
+    desc: '3-item screening voor mortaliteitsrisico bij verdenking infectie',
+    keywords: ['qsofa','sepsis','infectie','tachypnoe','hypotensie','bewustzijn','triage','shock','spoed'],
+    render() {
+      const items = [
+        { id: 'rr',  label: 'Ademfrequentie ≥ 22/min' },
+        { id: 'bp',  label: 'Systolische bloeddruk ≤ 100 mmHg' },
+        { id: 'gcs', label: 'Verlaagd bewustzijn (GCS &lt; 15 / AVPU niet "alert")' }
+      ];
+      return `
+        <div class="tool-view">
+          <h2>qSOFA</h2>
+          <div class="tool-subtitle">Quick Sequential Organ Failure Assessment — bedside-score voor mortaliteitsrisico bij vermoeden van infectie. Geen sepsis-diagnose op zichzelf: een positieve score (≥ 2) signaleert verhoogd risico op slechte uitkomst en is reden voor agressieve evaluatie en directe verwijzing.</div>
+
+          ${items.map(i => `
+            <label class="checkrow">
+              <input type="checkbox" data-grp="qsofa" onchange="computeQSofa()" />
+              <span class="checkrow-text">${i.label}</span>
+              <span class="checkrow-meta">+1</span>
+            </label>
+          `).join('')}
+
+          <div id="qsofa-out"></div>
+
+          <div class="disclaimer">Bron: Sepsis-3 consensus (Singer et al., JAMA 2016) · SWAB sepsis-richtlijn. qSOFA is een screeningstool met beperkte sensitiviteit; bij klinische verdenking sepsis altijd handelen ongeacht score. Bij score ≥ 2: spoedevaluatie + spoedverwijzing internist of intensivist, lab (lactaat, leukocyten, CRP), bloedkweken, en start empirische antibiotica binnen 1 uur (Surviving Sepsis Campaign). Vervangt geen klinische beoordeling.</div>
+        </div>
+      `;
+    },
+    onMount() { computeQSofa(); }
+  });
+  function computeQSofa() {
+    const score = document.querySelectorAll('input[data-grp="qsofa"]:checked').length;
+    let cat, color, advice;
+    if (score === 0) {
+      cat = 'Geen verhoogd risico'; color = 'green';
+      advice = 'qSOFA negatief. Bij persisterende klinische verdenking sepsis nog steeds laagdrempelig evalueren — qSOFA mist sensitiviteit, vooral vroeg in het beloop.';
+    } else if (score === 1) {
+      cat = 'Aandacht'; color = 'yellow';
+      advice = 'Eén positief criterium. Geen formele qSOFA-positiviteit, maar bij klinisch ziek beeld of infectiefocus: vervolgmeting na 30–60 min en lage drempel voor lab + verwijzing.';
+    } else {
+      cat = 'Verhoogd risico'; color = 'red';
+      advice = '<strong>qSOFA positief.</strong> Verhoogd mortaliteitsrisico bij infectieverdenking. Direct: 112 of spoedvervoer, IV-toegang, vulling (500–1000 ml NaCl 0,9% snel), zuurstof indien sat &lt; 94%, lactaat + bloedkweken (waar mogelijk), empirische breedspectrum-AB binnen 1 uur na herkenning.';
+    }
+    $('qsofa-out').innerHTML = `
+      <div class="result">
+        <div class="result-eyebrow">qSOFA-score</div>
+        <div class="result-value">${score}<span class="unit">/ 3</span></div>
+        <div class="result-interpretation">${escape(cat)}</div>
+        <div class="flag flag-${color}">${advice}</div>
+      </div>
+    `;
+  }
+
+  /* ==================================================================
+     31. Ottawa Ankle/Knee Rules — X-ray-indicatie na trauma
+     ================================================================== */
+  TOOLS.push({
+    id: 'ottawa',
+    name: 'Ottawa Ankle/Knee Rules',
+    category: 'Acuut & spoed',
+    metaLabel: 'X-ray-indicatie · trauma',
+    desc: 'Beslisregels: röntgenfoto wel of niet na enkel-, voet- of knietrauma',
+    keywords: ['ottawa','enkel','knie','voet','trauma','rontgen','xray','fractuur','malleolus','fibula','patella','tibiale plateau','navicularis','metatarsale'],
+    render() {
+      return `
+        <div class="tool-view">
+          <h2>Ottawa-regels</h2>
+          <div class="tool-subtitle">Klinische beslisregels voor X-ray-indicatie bij acuut trauma — voorkomt ~30% van onnodige opnames bij behoud van bijna 100% sensitiviteit voor klinisch relevante fracturen.</div>
+
+          <div class="view-toggle" id="ottawa-toggle">
+            <button class="active" data-v="enkel">Enkel</button>
+            <button data-v="voet">Voet</button>
+            <button data-v="knie">Knie</button>
+          </div>
+
+          <!-- Enkel -->
+          <div id="ottawa-enkel">
+            <div class="flag flag-blue" style="margin-bottom:14px">
+              <strong>Enkel-X-ray</strong> alleen bij pijn in <em>malleolaire</em> regio + ten minste één van:
+            </div>
+            <label class="checkrow">
+              <input type="checkbox" data-grp="ottawa-ank" onchange="computeOttawa()" />
+              <span class="checkrow-text">Drukpijn over achterrand of top van <strong>laterale malleolus</strong> (distale 6 cm fibula)</span>
+            </label>
+            <label class="checkrow">
+              <input type="checkbox" data-grp="ottawa-ank" onchange="computeOttawa()" />
+              <span class="checkrow-text">Drukpijn over achterrand of top van <strong>mediale malleolus</strong> (distale 6 cm tibia)</span>
+            </label>
+            <label class="checkrow">
+              <input type="checkbox" data-grp="ottawa-ank" onchange="computeOttawa()" />
+              <span class="checkrow-text"><strong>Niet kunnen belasten</strong> (4 stappen) — direct na trauma én op SEH/spreekkamer</span>
+            </label>
+            <div id="ottawa-ank-out"></div>
+          </div>
+
+          <!-- Voet -->
+          <div id="ottawa-voet" style="display:none">
+            <div class="flag flag-blue" style="margin-bottom:14px">
+              <strong>Voet-X-ray</strong> alleen bij pijn in <em>middenvoet</em> + ten minste één van:
+            </div>
+            <label class="checkrow">
+              <input type="checkbox" data-grp="ottawa-foot" onchange="computeOttawa()" />
+              <span class="checkrow-text">Drukpijn over <strong>basis 5e metatarsale</strong></span>
+            </label>
+            <label class="checkrow">
+              <input type="checkbox" data-grp="ottawa-foot" onchange="computeOttawa()" />
+              <span class="checkrow-text">Drukpijn over <strong>os naviculare</strong></span>
+            </label>
+            <label class="checkrow">
+              <input type="checkbox" data-grp="ottawa-foot" onchange="computeOttawa()" />
+              <span class="checkrow-text"><strong>Niet kunnen belasten</strong> (4 stappen) — direct na trauma én bij onderzoek</span>
+            </label>
+            <div id="ottawa-foot-out"></div>
+          </div>
+
+          <!-- Knie -->
+          <div id="ottawa-knie" style="display:none">
+            <div class="flag flag-blue" style="margin-bottom:14px">
+              <strong>Knie-X-ray</strong> bij acuut trauma + ten minste één van:
+            </div>
+            <label class="checkrow">
+              <input type="checkbox" data-grp="ottawa-knee" onchange="computeOttawa()" />
+              <span class="checkrow-text">Leeftijd <strong>≥ 55 jaar</strong></span>
+            </label>
+            <label class="checkrow">
+              <input type="checkbox" data-grp="ottawa-knee" onchange="computeOttawa()" />
+              <span class="checkrow-text">Drukpijn op <strong>fibulakopje</strong></span>
+            </label>
+            <label class="checkrow">
+              <input type="checkbox" data-grp="ottawa-knee" onchange="computeOttawa()" />
+              <span class="checkrow-text">Geïsoleerde drukpijn op de <strong>patella</strong> (geen pijn op andere knie-structuren)</span>
+            </label>
+            <label class="checkrow">
+              <input type="checkbox" data-grp="ottawa-knee" onchange="computeOttawa()" />
+              <span class="checkrow-text">Niet kunnen <strong>flecteren tot 90°</strong></span>
+            </label>
+            <label class="checkrow">
+              <input type="checkbox" data-grp="ottawa-knee" onchange="computeOttawa()" />
+              <span class="checkrow-text"><strong>Niet kunnen belasten</strong> (4 stappen) — direct én bij onderzoek</span>
+            </label>
+            <div id="ottawa-knee-out"></div>
+          </div>
+
+          <div class="disclaimer">Bron: Stiell et al., <em>Ann Emerg Med</em> 1992 (enkel/voet) en 1995 (knie) · NHG-Standaard Traumatische knieproblemen · NHG-Standaard Enkelband-letsel. Sensitiviteit ~98% voor klinisch relevante fracturen; gevalideerd bij volwassenen en kinderen ≥ 5–6 jaar. Bij twijfel, hoog-energetisch trauma, polytrauma, of intoxicatie laagdrempelig X-ray maken. Niet toepassen op kinderen jonger dan 5 jaar.</div>
+        </div>
+      `;
+    },
+    onMount() {
+      document.querySelectorAll('#ottawa-toggle button').forEach(b => {
+        b.addEventListener('click', () => {
+          document.querySelectorAll('#ottawa-toggle button').forEach(x => x.classList.remove('active'));
+          b.classList.add('active');
+          const v = b.dataset.v;
+          ['enkel', 'voet', 'knie'].forEach(view => {
+            document.getElementById(`ottawa-${view}`).style.display = view === v ? '' : 'none';
+          });
+        });
+      });
+      computeOttawa();
+    }
+  });
+  function computeOttawa() {
+    [{grp: 'ottawa-ank', out: 'ottawa-ank-out', region: 'enkel'},
+     {grp: 'ottawa-foot', out: 'ottawa-foot-out', region: 'voet'},
+     {grp: 'ottawa-knee', out: 'ottawa-knee-out', region: 'knie'}].forEach(cfg => {
+      const checked = document.querySelectorAll(`input[data-grp="${cfg.grp}"]:checked`).length;
+      const el = document.getElementById(cfg.out);
+      if (!el) return;
+      if (checked === 0) {
+        el.innerHTML = `
+          <div class="result">
+            <div class="result-eyebrow">Beslissing — ${cfg.region}</div>
+            <div class="result-interpretation"><strong>Geen X-ray-indicatie</strong> volgens Ottawa-regels. Klinische follow-up bij persisterende klachten na 5–7 dagen.</div>
+          </div>
+        `;
+      } else {
+        el.innerHTML = `
+          <div class="result">
+            <div class="result-eyebrow">Beslissing — ${cfg.region}</div>
+            <div class="result-value" style="font-size:28px">X-ray geïndiceerd</div>
+            <div class="result-interpretation">${checked} positief criterium volgens Ottawa-regels.</div>
+            <div class="flag flag-amber"><strong>Bij twijfel</strong>, hoog-energetisch trauma, gedissimuleerd letsel (intoxicatie, kind, oudere met cognitie-stoornis) altijd laagdrempelig X-ray maken — Ottawa-regels gelden alleen bij betrouwbaar lichamelijk onderzoek.</div>
+          </div>
+        `;
+      }
+    });
+  }
+
+  /* ==================================================================
+     32. ABCD² — TIA-risico
+     ================================================================== */
+  TOOLS.push({
+    id: 'abcd2',
+    name: 'ABCD² (TIA)',
+    category: 'Hart & vaten',
+    metaLabel: 'TIA · stroke-risico',
+    desc: 'Korte-termijn CVA-risico na TIA — 7-punts score (met disclaimer)',
+    keywords: ['abcd','tia','transient','ischemisch','stroke','cva','herseninfarct','risico','neurologie'],
+    render() {
+      return `
+        <div class="tool-view">
+          <h2>ABCD²</h2>
+          <div class="tool-subtitle">Risicoscore voor CVA in de 2/7/90 dagen na een TIA. Score 0–7. Belangrijk: NICE (2019) en de Nederlandse acute-CVA-richtlijn raden routinematig gebruik <em>af</em> voor triage — élke verdenking TIA verdient binnen 24 uur specialistisch onderzoek, ongeacht ABCD². De score blijft een communicatie-tool tussen huisarts en neuroloog.</div>
+
+          <div class="field"><label>A · Age — Leeftijd</label>
+            <div class="segmented" id="abcd-age">
+              <button class="active" data-v="0">&lt; 60 jr</button>
+              <button data-v="1">≥ 60 jr (+1)</button>
+            </div>
+          </div>
+
+          <div class="field"><label>B · Blood pressure — Bloeddruk bij presentatie</label>
+            <div class="segmented" id="abcd-bp">
+              <button class="active" data-v="0">RR &lt; 140/90</button>
+              <button data-v="1">RR ≥ 140/90 (+1)</button>
+            </div>
+          </div>
+
+          <div class="field"><label>C · Clinical features — Klinisch beeld</label>
+            <div class="segmented" id="abcd-clin">
+              <button class="active" data-v="0">Andere klachten</button>
+              <button data-v="1">Spraakstoornis zonder zwakte (+1)</button>
+              <button data-v="2">Unilaterale parese (+2)</button>
+            </div>
+          </div>
+
+          <div class="field"><label>D · Duration — Duur klachten</label>
+            <div class="segmented" id="abcd-dur">
+              <button class="active" data-v="0">&lt; 10 min</button>
+              <button data-v="1">10–59 min (+1)</button>
+              <button data-v="2">≥ 60 min (+2)</button>
+            </div>
+          </div>
+
+          <div class="field"><label>D · Diabetes mellitus</label>
+            <div class="segmented" id="abcd-dm">
+              <button class="active" data-v="0">Nee</button>
+              <button data-v="1">Ja (+1)</button>
+            </div>
+          </div>
+
+          <div id="abcd-out"></div>
+
+          <div class="disclaimer">Bron: Johnston et al., <em>Lancet</em> 2007 — gevalideerd op &gt; 4.000 patiënten. Sindsdien onderzoek: ABCD² mist een aanzienlijk deel hoog-risico TIA's (vooral atriumfibrilleren, carotis-stenose), reden waarom NICE Guideline NG128 (2019) routine-gebruik afraadt. <strong>Praktische lijn:</strong> bij élke TIA-verdenking spoed-verwijzing TIA-poli / spoedeisende hulp binnen 24 uur; ABCD² ondersteunt urgentie-communicatie maar bepaalt geen al-dan-niet verwijzing. Bij score ≥ 4 én combinatie met AF, carotis-bruit of recidief TIA: nog grotere urgentie.</div>
+        </div>
+      `;
+    },
+    onMount() {
+      ['abcd-age','abcd-bp','abcd-clin','abcd-dur','abcd-dm'].forEach(id => {
+        document.querySelectorAll(`#${id} button`).forEach(b => {
+          b.addEventListener('click', () => {
+            document.querySelectorAll(`#${id} button`).forEach(x => x.classList.remove('active'));
+            b.classList.add('active');
+            computeABCD2();
+          });
+        });
+      });
+      computeABCD2();
+    }
+  });
+  function computeABCD2() {
+    const score =
+      parseInt(document.querySelector('#abcd-age button.active').dataset.v) +
+      parseInt(document.querySelector('#abcd-bp button.active').dataset.v) +
+      parseInt(document.querySelector('#abcd-clin button.active').dataset.v) +
+      parseInt(document.querySelector('#abcd-dur button.active').dataset.v) +
+      parseInt(document.querySelector('#abcd-dm button.active').dataset.v);
+
+    let cat, color, advice;
+    if (score <= 3) {
+      cat = 'Laag risico (klassieke validatie)'; color = 'yellow';
+      advice = '2-daags CVA-risico ~1%. Maar: NICE en NL-richtlijn — élke TIA-verdenking nog steeds binnen 24 uur naar TIA-poli of SEH voor verder onderzoek (carotis-duplex, ECG, MRI) en directe start secundaire preventie.';
+    } else if (score <= 5) {
+      cat = 'Matig risico'; color = 'amber';
+      advice = '2-daags CVA-risico ~4%. Spoedverwijzing TIA-poli/SEH binnen 24 uur. Start asa 80 mg directe (na CT-uitsluiting bloeding) — of overleg.';
+    } else {
+      cat = 'Hoog risico'; color = 'red';
+      advice = '2-daags CVA-risico ~8%. Acute verwijzing — laagdrempelig spoedvervoer overwegen, vooral bij AF, recidief klachten of carotis-bruit. Directe asa + statine na uitsluiting bloeding.';
+    }
+
+    $('abcd-out').innerHTML = `
+      <div class="result">
+        <div class="result-eyebrow">ABCD²-score</div>
+        <div class="result-value">${score}<span class="unit">/ 7</span></div>
+        <div class="result-interpretation">${escape(cat)}</div>
+        <div class="flag flag-${color}">${advice}</div>
+        <div class="result-detail">
+          <strong>Rode vlaggen voor extra urgentie</strong> (los van score): atriumfibrilleren, recidief TIA &lt; 7 dagen, klachten op asa/statine, carotis-stenose-verdenking, hoog cardiovasculair risicoprofiel.
+        </div>
+      </div>
+    `;
+  }
+
+  /* ==================================================================
+     33. EPDS — Edinburgh Postnatal Depression Scale
+     ================================================================== */
+  // 10 items, ieder 0-3 punten. Item-volgorde + omgekeerde scoring per item
+  // 'reverse': true betekent score = 3 - antwoord (eerste optie scoort hoog)
+  const EPDS_ITEMS = [
+    { q: 'Ik heb kunnen lachen en de zonnige kant van de dingen kunnen zien',
+      opts: ['Net zo veel als ik altijd kon', 'Niet zo veel als ik gewend was', 'Beslist minder dan ik gewend was', 'Helemaal niet'] },
+    { q: 'Ik heb met plezier naar dingen uitgekeken',
+      opts: ['Net zo veel als altijd', 'Wat minder dan ik gewend was', 'Beslist minder dan ik gewend was', 'Bijna nergens naar'] },
+    { q: 'Ik heb mezelf onnodig verwijten gemaakt als er iets fout ging',
+      opts: ['Nee, nooit', 'Niet erg vaak', 'Ja, soms', 'Ja, heel vaak'], reverse: true },
+    { q: 'Ik ben nerveus of bezorgd geweest zonder reden',
+      opts: ['Nee, helemaal niet', 'Bijna nooit', 'Ja, soms', 'Ja, heel vaak'], reverse: true },
+    { q: 'Ik heb me angstig of paniekerig gevoeld zonder echte reden',
+      opts: ['Nee, helemaal niet', 'Nee, niet veel', 'Ja, soms', 'Ja, heel vaak'], reverse: true },
+    { q: 'Dingen groeien me boven het hoofd',
+      opts: ['Nee, ik kon ze net zo goed aan als altijd', 'Nee, meestal kon ik ze prima aan', 'Ja, soms kon ik ze niet zo goed aan als altijd', 'Ja, meestal kon ik ze helemaal niet aan'], reverse: true },
+    { q: 'Ik was zo ongelukkig dat ik er slecht door geslapen heb',
+      opts: ['Nee, helemaal niet', 'Niet erg vaak', 'Ja, soms', 'Ja, meestal'], reverse: true },
+    { q: 'Ik heb me droevig of ellendig gevoeld',
+      opts: ['Nee, helemaal niet', 'Niet erg vaak', 'Ja, tamelijk vaak', 'Ja, meestal'], reverse: true },
+    { q: 'Ik was zo ongelukkig dat ik heb zitten huilen',
+      opts: ['Nee, nooit', 'Slechts een enkele keer', 'Ja, tamelijk vaak', 'Ja, heel vaak'], reverse: true },
+    { q: 'Ik heb eraan gedacht mezelf iets aan te doen',
+      opts: ['Nooit', 'Bijna nooit', 'Soms', 'Ja, tamelijk vaak'], reverse: true }
+  ];
+
+  TOOLS.push({
+    id: 'epds',
+    name: 'EPDS (postpartum)',
+    category: 'Psyche & GGZ',
+    metaLabel: '10 items · postpartum',
+    desc: 'Edinburgh Postnatal Depression Scale — screening postpartum depressie',
+    keywords: ['epds','postpartum','postnataal','depressie','kraam','bevalling','moeder','baby','huilen','suicide','zelfverwonding','akwa','ggz'],
+    render() {
+      const items = EPDS_ITEMS.map((it, i) => `
+        <div class="scale-item">
+          <div class="scale-q">${i + 1}. ${escape(it.q)}</div>
+          <div class="scale-options" data-q="${i}" data-reverse="${it.reverse ? '1' : '0'}" style="grid-template-columns:1fr">
+            ${it.opts.map((opt, v) => `<button data-v="${v}" style="text-align:left;padding:10px 12px;font-family:var(--font-sans);font-size:13px">${escape(opt)}</button>`).join('')}
+          </div>
+        </div>
+      `).join('');
+      return `
+        <div class="tool-view">
+          <h2>EPDS — Edinburgh Postnatal Depression Scale</h2>
+          <div class="tool-subtitle">Tien items over hoe moeder zich de afgelopen <strong>7 dagen</strong> heeft gevoeld. Geen diagnose — een positief resultaat is reden voor gesprek + uitvragen naar suïcide-ideatie en organische oorzaken.</div>
+
+          ${items}
+
+          <div id="epds-out"></div>
+
+          <div class="disclaimer">Bron: Cox JL et al., <em>Br J Psychiatry</em> 1987 · Nederlandse validatie Pop VJM et al. Score &gt; 10 wijst op mogelijke depressie, &gt; 12 sterke verdenking. <strong>Vraag item 10 (zelfverwonding) altijd na</strong>, ook bij lage totaalscore — een positief antwoord vraagt direct vervolgactie ongeacht totaal. Bij verdenking depressie en/of suïcidaliteit: bespreek + verwijs laagdrempelig naar POH-GGZ, GGZ of postpartum-specialist. Bij acute suïcide-ideatie: spoedverwijzing crisisdienst.</div>
+        </div>
+      `;
+    },
+    onMount() {
+      [...Array(10).keys()].forEach(i => {
+        document.querySelectorAll(`.scale-options[data-q="${i}"] button`).forEach(b => {
+          b.addEventListener('click', () => {
+            document.querySelectorAll(`.scale-options[data-q="${i}"] button`).forEach(x => x.classList.remove('active'));
+            b.classList.add('active');
+            computeEPDS();
+          });
+        });
+      });
+    }
+  });
+  function computeEPDS() {
+    let total = 0, answered = 0, item10 = null;
+    EPDS_ITEMS.forEach((it, i) => {
+      const active = document.querySelector(`.scale-options[data-q="${i}"] button.active`);
+      if (active) {
+        answered++;
+        const raw = parseInt(active.dataset.v);
+        const score = it.reverse ? raw : (3 - raw);
+        total += score;
+        if (i === 9) item10 = score;
+      }
+    });
+    if (answered < 10) {
+      $('epds-out').innerHTML = `<div class="result"><div class="result-eyebrow">Onvolledig</div><div class="result-interpretation">Beantwoord alle 10 items (${answered}/10).</div></div>`;
+      return;
+    }
+    let cat, color, advice;
+    if (total <= 9)      { cat = 'Laag';         color = 'green';  advice = 'Geen aanwijzing voor depressieve klachten. Routine postpartum-zorg.'; }
+    else if (total <= 12){ cat = 'Verhoogd';     color = 'yellow'; advice = 'Mogelijk milde depressieve klachten. Bespreek symptomen, herhaal na 2–4 weken, overweeg POH-GGZ of laagdrempelige psychologische hulp.'; }
+    else                 { cat = 'Sterk verhoogd'; color = 'red'; advice = 'Sterke verdenking depressie. Verwijs naar POH-GGZ, GGZ of postpartum-specialist binnen 1–2 weken. Volg op met aanvullend gesprek + somatisch onderzoek (schildklier, anemie, ijzer).'; }
+
+    const item10Warning = item10 !== null && item10 >= 1 ? `
+      <div class="flag flag-red" style="margin-top:12px">
+        <strong>Item 10 positief — vraag direct na.</strong> Patiënt geeft aan gedachten te hebben gehad over zichzelf iets aandoen. Stel vervolgvragen over frequentie, intensiteit en concretere plannen. Bij actuele suïcidaliteit of plan: <strong>directe verwijzing crisisdienst</strong> (113, lokale crisisdienst, of huisartsenpost na uren). Veiligheidsplan + betrokkenheid partner/familie.
+      </div>
+    ` : '';
+
+    $('epds-out').innerHTML = `
+      <div class="result">
+        <div class="result-eyebrow">EPDS-totaal</div>
+        <div class="result-value">${total}<span class="unit">/ 30</span></div>
+        <div class="result-interpretation">${escape(cat)}</div>
+        <div class="flag flag-${color}">${advice}</div>
+        ${item10Warning}
+      </div>
+    `;
+  }
+
+  /* ==================================================================
+     34. ACB — Anticholinerge belasting (Boustani-schaal)
+     ================================================================== */
+  const ACB_DRUGS = [
+    // Score 3 — sterk anticholinerg
+    { name: 'Amitriptyline',        score: 3, klasse: 'TCA' },
+    { name: 'Nortriptyline',        score: 3, klasse: 'TCA' },
+    { name: 'Clomipramine',         score: 3, klasse: 'TCA' },
+    { name: 'Paroxetine',           score: 3, klasse: 'SSRI' },
+    { name: 'Oxybutynine',          score: 3, klasse: 'Anticholinergicum (blaas)' },
+    { name: 'Tolterodine',          score: 3, klasse: 'Anticholinergicum (blaas)' },
+    { name: 'Solifenacine',         score: 3, klasse: 'Anticholinergicum (blaas)' },
+    { name: 'Biperideen',           score: 3, klasse: 'Anti-Parkinson' },
+    { name: 'Clemastine',           score: 3, klasse: 'Anti-histaminicum H1' },
+    { name: 'Hydroxyzine',          score: 3, klasse: 'Anti-histaminicum H1' },
+    { name: 'Promethazine',         score: 3, klasse: 'Anti-histaminicum H1' },
+    { name: 'Chloorpromazine',      score: 3, klasse: 'Antipsychoticum' },
+    { name: 'Olanzapine',           score: 3, klasse: 'Antipsychoticum' },
+    { name: 'Clozapine',            score: 3, klasse: 'Antipsychoticum' },
+    { name: 'Carbamazepine',        score: 2, klasse: 'Anti-epilepticum' },
+    // Score 2 — matig anticholinerg
+    { name: 'Amantadine',           score: 2, klasse: 'Anti-Parkinson / antiviraal' },
+    { name: 'Cyclobenzaprine',      score: 2, klasse: 'Spierrelaxans' },
+    { name: 'Loperamide',           score: 2, klasse: 'Antidiarrheicum' },
+    { name: 'Cyproheptadine',       score: 2, klasse: 'Antihistaminicum' },
+    { name: 'Pseudoëfedrine',       score: 2, klasse: 'Decongestivum' },
+    // Score 1 — licht anticholinerg
+    { name: 'Cetirizine',           score: 1, klasse: 'Antihistaminicum H1 (2e gen)' },
+    { name: 'Loratadine',           score: 1, klasse: 'Antihistaminicum H1 (2e gen)' },
+    { name: 'Alprazolam',           score: 1, klasse: 'Benzodiazepine' },
+    { name: 'Diazepam',             score: 1, klasse: 'Benzodiazepine' },
+    { name: 'Codeïne',              score: 1, klasse: 'Opioïd' },
+    { name: 'Morfine',              score: 1, klasse: 'Opioïd' },
+    { name: 'Tramadol',             score: 1, klasse: 'Opioïd' },
+    { name: 'Digoxine',             score: 1, klasse: 'Cardiaal glycoside' },
+    { name: 'Furosemide',           score: 1, klasse: 'Diureticum' },
+    { name: 'Metoprolol',           score: 1, klasse: 'Bètablokker' },
+    { name: 'Atenolol',             score: 1, klasse: 'Bètablokker' },
+    { name: 'Captopril',            score: 1, klasse: 'ACE-remmer' },
+    { name: 'Risperidon',           score: 1, klasse: 'Antipsychoticum' },
+    { name: 'Quetiapine',           score: 1, klasse: 'Antipsychoticum' },
+    { name: 'Haloperidol',          score: 1, klasse: 'Antipsychoticum' },
+    { name: 'Trazodon',             score: 1, klasse: 'Antidepressivum (slaap)' },
+    { name: 'Mirtazapine',          score: 1, klasse: 'Antidepressivum' },
+    { name: 'Fluvoxamine',          score: 1, klasse: 'SSRI' },
+    { name: 'Citalopram',           score: 1, klasse: 'SSRI' },
+    { name: 'Warfarine',            score: 1, klasse: 'Anticoagulans (VKA)' },
+    { name: 'Dipyridamol',          score: 1, klasse: 'Trombocytenaggregatieremmer' },
+    { name: 'Ranitidine',           score: 1, klasse: 'H2-blokker (uit handel)' }
+  ];
+
+  TOOLS.push({
+    id: 'acb',
+    name: 'Anticholinerge belasting (ACB)',
+    category: 'Medicatie & rotatie',
+    metaLabel: 'Boustani · medicatiereview',
+    desc: 'Cumulatieve anticholinerge belasting bij ouderen — klikbare middelen, lopende som',
+    keywords: ['acb','anticholinerg','anticholinergica','boustani','cognitie','dementie','ouderen','polyfarmacie','urineretentie','obstipatie','sedatie','val','delier'],
+    render() {
+      // Groep op score
+      const groups = { 3: [], 2: [], 1: [] };
+      ACB_DRUGS.forEach(d => groups[d.score].push(d));
+      const groupOrder = [3, 2, 1];
+      const list = groupOrder.map(s => `
+        <div style="margin-bottom:18px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border)">
+            <span class="tag tag-${s === 3 ? 'red' : s === 2 ? 'amber' : 'yellow'}" style="margin:0;font-size:10px">Score ${s}</span>
+            <span style="font-size:11px;color:var(--muted);font-family:var(--font-mono)">${s === 3 ? 'sterk' : s === 2 ? 'matig' : 'licht'} anticholinerg · ${groups[s].length}</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            ${groups[s].sort((a, b) => a.name.localeCompare(b.name)).map(d => `
+              <label class="checkrow acb-drug" data-score="${d.score}" data-name="${escape(d.name.toLowerCase())}" data-klasse="${escape(d.klasse.toLowerCase())}" style="padding:8px 0">
+                <input type="checkbox" data-grp="acb" onchange="computeACB()" />
+                <span class="checkrow-text">
+                  <strong style="font-size:13px">${escape(d.name)}</strong>
+                  <span style="display:block;font-size:11px;color:var(--muted);font-family:var(--font-mono)">${escape(d.klasse)}</span>
+                </span>
+                <span class="checkrow-meta">+${d.score}</span>
+              </label>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+
+      return `
+        <div class="tool-view">
+          <h2>Anticholinerge belasting</h2>
+          <div class="tool-subtitle">Cumulatieve anticholinerge effecten bij oudere patiënten — vink alle middelen aan die patiënt gebruikt. Totaal ≥ 3 is geassocieerd met cognitieve achteruitgang, valneiging, urineretentie, obstipatie en delier-risico.</div>
+
+          <div id="acb-out" style="position:sticky;top:var(--safe-top,0);z-index:5;background:var(--bg);padding:8px 0;margin-bottom:12px"></div>
+
+          <div class="search" style="margin:8px 0 14px 0;position:static">
+            <span class="search-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            </span>
+            <input id="acb-search" type="search" placeholder="Zoek middel of klasse…" autocomplete="off" />
+          </div>
+
+          ${list}
+
+          <div class="disclaimer">Bron: Boustani et al., <em>Aging Health</em> 2008 — Anticholinergic Cognitive Burden Scale. Aangepast voor Nederlandse formularia. Bij <strong>totaal ≥ 3</strong>: heroverweeg alternatieven met lagere ACB (bv. SSRI i.p.v. TCA, mirabegron i.p.v. oxybutynine, 2e-generatie antihistaminicum i.p.v. clemastine). De lijst is niet uitputtend — bij twijfel KNMP-Kennisbank of klinisch farmacoloog raadplegen.</div>
+        </div>
+      `;
+    },
+    onMount() {
+      document.getElementById('acb-search').addEventListener('input', (e) => {
+        const q = e.target.value.trim().toLowerCase();
+        document.querySelectorAll('.acb-drug').forEach(el => {
+          const match = !q || el.dataset.name.includes(q) || el.dataset.klasse.includes(q);
+          el.style.display = match ? '' : 'none';
+        });
+      });
+      computeACB();
+    }
+  });
+  function computeACB() {
+    let total = 0, count = 0;
+    document.querySelectorAll('input[data-grp="acb"]:checked').forEach(cb => {
+      const score = parseInt(cb.closest('.acb-drug').dataset.score);
+      total += score;
+      count++;
+    });
+    let cat, color, advice;
+    if (total === 0)     { cat = 'Geen belasting';      color = 'green';  advice = 'Geen anticholinerge middelen geselecteerd.'; }
+    else if (total <= 2) { cat = 'Lage belasting';      color = 'green';  advice = 'Lage anticholinerge belasting — klinisch zelden relevant, maar blijf alert bij gevoelige patiënten (frailty, milde cognitieve stoornis).'; }
+    else if (total <= 5) { cat = 'Klinisch relevant';   color = 'amber';  advice = 'Klinisch relevante anticholinerge belasting. Overweeg deprescribing of switch naar middel met lagere ACB. Vooral bij cognitieve klachten, vallen, urineretentie of obstipatie.'; }
+    else                 { cat = 'Hoge belasting';      color = 'red';    advice = 'Hoge cumulatieve belasting — significant verhoogd risico op cognitieve achteruitgang, delier en mortaliteit. Prioriteit voor medicatiereview met klinisch farmacoloog of geriater.'; }
+    $('acb-out').innerHTML = `
+      <div class="result" style="padding:14px 16px;margin-top:0">
+        <div class="result-eyebrow">ACB-totaal</div>
+        <div class="result-value" style="font-size:36px">${total}<span class="unit" style="font-size:12px">${count} ${count === 1 ? 'middel' : 'middelen'}</span></div>
+        <div class="result-interpretation" style="font-size:13px;margin-top:6px"><strong>${escape(cat)}</strong> — ${advice}</div>
+      </div>
+    `;
+  }
+
+  /* ==================================================================
+     35. Hoofdtrauma NICE — CT-criteria
+     ================================================================== */
+  TOOLS.push({
+    id: 'hoofdtrauma',
+    name: 'Hoofdtrauma (NICE)',
+    category: 'Acuut & spoed',
+    tag: 'acuut',
+    metaLabel: 'NICE NG232 · CT-criteria',
+    desc: 'CT-indicatie volwassen + kind na hoofdtrauma — NICE-criteria',
+    keywords: ['hoofdtrauma','hoofdletsel','schedeltrauma','ct','beeldvorming','commotio','contusio','gcs','nice','kind','volwassen','val','traumahoofd'],
+    render() {
+      return `
+        <div class="tool-view">
+          <h2>Hoofdtrauma — NICE-criteria voor CT</h2>
+          <div class="tool-subtitle">CT-cerebrum-indicatie na hoofdtrauma. Twee categorieën: <strong>direct (binnen 1 uur)</strong> en <strong>binnen 8 uur</strong>. NICE NG232 (2023) is de actuele referentie; Nederlandse aanpassing volgt NHG/NVN.</div>
+
+          <div class="view-toggle" id="ht-toggle">
+            <button class="active" data-v="volw">Volwassen (≥ 16 jr)</button>
+            <button data-v="kind">Kind (&lt; 16 jr)</button>
+          </div>
+
+          <!-- Volwassenen -->
+          <div id="ht-volw">
+            <div class="flag flag-red" style="margin-bottom:14px">
+              <strong>Direct CT (binnen 1 uur)</strong> bij één of meer van:
+            </div>
+            <label class="checkrow"><input type="checkbox" data-grp="ht-volw-acute" onchange="computeHT()" /><span class="checkrow-text">GCS &lt; 13 bij presentatie</span></label>
+            <label class="checkrow"><input type="checkbox" data-grp="ht-volw-acute" onchange="computeHT()" /><span class="checkrow-text">GCS &lt; 15 op 2 uur na trauma</span></label>
+            <label class="checkrow"><input type="checkbox" data-grp="ht-volw-acute" onchange="computeHT()" /><span class="checkrow-text">Verdenking open of imprimatuur-fractuur schedel</span></label>
+            <label class="checkrow"><input type="checkbox" data-grp="ht-volw-acute" onchange="computeHT()" /><span class="checkrow-text">Klinische tekenen schedelbasisfractuur (hemotympanum, panda-ogen, Battle's sign, otorrhoea/rinorrhoea liquor)</span></label>
+            <label class="checkrow"><input type="checkbox" data-grp="ht-volw-acute" onchange="computeHT()" /><span class="checkrow-text">Post-traumatische epileptische aanval</span></label>
+            <label class="checkrow"><input type="checkbox" data-grp="ht-volw-acute" onchange="computeHT()" /><span class="checkrow-text">Focale neurologische uitval</span></label>
+            <label class="checkrow"><input type="checkbox" data-grp="ht-volw-acute" onchange="computeHT()" /><span class="checkrow-text">Meer dan één episode braken</span></label>
+
+            <div class="flag flag-amber" style="margin:20px 0 14px 0">
+              <strong>CT binnen 8 uur</strong> bij ≥ 1 risicofactor + bewustzijnsverlies/amnesie:
+            </div>
+            <label class="checkrow"><input type="checkbox" data-grp="ht-volw-late" onchange="computeHT()" /><span class="checkrow-text">Leeftijd ≥ 65 jaar</span></label>
+            <label class="checkrow"><input type="checkbox" data-grp="ht-volw-late" onchange="computeHT()" /><span class="checkrow-text">Anticoagulantia (DOAC, VKA) of trombocyten-aggregatie-remmer (asa, clopidogrel)</span></label>
+            <label class="checkrow"><input type="checkbox" data-grp="ht-volw-late" onchange="computeHT()" /><span class="checkrow-text">Gevaarlijk mechanisme (val van ≥ 1 m of 5 traptreden, voetganger/fietser aangereden door auto, ejectie uit voertuig)</span></label>
+            <label class="checkrow"><input type="checkbox" data-grp="ht-volw-late" onchange="computeHT()" /><span class="checkrow-text">Retrograde amnesie &gt; 30 min vóór impact</span></label>
+
+            <div id="ht-volw-out"></div>
+          </div>
+
+          <!-- Kinderen -->
+          <div id="ht-kind" style="display:none">
+            <div class="flag flag-red" style="margin-bottom:14px">
+              <strong>Direct CT (binnen 1 uur)</strong> bij ≥ 1 van:
+            </div>
+            <label class="checkrow"><input type="checkbox" data-grp="ht-kind-acute" onchange="computeHT()" /><span class="checkrow-text">GCS &lt; 14 (of &lt; 15 bij &lt; 1 jaar) bij presentatie</span></label>
+            <label class="checkrow"><input type="checkbox" data-grp="ht-kind-acute" onchange="computeHT()" /><span class="checkrow-text">GCS &lt; 15 op 2 uur na trauma</span></label>
+            <label class="checkrow"><input type="checkbox" data-grp="ht-kind-acute" onchange="computeHT()" /><span class="checkrow-text">Verdenking niet-accidenteel letsel (NAI) of huiselijk geweld</span></label>
+            <label class="checkrow"><input type="checkbox" data-grp="ht-kind-acute" onchange="computeHT()" /><span class="checkrow-text">Post-traumatische epileptische aanval (zonder voorgeschiedenis epilepsie)</span></label>
+            <label class="checkrow"><input type="checkbox" data-grp="ht-kind-acute" onchange="computeHT()" /><span class="checkrow-text">Klinische tekenen schedelbasisfractuur (zoals volwassenen)</span></label>
+            <label class="checkrow"><input type="checkbox" data-grp="ht-kind-acute" onchange="computeHT()" /><span class="checkrow-text">Focale neurologische uitval</span></label>
+            <label class="checkrow"><input type="checkbox" data-grp="ht-kind-acute" onchange="computeHT()" /><span class="checkrow-text">Bij &lt; 1 jaar: bult/zwelling/hematoom &gt; 5 cm op het hoofd</span></label>
+
+            <div class="flag flag-amber" style="margin:20px 0 14px 0">
+              <strong>CT binnen 1 uur</strong> bij ≥ 2 risicofactoren (of CT/observatie bij 1):
+            </div>
+            <label class="checkrow"><input type="checkbox" data-grp="ht-kind-late" onchange="computeHT()" /><span class="checkrow-text">Bewustzijnsverlies &gt; 5 min</span></label>
+            <label class="checkrow"><input type="checkbox" data-grp="ht-kind-late" onchange="computeHT()" /><span class="checkrow-text">Abnormale slaperigheid (afwijkend van baseline)</span></label>
+            <label class="checkrow"><input type="checkbox" data-grp="ht-kind-late" onchange="computeHT()" /><span class="checkrow-text">≥ 3 episodes braken</span></label>
+            <label class="checkrow"><input type="checkbox" data-grp="ht-kind-late" onchange="computeHT()" /><span class="checkrow-text">Gevaarlijk mechanisme (verkeer hoge snelheid, val van ≥ 3 m, val op harde ondergrond)</span></label>
+            <label class="checkrow"><input type="checkbox" data-grp="ht-kind-late" onchange="computeHT()" /><span class="checkrow-text">Amnesie (anterograad of retrograad) &gt; 5 min</span></label>
+
+            <div id="ht-kind-out"></div>
+          </div>
+
+          <div class="disclaimer">Bron: NICE Guideline NG232 (Head injury: assessment and early management, 2023) · NHG-Standaard Hoofdtrauma. <strong>Voor de huisarts</strong>: bij iedere positieve categorie verwijzing naar SEH (spoedvervoer als ABC bedreigd, anders op eigen vervoer met begeleiding). De criteria zijn ondersteunend — bij twijfel altijd laagdrempelig verwijzen. Bij gebruik anticoagulantia altijd CT en observatie ongeacht klinisch beeld bij oudere patiënten.</div>
+        </div>
+      `;
+    },
+    onMount() {
+      document.querySelectorAll('#ht-toggle button').forEach(b => {
+        b.addEventListener('click', () => {
+          document.querySelectorAll('#ht-toggle button').forEach(x => x.classList.remove('active'));
+          b.classList.add('active');
+          const v = b.dataset.v;
+          document.getElementById('ht-volw').style.display = v === 'volw' ? '' : 'none';
+          document.getElementById('ht-kind').style.display = v === 'kind' ? '' : 'none';
+          computeHT();
+        });
+      });
+      computeHT();
+    }
+  });
+  function computeHT() {
+    [{groep: 'volw', acute: 'ht-volw-acute', late: 'ht-volw-late', out: 'ht-volw-out'},
+     {groep: 'kind', acute: 'ht-kind-acute', late: 'ht-kind-late', out: 'ht-kind-out'}].forEach(cfg => {
+      const acuteN = document.querySelectorAll(`input[data-grp="${cfg.acute}"]:checked`).length;
+      const lateN = document.querySelectorAll(`input[data-grp="${cfg.late}"]:checked`).length;
+      const el = document.getElementById(cfg.out);
+      if (!el) return;
+
+      if (acuteN > 0) {
+        el.innerHTML = `
+          <div class="result">
+            <div class="result-eyebrow">Beslissing</div>
+            <div class="result-value" style="font-size:26px">CT binnen 1 uur</div>
+            <div class="result-interpretation">${acuteN} acute criterium${acuteN > 1 ? 'a' : ''}. Spoedverwijzing SEH; bij ABC-bedreiging spoedvervoer.</div>
+          </div>
+        `;
+      } else if ((cfg.groep === 'volw' && lateN > 0) || (cfg.groep === 'kind' && lateN >= 2)) {
+        el.innerHTML = `
+          <div class="result">
+            <div class="result-eyebrow">Beslissing</div>
+            <div class="result-value" style="font-size:24px">CT binnen 8 uur</div>
+            <div class="result-interpretation">${lateN} risicofactor${lateN > 1 ? 'en' : ''}. Verwijs SEH voor beeldvorming + observatie.</div>
+          </div>
+        `;
+      } else if (cfg.groep === 'kind' && lateN === 1) {
+        el.innerHTML = `
+          <div class="result">
+            <div class="result-eyebrow">Beslissing — kind</div>
+            <div class="result-value" style="font-size:22px">Overweeg CT of observatie</div>
+            <div class="result-interpretation">Eén risicofactor. NICE: observatie 4 uur of CT; bij verergering tijdens observatie alsnog CT. Overleg laagdrempelig kinderarts/SEH.</div>
+          </div>
+        `;
+      } else {
+        el.innerHTML = `
+          <div class="result">
+            <div class="result-eyebrow">Beslissing</div>
+            <div class="result-interpretation"><strong>Geen CT-indicatie</strong> volgens NICE. Geef helder schriftelijk waarschuwingsadvies: terug bij verergerende hoofdpijn, braken &gt; 1×, sufheid, gedragsverandering, focale uitval, of insult. Bij twijfel laagdrempelig overleg SEH.</div>
+          </div>
+        `;
+      }
+    });
+  }
+
+  /* ==================================================================
+     36. MoCA — scoring (geen test-content; copyright Nasreddine)
+     ================================================================== */
+  const MOCA_DOMAINS = [
+    { id: 'vis',  label: 'Visuospatiaal / Executief',  max: 5, hint: 'Trail-making (1) + kubus kopiëren (1) + klok tekenen: contour (1) + getallen (1) + wijzers (1)' },
+    { id: 'nm',   label: 'Benoemen',                    max: 3, hint: '3 dieren-afbeeldingen (leeuw, neushoorn, kameel) — 1 pt per correct' },
+    { id: 'att',  label: 'Aandacht',                    max: 6, hint: 'Cijfers voor + achteruit (2) + letter A-vigilance (1) + serial 7-aftrekken (3)' },
+    { id: 'lng',  label: 'Taal',                        max: 3, hint: '2 zinnen herhalen (2) + woord-fluency &gt; 11 woorden/min met letter F (1)' },
+    { id: 'abs',  label: 'Abstractie',                  max: 2, hint: '2 paar gelijkenissen (bv. trein-fiets, horloge-meetlat) — 1 pt per correct' },
+    { id: 'rec',  label: 'Vertraagde herinnering',      max: 5, hint: '5 woorden vrij oproepen na 5 min (zonder hints)' },
+    { id: 'ori',  label: 'Oriëntatie',                  max: 6, hint: 'Datum, maand, jaar, dag van week, plaats van onderzoek, stad — 1 pt elk' }
+  ];
+
+  TOOLS.push({
+    id: 'moca',
+    name: 'MoCA-scoring',
+    category: 'Psyche & GGZ',
+    metaLabel: 'Cognitieve screening · 30 pt',
+    desc: 'Domein-scoring + educatie-correctie + interpretatie van een afgenomen MoCA',
+    keywords: ['moca','montreal','cognitief','dementie','mci','geriatrie','ouderen','geheugen','klok','vergeetachtigheid'],
+    render() {
+      const fields = MOCA_DOMAINS.map(d => `
+        <div class="field">
+          <label>${escape(d.label)} <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;margin-left:6px">/ ${d.max}</span></label>
+          <input type="number" id="moca-${d.id}" min="0" max="${d.max}" step="1" placeholder="0" />
+          <span class="hint">${d.hint}</span>
+        </div>
+      `).join('');
+
+      return `
+        <div class="tool-view">
+          <h2>MoCA — scoring</h2>
+          <div class="tool-subtitle">Voer per domein de behaalde score in. Deze tool bevat <em>geen</em> test-items zelf (copyright Nasreddine, mocacognition.com — registreer aldaar voor de officiële Nederlandse versie en training).</div>
+
+          ${fields}
+
+          <div class="field">
+            <label>Onderwijsjaren patiënt</label>
+            <div class="segmented" id="moca-edu">
+              <button class="active" data-v="0">&gt; 12 jaar</button>
+              <button data-v="1">≤ 12 jaar (+1 correctie)</button>
+            </div>
+          </div>
+
+          <div id="moca-out"></div>
+
+          <div class="disclaimer">Bron: Nasreddine ZS et al., <em>J Am Geriatr Soc</em> 2005 — Montreal Cognitive Assessment. Educatie-correctie: + 1 punt bij ≤ 12 jaar onderwijs (en alléén als totaal &lt; 30). Cut-off klassiek 26 (sensitiviteit 90% voor MCI, specificiteit 87%), maar recente literatuur en NL-praktijk hanteert ook 23–24 voor hogere specificiteit bij ouderen en bij laaggeletterdheid/anderstaligheid. Bij Donderberg-populatie met taalbarrière: gebruik officiële Arabische/Turkse MoCA-versie of overweeg RUDAS in plaats van MoCA (minder cultuur- en educatieafhankelijk).</div>
+        </div>
+      `;
+    },
+    onMount() {
+      MOCA_DOMAINS.forEach(d => {
+        document.getElementById(`moca-${d.id}`).addEventListener('input', computeMoca);
+      });
+      document.querySelectorAll('#moca-edu button').forEach(b => {
+        b.addEventListener('click', () => {
+          document.querySelectorAll('#moca-edu button').forEach(x => x.classList.remove('active'));
+          b.classList.add('active');
+          computeMoca();
+        });
+      });
+    }
+  });
+  function computeMoca() {
+    let raw = 0, filled = 0;
+    MOCA_DOMAINS.forEach(d => {
+      const v = parseInt(document.getElementById(`moca-${d.id}`).value);
+      if (!isNaN(v) && v >= 0 && v <= d.max) { raw += v; filled++; }
+    });
+    if (filled === 0) { $('moca-out').innerHTML = ''; return; }
+    const eduCorr = parseInt(document.querySelector('#moca-edu button.active').dataset.v);
+    const adjusted = raw < 30 ? Math.min(30, raw + eduCorr) : raw;
+    const total = adjusted;
+
+    let cat, color, advice;
+    if (total >= 26)      { cat = 'Normaal';                color = 'green';  advice = 'Geen aanwijzing voor cognitieve achteruitgang bij MoCA. Bij persisterende subjectieve klachten ondanks normale score: heroverweeg context (depressie, slaapstoornis, slaaptekort, medicatie zoals ACB), herhaal MoCA na 6–12 maanden, of doe uitgebreidere neuropsychologische assessment.'; }
+    else if (total >= 22) { cat = 'Mild cognitief gestoord (MCI)'; color = 'yellow'; advice = 'Past bij milde cognitieve stoornis. Verder onderzoek: NPO, bloedbeeld + B12 + folaat + TSH + nierfunctie + glucose, eventueel beeldvorming. Bespreek met patiënt + familie; uitleg dat ~10% per jaar progresseert naar dementie. Volg op met POH-OUD of geriater.'; }
+    else if (total >= 18) { cat = 'Matig cognitief gestoord'; color = 'amber';  advice = 'Past bij beginnende dementie. Verwijs voor diagnostisch traject (geriater of neuroloog met geheugenpolikliniek). Bespreek ondersteunende thuissituatie + rijbewijs-evaluatie (CBR-regelgeving).'; }
+    else                  { cat = 'Ernstig cognitief gestoord'; color = 'red';   advice = 'Past bij gevorderde dementie. Focus op zorgcontinuïteit, mantelzorg-ondersteuning, casemanager-dementie aanvragen. Bespreek ACP (advance care planning) inclusief behandelbeperkingen.'; }
+
+    const eduText = eduCorr === 1 ? `<span style="font-family:var(--font-mono);font-size:11px;color:var(--muted)">(${raw} + 1 educatie-correctie)</span>` : '';
+
+    $('moca-out').innerHTML = `
+      <div class="result">
+        <div class="result-eyebrow">MoCA-totaal</div>
+        <div class="result-value">${total}<span class="unit">/ 30</span></div>
+        <div style="margin:6px 0 12px">${eduText}</div>
+        <div class="result-interpretation">${escape(cat)}</div>
+        <div class="flag flag-${color}">${advice}</div>
+        <div class="result-detail">
+          <strong>Belangrijke beperkingen MoCA:</strong> sterk afhankelijk van onderwijsniveau, taalvaardigheid en culturele bekendheid van de test-items. Bij anderstalige patiënten in Donderberg-populatie: overweeg de RUDAS (Rowland Universal Dementia Assessment Scale), die minder culturele en talige bias heeft.
         </div>
       </div>
     `;
