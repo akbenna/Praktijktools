@@ -234,6 +234,26 @@ Toggle bovenaan via `.view-toggle` patroon (segmented control style). Data zit i
 - v0.2 — redesign (Geist + teal), surfaces opwaardering.
 - v0.3 — IA-herstructurering naar 7 klinische domeinen, favorieten-systeem, categorie-iconen, tags op cards, 6 nieuwe tools (ADHD-medicatie, antibiotica-keuzehulp, paracetamol pediatrisch, testosteron-suppletie, dermatomen, hersenzenuwen). Totaal 24 tools.
 - v0.4 — dark mode + theme toggle, contrast bumped voor spreekkamerlicht, interactieve dermatomen (SVG body + clickable regions), flowchart-patroon (anafylaxie als demo), ASRS-v1.1 ADHD-screener. Totaal 25 tools.
+- v0.5 — NHG ABCDE-kaart (primary + secondary assessment, tabellen O2/AVPU/EMV/SBARR, pediatrische normaalwaarden), categorie-specifieke kleurtinten (elk van de 7 domeinen eigen kleur in iconen + meta-labels). Totaal 26 tools.
+- v0.6 — Spoedmedicatie-voorraad (NHG-Behandelrichtlijn Geneesmiddelen 2024): Tabel 1 aanbevolen + Tabel 2 facultatief, geïndexeerd op klinische indicatie (cardio/respiratoir/anafylaxie/sedatie/endo/pijn/psy/overig), zoekbalk + filter chips + bewaarbeleid-sectie. Totaal 27 tools. Acuut & spoed bevat nu drie complementaire tools: anafylaxie (specifieke acute casus), ABCDE-kaart (algemeen raamwerk + secondary), spoedmedicatie (inventaris).
+
+## Categorie-kleurpalet (v0.5)
+
+Elk van de 7 domeinen heeft een subtiele eigen kleurfamilie (in `:root` als `--cat-{naam}-bg` en `--cat-{naam}-ink`):
+
+| Categorie               | Light ink | Dark ink | Toegepast op                 |
+|-------------------------|-----------|----------|------------------------------|
+| Acuut & spoed           | red-600   | red-300  | section-icon, card-meta      |
+| Hart & vaten            | rose-600  | rose-300 | idem                         |
+| Infectie & antibiotica  | amber-600 | amber-300| idem                         |
+| Psyche & GGZ            | violet-600| violet-300| idem                        |
+| Medicatie & rotatie     | blue-600  | blue-300 | idem                         |
+| Endocrien & metabool    | emerald-600| emerald-300| idem                       |
+| Neuro & anatomie        | indigo-600| indigo-300| idem                        |
+
+Mapping van categorienaam → CSS-class via `CATEGORY_CLASS` constant in JS. `catClass(name)` is de helper. De class wordt op `<section>` (voor section-head-icon) én op `.tool-card` (voor meta-label-kleur) geplaatst.
+
+De **accent-teal** blijft voor alle primaire acties (buttons, focus-rings, result-blokken) — dat zorgt voor visuele consistentie ondanks de categorie-variatie.
 
 ---
 

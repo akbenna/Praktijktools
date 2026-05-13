@@ -71,6 +71,16 @@
       --amber-ink: #B45309;
       --amber-border: #FCD34D;
 
+      /* Categorie-kleuren — elk domein eigen tint voor visuele navigatie.
+         Subtiele bg + heldere ink, voor section-icons en card-metas. */
+      --cat-acuut-ink: #DC2626;     --cat-acuut-bg: #FEF2F2;
+      --cat-hart-ink: #E11D48;      --cat-hart-bg: #FFF1F2;
+      --cat-infectie-ink: #D97706;  --cat-infectie-bg: #FFFBEB;
+      --cat-psyche-ink: #7C3AED;    --cat-psyche-bg: #F5F3FF;
+      --cat-medicatie-ink: #2563EB; --cat-medicatie-bg: #EFF6FF;
+      --cat-endocrien-ink: #059669; --cat-endocrien-bg: #ECFDF5;
+      --cat-neuro-ink: #4F46E5;     --cat-neuro-bg: #EEF2FF;
+
       /* Typography */
       --font-display: 'Geist', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
       --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
@@ -125,6 +135,15 @@
         --amber-ink: #FCD34D;
         --amber-border: #B45309;
 
+        /* Categorie-kleuren dark mode */
+        --cat-acuut-ink: #FCA5A5;     --cat-acuut-bg: #450A0A;
+        --cat-hart-ink: #FDA4AF;      --cat-hart-bg: #4C0519;
+        --cat-infectie-ink: #FCD34D;  --cat-infectie-bg: #422006;
+        --cat-psyche-ink: #C4B5FD;    --cat-psyche-bg: #2E1065;
+        --cat-medicatie-ink: #93C5FD; --cat-medicatie-bg: #172554;
+        --cat-endocrien-ink: #6EE7B7; --cat-endocrien-bg: #022C22;
+        --cat-neuro-ink: #A5B4FC;     --cat-neuro-bg: #1E1B4B;
+
         --shadow-card: 0 1px 2px rgba(0,0,0,0.4), 0 1px 1px rgba(0,0,0,0.2);
         --shadow-hover: 0 4px 12px rgba(45,212,191,0.15), 0 2px 4px rgba(0,0,0,0.3);
         --shadow-strong: 0 8px 24px rgba(0,0,0,0.5);
@@ -165,6 +184,15 @@
       --amber-bg: #451A03;
       --amber-ink: #FCD34D;
       --amber-border: #B45309;
+
+      /* Categorie-kleuren dark mode */
+      --cat-acuut-ink: #FCA5A5;     --cat-acuut-bg: #450A0A;
+      --cat-hart-ink: #FDA4AF;      --cat-hart-bg: #4C0519;
+      --cat-infectie-ink: #FCD34D;  --cat-infectie-bg: #422006;
+      --cat-psyche-ink: #C4B5FD;    --cat-psyche-bg: #2E1065;
+      --cat-medicatie-ink: #93C5FD; --cat-medicatie-bg: #172554;
+      --cat-endocrien-ink: #6EE7B7; --cat-endocrien-bg: #022C22;
+      --cat-neuro-ink: #A5B4FC;     --cat-neuro-bg: #1E1B4B;
 
       --shadow-card: 0 1px 2px rgba(0,0,0,0.4), 0 1px 1px rgba(0,0,0,0.2);
       --shadow-hover: 0 4px 12px rgba(45,212,191,0.15), 0 2px 4px rgba(0,0,0,0.3);
@@ -381,6 +409,22 @@
       flex-shrink: 0;
     }
     .section-title-icon svg { width: 16px; height: 16px; }
+    /* Categorie-specifieke kleuren op icon-tile + meta-label */
+    .section.cat-acuut     .section-title-icon { background: var(--cat-acuut-bg);     color: var(--cat-acuut-ink); }
+    .section.cat-hart      .section-title-icon { background: var(--cat-hart-bg);      color: var(--cat-hart-ink); }
+    .section.cat-infectie  .section-title-icon { background: var(--cat-infectie-bg);  color: var(--cat-infectie-ink); }
+    .section.cat-psyche    .section-title-icon { background: var(--cat-psyche-bg);    color: var(--cat-psyche-ink); }
+    .section.cat-medicatie .section-title-icon { background: var(--cat-medicatie-bg); color: var(--cat-medicatie-ink); }
+    .section.cat-endocrien .section-title-icon { background: var(--cat-endocrien-bg); color: var(--cat-endocrien-ink); }
+    .section.cat-neuro     .section-title-icon { background: var(--cat-neuro-bg);     color: var(--cat-neuro-ink); }
+    /* Cat-color toegepast op tool-card meta-label (subtieler) */
+    .tool-card.cat-acuut     .tool-card-meta { color: var(--cat-acuut-ink); }
+    .tool-card.cat-hart      .tool-card-meta { color: var(--cat-hart-ink); }
+    .tool-card.cat-infectie  .tool-card-meta { color: var(--cat-infectie-ink); }
+    .tool-card.cat-psyche    .tool-card-meta { color: var(--cat-psyche-ink); }
+    .tool-card.cat-medicatie .tool-card-meta { color: var(--cat-medicatie-ink); }
+    .tool-card.cat-endocrien .tool-card-meta { color: var(--cat-endocrien-ink); }
+    .tool-card.cat-neuro     .tool-card-meta { color: var(--cat-neuro-ink); }
     .section-count {
       font-family: var(--font-mono);
       font-size: 11px;
@@ -1446,7 +1490,7 @@
       </div>
       <div class="fade-in">${inner}</div>
       <div class="app-footer">
-        Praktijktools v0.4 · Het Roosendael, Roermond · Niet bedoeld ter vervanging van klinisch oordeel.
+        Praktijktools v0.6 · Het Roosendael, Roermond · Niet bedoeld ter vervanging van klinisch oordeel.
       </div>
     `;
   }
@@ -1521,6 +1565,18 @@
     `;
   }
 
+  // Categorie-naam → CSS-class voor kleurtinten
+  const CATEGORY_CLASS = {
+    'Acuut & spoed':           'cat-acuut',
+    'Hart & vaten':            'cat-hart',
+    'Infectie & antibiotica':  'cat-infectie',
+    'Psyche & GGZ':            'cat-psyche',
+    'Medicatie & rotatie':     'cat-medicatie',
+    'Endocrien & metabool':    'cat-endocrien',
+    'Neuro & anatomie':        'cat-neuro'
+  };
+  function catClass(cat) { return CATEGORY_CLASS[cat] || ''; }
+
   function categoryIcon(cat) {
     const paths = CATEGORY_ICONS[cat];
     if (!paths) return '';
@@ -1560,7 +1616,7 @@
     });
     const CAT_ORDER = ['Acuut & spoed', 'Hart & vaten', 'Infectie & antibiotica', 'Psyche & GGZ', 'Medicatie & rotatie', 'Endocrien & metabool', 'Neuro & anatomie'];
     return CAT_ORDER.filter(c => cats[c]).map(c => `
-      <section class="section">
+      <section class="section ${catClass(c)}">
         <div class="section-head">
           <div class="section-title">${categoryIcon(c)}${escape(c)}</div>
           <div class="section-count">${cats[c].length}</div>
@@ -1573,7 +1629,7 @@
   function toolCard(t) {
     const tag = t.tag ? `<span class="tool-card-tag tag-${t.tag}">${escape(t.tag)}</span>` : '';
     return `
-      <button class="tool-card ${t.featured ? 'featured' : ''}" onclick="App.navigate('${t.id}')">
+      <button class="tool-card ${t.featured ? 'featured' : ''} ${catClass(t.category)}" onclick="App.navigate('${t.id}')">
         <span class="tool-card-meta">${escape(t.metaLabel || t.category)}</span>
         <span class="tool-card-name">${escape(t.name)}</span>
         <span class="tool-card-desc">${escape(t.desc)}</span>
@@ -3847,7 +3903,581 @@
   });
 
   /* ==================================================================
-     25. ASRS-v1.1 — ADHD-screener volwassenen
+     25. NHG ABCDE-kaart — spoedeisende eerstelijn
+     ================================================================== */
+  const ABCDE_DATA = [
+    {
+      letter: 'A', name: 'Airway — luchtweg + CWK', color: 'red',
+      stabilisatie: 'Bij trauma: CWK-stabilisatie noodzakelijk?',
+      kijken: [
+        'Verlaagd bewustzijn?',
+        'Inspectie mondholte — uitwendige en inwendige oorzaken van ademwegobstructie (persisterend braken)?',
+        'Slijmvliezen: droog/nat, zwelling (lippen, tong, keel)?'
+      ],
+      luisteren: ['Heesheid? Hoorbare ademhaling (stridor, rochelen, snurken)?'],
+      voelen: ['Boven mond/neus voelen naar luchtbeweging'],
+      meten: [],
+      interventies: [
+        'Verwijderen corpus alienum (uitzuigen / Heimlich)',
+        'Manuele luchtwegmanoeuvres (head tilt + chin lift, jaw thrust, stabiele zijligging)',
+        'Guedel / nasopharyngeale tube',
+        'Verlaagd bewustzijn: O₂ op indicatie (zie tabel 1)',
+        '<strong>Medicatie:</strong> bij gegeneraliseerd insult midazolam of diazepam · bij anafylaxie adrenaline'
+      ]
+    },
+    {
+      letter: 'B', name: 'Breathing — oxygenatie & ventilatie', color: 'amber',
+      kijken: [
+        'Kleur: cyanose?',
+        'Uitwendig zichtbare thorax-afwijkingen (trauma, aangeboren)',
+        'Ademhalingsbewegingen (regelmaat, diepte, intrekkingen, L=R?)',
+        'Ademarbeid (gebruik hulpademhalingsspieren)'
+      ],
+      luisteren: ['Auscultatie longen, L=R?', 'Percussie, L=R?'],
+      voelen: ['Ademhalingsbewegingen, L=R?', 'Subcutaan emfyseem?', 'Bij trauma: ribfracturen?'],
+      meten: ['Ademfrequentie', 'Zuurstofsaturatie'],
+      interventies: [
+        'O₂ via neusbril / non-rebreather masker (tabel 1)',
+        'Bij insufficiënte ademhaling: pocketmask of masker-ballon',
+        '<strong>Medicatie:</strong> bij longaanval bronchodilatantia (verneveling 6–8 L O₂-flow met ≥ 4 ml in reservoir, of dosisaerosol + voorzetkamer)'
+      ]
+    },
+    {
+      letter: 'C', name: 'Circulation — circulatie + bloedingen stelpen', color: 'red',
+      kijken: [
+        'Huidskleur (bleek, rood)',
+        'Transpiratie',
+        'Uitwendig zichtbaar ernstig bloedverlies (uitwendig, bloedbraken, hemoptoë, bloederige diarree)',
+        'Halsvenen (gestuwd / gecollabeerd)'
+      ],
+      luisteren: ['Auscultatie hart — frequentie, ritme, luidheid tonen/souffles'],
+      voelen: ['Temperatuur extremiteiten', 'Pols/hals (ritme, kracht)', 'Palpatie abdomen', 'Bij trauma: borst/buik/bekken/bovenbenen'],
+      meten: ['Hartfrequentie (reg./irreg.)', 'Bloeddruk', 'Capillary Refill Time (CRT) op sternum'],
+      interventies: [
+        'Stelp ernstige uitwendige bloedingen',
+        'IV-toegang (voorkeur groene naald, 18G)',
+        'Spanningspneumothorax: decompressie met naald 4e–5e ICR midaxillair',
+        '<strong>Bij shock:</strong> ① get help · ② O₂ op indicatie · ③ vloeistoftherapie Ringer/NaCl 0,9% snel <em>volwassene 500 cc · kind 10 ml/kg (max 500 cc)</em>, streef syst. RR &gt; 90 mmHg',
+        'Contra-indicatie vulling: (verdenking) obstructieve shock of acuut hartfalen. Bij niet te stelpen bloeding: permissive hypotension RR 80–90 mmHg',
+        '<strong>Medicatie:</strong> hevige pijn — analgesie · ACS — nitroglycerine · acuut hartfalen — nitroglycerine + diuretica · anafylaxie — adrenaline'
+      ]
+    },
+    {
+      letter: 'D', name: 'Disability — bewustzijn + neurologische uitval', color: 'amber',
+      kijken: [
+        'Bewustzijn — EMV-score (tabel 3), bij kinderen AVPU (tabel 2)',
+        'Pupilcontrole (PEARRL: Pupils Equal And Round, Reactive to Light)',
+        'Lateralisatie (FAST: Face / Arms / Speech / Time)',
+        'Tekenen van convulsies'
+      ],
+      luisteren: [],
+      voelen: [],
+      meten: ['Glucose'],
+      interventies: [
+        'Verlaagd bewustzijn: O₂ op indicatie (tabel 1)',
+        '<strong>Medicatie:</strong> gegeneraliseerd insult — midazolam of diazepam · hypoglycemie &lt; 3,9 mmol/L met verlaagd bewustzijn — glucose IV of glucagon IM · hevige pijn — pijnmedicatie'
+      ]
+    },
+    {
+      letter: 'E', name: 'Exposure — huid + temperatuur + omgeving', color: 'info',
+      kijken: [
+        'Volledige inspectie huid, inclusief rug (logroll)',
+        'Huidafwijkingen — petechiën, hematomen, zwelling, oedeem, verwondingen, ontstekingsverschijnselen, priklaesies',
+        'Urgentieverhogende omgevingsfactoren',
+        'Palpeer de rug bij trauma of koorts e.c.i.'
+      ],
+      luisteren: [],
+      voelen: [],
+      meten: ['Lichaamstemperatuur', 'Pijnscore'],
+      interventies: [
+        'Toedekken / opwarmen bij hypothermie',
+        'Afkoelen bij hyperthermie',
+        '<strong>Medicatie:</strong> hevige pijn — analgesie'
+      ]
+    }
+  ];
+
+  const O2_INDICATIES = [
+    { sit: 'CO-/cyanide-intoxicatie of reanimatie', sat: 'Maximaal O₂' },
+    { sit: 'Acuut respiratoir falen of hypoxemie (sat &lt; 94%)', sat: '94–98%' },
+    { sit: 'Restrictief O₂-beleid (COPD GOLD II-IV, morbide obesitas, ernstige spierzwakte)', sat: '88–92%' }
+  ];
+
+  const PEDS_VITALS = [
+    { age: 'Geboorte',  wM: 3.5, wV: 3.5, rr: '25–50', hr: '120–170', bp: '65–75' },
+    { age: '1 mnd',     wM: 4.5, wV: 4.5, rr: '25–50', hr: '120–170', bp: '65–75' },
+    { age: '3 mnd',     wM: 6.5, wV: 6,   rr: '25–45', hr: '115–160', bp: '65–75' },
+    { age: '6 mnd',     wM: 8,   wV: 7,   rr: '20–40', hr: '110–160', bp: '65–75' },
+    { age: '12 mnd',    wM: 9.5, wV: 9,   rr: '20–40', hr: '110–160', bp: '70–75' },
+    { age: '18 mnd',    wM: 11,  wV: 10,  rr: '20–35', hr: '100–155', bp: '70–75' },
+    { age: '2 jr',      wM: 12,  wV: 12,  rr: '20–30', hr: '100–150', bp: '70–80' },
+    { age: '3 jr',      wM: 14,  wV: 14,  rr: '20–30', hr: '90–140',  bp: '70–80' },
+    { age: '4 jr',      wM: 16,  wV: 16,  rr: '20–30', hr: '80–135',  bp: '70–80' },
+    { age: '5 jr',      wM: 18,  wV: 18,  rr: '20–30', hr: '80–135',  bp: '80–90' },
+    { age: '6 jr',      wM: 21,  wV: 20,  rr: '20–30', hr: '80–130',  bp: '80–90' },
+    { age: '8 jr',      wM: 25,  wV: 25,  rr: '15–25', hr: '70–120',  bp: '80–90' },
+    { age: '10 jr',     wM: 31,  wV: 32,  rr: '15–25', hr: '70–120',  bp: '80–90' },
+    { age: '12 jr',     wM: 43,  wV: 43,  rr: '12–24', hr: '65–115',  bp: '90–105' },
+    { age: '14 jr',     wM: 50,  wV: 50,  rr: '12–24', hr: '50–110',  bp: '90–105' },
+    { age: 'Volwassene', wM: 70, wV: 70,  rr: '12–24', hr: '55–80',   bp: '90–105' }
+  ];
+
+  TOOLS.push({
+    id: 'abcde',
+    name: 'ABCDE-kaart (NHG)',
+    category: 'Acuut & spoed',
+    tag: 'acuut',
+    metaLabel: 'NHG · dec 2024',
+    desc: 'Primary + secondary assessment voor spoedeisende situaties — flowchart met tabellen',
+    featured: true,
+    keywords: ['abcde','spoed','reanimatie','airway','breathing','circulation','disability','exposure','primary','assessment','sbarr','gcs','emv','avpu','o2','saturatie','nhg','spoedeisend'],
+    render() {
+      const sectionHtml = (s) => {
+        const subSection = (title, items) => items.length === 0 ? '' : `
+          <div style="margin-top:10px"><strong style="display:inline-block;min-width:90px;font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted)">${title}</strong>
+          <ul class="clean-list" style="margin:4px 0">
+            ${items.map(i => `<li>${i}</li>`).join('')}
+          </ul></div>`;
+        return `
+          <div class="flow-node flow-${s.color === 'red' ? 'critical' : s.color === 'amber' ? 'warn' : 'info'}" id="abcde-${s.letter.toLowerCase()}">
+            <div class="flow-node-label">${s.letter} · ${s.color === 'red' ? 'Direct levensbedreigend' : s.color === 'amber' ? 'Urgent' : 'Aanvullend'}</div>
+            <div class="flow-node-title">${escape(s.name)}</div>
+            <div class="flow-node-body">
+              ${s.stabilisatie ? `<div style="padding:8px 10px;background:rgba(0,0,0,0.04);border-radius:6px;margin-bottom:8px;font-size:12px"><strong>Stabilisatie:</strong> ${s.stabilisatie}</div>` : ''}
+              ${subSection('Kijken', s.kijken)}
+              ${subSection('Luisteren', s.luisteren)}
+              ${subSection('Voelen', s.voelen)}
+              ${subSection('Meten', s.meten)}
+              ${subSection('Interventies', s.interventies)}
+            </div>
+          </div>
+        `;
+      };
+
+      const o2Rows = O2_INDICATIES.map(o => `
+        <div class="lookup-row"><span class="lookup-row-label">${o.sit}</span><span class="lookup-row-value">${o.sat}</span></div>
+      `).join('');
+
+      const pedsRows = PEDS_VITALS.map(p => `
+        <div class="matrix-row">
+          <div class="matrix-from-to">${escape(p.age)} · ${p.wM} kg ♂ / ${p.wV} kg ♀</div>
+          <div class="matrix-strategy" style="font-family:var(--font-mono);font-size:12px">
+            RR <strong>${p.rr}</strong>/min · HF <strong>${p.hr}</strong>/min · syst. BD min. <strong>${p.bp}</strong> mmHg
+          </div>
+        </div>
+      `).join('');
+
+      return `
+        <div class="tool-view">
+          <h2>ABCDE-kaart</h2>
+          <div class="tool-subtitle">Checklist voor spoedeisende situaties in de eerstelijn (NHG, december 2024). Welke interventies haalbaar zijn hangt af van de situatie en uitrusting. Principe: <em>treat first what kills first</em> — overweeg HULP bij elke letter.</div>
+
+          <div class="view-toggle" id="abcde-toggle">
+            <button class="active" data-v="abcde">ABCDE</button>
+            <button data-v="tabellen">Tabellen</button>
+            <button data-v="kinderen">Kinderwaarden</button>
+          </div>
+
+          <div id="abcde-view-abcde">
+            <!-- Quick-jump knoppen -->
+            <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:18px">
+              ${ABCDE_DATA.map(s => `
+                <button class="btn-ghost" style="padding:11px 0;font-family:var(--font-mono);font-weight:600;font-size:14px"
+                  onclick="document.getElementById('abcde-${s.letter.toLowerCase()}').scrollIntoView({behavior:'smooth',block:'start'})">
+                  ${s.letter}
+                </button>
+              `).join('')}
+            </div>
+
+            <!-- Algemene benadering flowchart -->
+            <div class="flow" style="margin-bottom:24px">
+              <div class="flow-node">
+                <div class="flow-node-label">Stap 0 · Voordat je begint</div>
+                <div class="flow-node-title">Situatie veilig voor hulpverlening?</div>
+                <div class="flow-node-body">Niet binnenstappen in een onveilige scene. Eigen veiligheid eerst, dan patiëntveiligheid.</div>
+              </div>
+              <div class="flow-node">
+                <div class="flow-node-label">Stap 1 · Reageert de patiënt?</div>
+                <div class="flow-node-title">Bewustzijn + ademhaling</div>
+                <div class="flow-node-body">
+                  <strong>Bewustzijn ja + ademhaling ja</strong> → start ABCDE primary assessment.<br>
+                  <strong>Geen bewustzijn / geen ademhaling</strong> + geen niet-reanimeerverklaring → start <strong>BLS</strong>.<br>
+                  <strong>Wel niet-reanimeerverklaring</strong> → comfort + opvang familie, geen reanimatie.
+                </div>
+              </div>
+            </div>
+
+            <!-- ABCDE stappen -->
+            <div class="flow">
+              ${ABCDE_DATA.map(sectionHtml).join('')}
+            </div>
+
+            <!-- Conclusie + Re-assessment -->
+            <div class="flow" style="margin-top:24px">
+              <div class="flow-node">
+                <div class="flow-node-label">Na ABCDE · Conclusie</div>
+                <div class="flow-node-title">Samenvatten + re-assessment</div>
+                <div class="flow-node-body">
+                  Samenvatten bevindingen, conclusie en reflectie.<br>
+                  Check overgeslagen items, veranderingen in ABCDE en resultaat van interventies.
+                </div>
+              </div>
+              <div class="flow-node">
+                <div class="flow-node-label">Secondary assessment</div>
+                <div class="flow-node-title">AMPLE + B anamnese</div>
+                <div class="flow-node-body">
+                  <strong>A</strong>llergie · <strong>M</strong>edicatie/intoxicaties · <strong>P</strong>ast (voorgeschiedenis) · <strong>L</strong>aatst gebruikte maaltijd · <strong>E</strong>vents (anamnese) · <strong>B</strong>ehandelbeperkingen.<br><br>
+                  Gericht/volledig lichamelijk onderzoek · documentatie · DD opstellen · bij insturen: <strong>SBARR-overdracht</strong> (zie Tabellen).
+                </div>
+              </div>
+            </div>
+
+            <div class="disclaimer">Bron: NHG-Behandelrichtlijn Geneesmiddelen en zuurstof in spoedeisende situaties (2024) · Schola Medica ABCDE-kaart. Voor het complete medicatie-overzicht zie het NHG-document (richtlijnen.nhg.org/download/1060).</div>
+          </div>
+
+          <div id="abcde-view-tabellen" style="display:none">
+            <div style="font-family:var(--font-display);font-size:14px;font-weight:600;color:var(--ink);margin:8px 0 10px;letter-spacing:-0.01em">Tabel 1 — O₂-indicaties + streefsaturatie</div>
+            ${o2Rows}
+            <div class="disclaimer" style="margin-top:8px">Streefwaarden pas nastreven bij &gt; 15 min O₂-behoefte, tenzij restrictief beleid wegens CO₂-stapelingsrisico.</div>
+
+            <div style="font-family:var(--font-display);font-size:14px;font-weight:600;color:var(--ink);margin:24px 0 10px;letter-spacing:-0.01em">Tabel 2 — AVPU-score (pediatrisch bewustzijn)</div>
+            <div class="lookup-row"><span class="lookup-row-label"><strong>A</strong>lert</span><span class="lookup-row-value">Alert + bewust van omgeving</span></div>
+            <div class="lookup-row"><span class="lookup-row-label"><strong>V</strong>ocal</span><span class="lookup-row-value">Reageert op aanspreken</span></div>
+            <div class="lookup-row"><span class="lookup-row-label"><strong>P</strong>ain</span><span class="lookup-row-value">Reageert alleen op pijnprikkels</span></div>
+            <div class="lookup-row"><span class="lookup-row-label"><strong>U</strong>nresponsive</span><span class="lookup-row-value">Reageert niet op prikkels</span></div>
+
+            <div style="font-family:var(--font-display);font-size:14px;font-weight:600;color:var(--ink);margin:24px 0 10px;letter-spacing:-0.01em">Tabel 3 — New Glasgow Coma Scale (EMV)</div>
+            <div class="matrix-row">
+              <div class="matrix-from-to">Ogen openen (E)</div>
+              <div class="matrix-strategy">
+                Spontaan <strong>4</strong> · Op geluid <strong>3</strong> · Op drukprikkel <strong>2</strong> · Afwezig <strong>1</strong> · Niet testbaar NT
+              </div>
+            </div>
+            <div class="matrix-row">
+              <div class="matrix-from-to">Motoriek (M)</div>
+              <div class="matrix-strategy">
+                Voert opdracht uit <strong>6</strong> · Lokaliseert pijnprikkel <strong>5</strong> · Normale buigreactie <strong>4</strong> · Abnormale buigreactie <strong>3</strong> · Strekreactie <strong>2</strong> · Afwezig <strong>1</strong>
+              </div>
+            </div>
+            <div class="matrix-row">
+              <div class="matrix-from-to">Verbaal (V)</div>
+              <div class="matrix-strategy">
+                Georiënteerd <strong>5</strong> · Verward/zinnen <strong>4</strong> · Woorden/inadequaat <strong>3</strong> · Geluiden <strong>2</strong> · Afwezig <strong>1</strong>
+              </div>
+            </div>
+            <div class="disclaimer" style="margin-top:8px">Bij lateralisatie telt de béste motorische score. Totaal min. 3, max. 15.</div>
+
+            <div style="font-family:var(--font-display);font-size:14px;font-weight:600;color:var(--ink);margin:24px 0 10px;letter-spacing:-0.01em">Tabel 4 — SBARR overdracht</div>
+            <div class="matrix-row">
+              <div class="matrix-from-to">Situation</div>
+              <div class="matrix-strategy">Identificeer jezelf + reden contact · NAW patiënt · wat is er aan de hand?</div>
+            </div>
+            <div class="matrix-row">
+              <div class="matrix-from-to">Background</div>
+              <div class="matrix-strategy">Relevante voorgeschiedenis · medicatie · allergie · infectierisico · behandelrestricties</div>
+            </div>
+            <div class="matrix-row">
+              <div class="matrix-from-to">Assessment</div>
+              <div class="matrix-strategy">Meest ernstige bedreiging vitale functie (ABCDE) · behandeling tot nu toe · werkdiagnose of DD</div>
+            </div>
+            <div class="matrix-row">
+              <div class="matrix-from-to">Recommendation</div>
+              <div class="matrix-strategy">Wat wil je dat er gebeurt? Plan/vraag/aanbeveling · welke hulp nodig?</div>
+            </div>
+            <div class="matrix-row">
+              <div class="matrix-from-to">Repeat</div>
+              <div class="matrix-strategy">Laat communicatiepartner afspraken hardop herhalen, stel zo nodig bij</div>
+            </div>
+          </div>
+
+          <div id="abcde-view-kinderen" style="display:none">
+            <div class="tool-subtitle" style="margin-bottom:14px">Indicatie van normaalwaarden — APLS compact (Turner & Nusmeier, BSL 2019). Bij twijfel: vraag overleg met kinderarts.</div>
+            ${pedsRows}
+            <div class="disclaimer">Onder de leeftijdsgrenzen is de variatie groot — vergelijk altijd met patiëntspecifieke baseline indien beschikbaar. Tachycardie bij kind kan een vroeg teken zijn van shock vóór bloeddrukdaling.</div>
+          </div>
+        </div>
+      `;
+    },
+    onMount() {
+      document.querySelectorAll('#abcde-toggle button').forEach(b => {
+        b.addEventListener('click', () => {
+          document.querySelectorAll('#abcde-toggle button').forEach(x => x.classList.remove('active'));
+          b.classList.add('active');
+          const v = b.dataset.v;
+          ['abcde', 'tabellen', 'kinderen'].forEach(view => {
+            document.getElementById(`abcde-view-${view}`).style.display = view === v ? '' : 'none';
+          });
+        });
+      });
+    }
+  });
+
+  /* ==================================================================
+     26. Spoedmedicatie-voorraad — NHG-Behandelrichtlijn 2024
+     ================================================================== */
+  // ind = klinische indicatie-tag voor filtering
+  // qty = aantal voor eerste gift (optioneel, default 1)
+  // store = bewaarconditie
+  // alt = uitwisselbaar met andere middel
+  const SPOEDMED = {
+    aanbevolen: [
+      { name: 'Acetylsalicylzuur',     form: 'wateroplosbare (dispergeerbare) tablet 80 mg',         ind: 'cardio',  qty: 2, store: '< 25 °C' },
+      { name: 'Adrenaline',            form: 'injectievloeistof 1 mg/ml, ampul 1 ml (waterstoftartraat)', ind: 'anafyl', store: '< 25 °C en buiten invloed van licht' },
+      { name: 'Atropine',              form: 'injectievloeistof 0,5 mg/ml, ampul 1 ml',              ind: 'cardio',  store: '< 25 °C en buiten invloed van licht' },
+      { name: 'Bumetanide',            form: 'injectievloeistof 0,5 mg/ml, ampul 4 ml',              ind: 'cardio',  alt: 'furosemide', store: '< 25 °C en buiten invloed van licht' },
+      { name: 'Dexamethason',          form: 'injectievloeistof 4 mg/ml, ampul 1 ml (dinatriumfosfaat)', ind: 'anafyl', qty: 2, store: '< 25 °C en buiten invloed van licht' },
+      { name: 'Diazepam',              form: 'rectiole 5 mg/2,5 ml',                                 ind: 'neuro',   alt: 'midazolam', store: '< 25 °C' },
+      { name: 'Diazepam',              form: 'rectiole 10 mg/2,5 ml',                                ind: 'neuro',   alt: 'midazolam', store: '< 25 °C' },
+      { name: 'Diclofenac',            form: 'injectievloeistof 25 mg/ml, ampul 3 ml',               ind: 'pijn',    store: '< 25 °C en buiten invloed van licht' },
+      { name: 'Furosemide',            form: 'injectievloeistof 10 mg/ml, ampul 4 ml',               ind: 'cardio',  alt: 'bumetanide', store: '< 25 °C en buiten invloed van licht' },
+      { name: 'Glucagon',              form: 'poeder 1 mg + oplosmiddel 1 ml voor injectieoplossing', ind: 'endo',    store: '< 25 °C en buiten invloed van licht. 18 maanden houdbaar; in koelkast tot expiratiedatum' },
+      { name: 'Glucose 10%',           form: 'infusievloeistof (10 g/100 ml), flacon/zak 100 ml',    ind: 'endo',    alt: 'glucose 40% — voorkeur i.v.m. lager flebitis-risico', store: '< 25 °C' },
+      { name: 'Glucose 40%',           form: 'injectievloeistof (4 g/10 ml), ampul 10 ml',           ind: 'endo',    qty: 2, alt: 'glucose 10%', store: '15-25 °C' },
+      { name: 'Haloperidol',           form: 'injectievloeistof 5 mg/ml, ampul 1 ml',                ind: 'psy',     store: 'Buiten invloed van licht' },
+      { name: 'Ipratropiumbromide',    form: 'dosisaerosol 20 microg/dosis',                         ind: 'resp',    store: '< 30 °C en buiten invloed van licht' },
+      { name: 'Lorazepam',             form: 'tablet 1 of 2,5 mg',                                   ind: 'neuro',   store: '< 25 °C' },
+      { name: 'Midazolam',             form: 'injectievloeistof 1 mg/ml, ampul 5 ml (bevat natrium)', ind: 'neuro',   store: 'Buiten invloed van licht' },
+      { name: 'Midazolam',             form: 'injectievloeistof 5 mg/ml, ampul 3 ml (bevat natrium)', ind: 'neuro',   store: 'Buiten invloed van licht' },
+      { name: 'Morfine',               form: 'injectievloeistof 10 mg/ml, ampul 1 ml',               ind: 'pijn',    store: '< 25 °C en buiten invloed van licht' },
+      { name: 'Natriumchloride 0,9%',  form: 'injectievloeistof, miniplasco 10 ml',                  ind: 'overig',  store: '< 25 °C' },
+      { name: 'Nitroglycerine',        form: 'spray 0,4 mg/dosis',                                   ind: 'cardio',  store: '< 25 °C' },
+      { name: 'Salbutamol',            form: 'dosisaerosol 100 microg/dosis',                        ind: 'resp',    store: '15-25 °C en buiten invloed van licht' }
+    ],
+    facultatief: [
+      { name: 'Budesonide',            form: 'vernevelvloeistof 0,5 mg/ml, ampul 2 ml',              ind: 'resp',    qty: 2, store: '< 25 °C en buiten invloed van licht' },
+      { name: 'Desloratadine',         form: 'drank 0,5 mg/ml',                                      ind: 'anafyl',  alt: 'levocetirizine', store: 'Na openen 2 maanden houdbaar' },
+      { name: 'Desloratadine',         form: 'tablet 2,5 of 5 mg',                                   ind: 'anafyl',  alt: 'levocetirizine', store: '< 30 °C' },
+      { name: 'Dexamethason',          form: 'drank 1 mg/ml, flacon 10 ml (dinatriumfosfaat)',       ind: 'anafyl',  store: '15-25 °C, na openen 1 maand houdbaar' },
+      { name: 'Fentanyl',              form: 'neusspray 50 microg/spray',                            ind: 'pijn',    store: '< 30 °C en rechtop bewaren' },
+      { name: 'Fentanyl',              form: 'neusspray 100 microg/spray',                           ind: 'pijn',    store: '< 30 °C en rechtop bewaren' },
+      { name: 'Fentanyl',              form: 'injectievloeistof 50 microg/ml, ampul 2 ml',           ind: 'pijn',    store: '< 30 °C en buiten invloed van licht' },
+      { name: 'Haloperidol',           form: 'tablet 5 mg',                                          ind: 'psy',     store: '< 25 °C' },
+      { name: 'Ipratropiumbromide',    form: 'vernevelvloeistof 250 microg/ml, flacon 2 ml',         ind: 'resp',    store: '< 25 °C en buiten invloed van licht' },
+      { name: 'Isosorbidedinitraat',   form: 'tablet 5 mg',                                          ind: 'cardio',  store: '< 25 °C' },
+      { name: 'Levocetirizine',        form: 'tablet 5 mg',                                          ind: 'anafyl',  alt: 'desloratadine', store: '—' },
+      { name: 'Levocetirizine',        form: 'drank 0,5 mg/ml, flacon 100 ml',                       ind: 'anafyl',  alt: 'desloratadine', store: 'Na openen 3 maanden houdbaar' },
+      { name: 'Midazolam',             form: 'neusspray 0,5 mg/spray (hydrochloride)',               ind: 'neuro',   store: '15-25 °C' },
+      { name: 'Midazolam',             form: 'neusspray 2,5 mg/spray (hydrochloride)',               ind: 'neuro',   store: '15-25 °C' },
+      { name: 'Natriumchloride 0,9%',  form: 'infusievloeistof, zak 500 ml',                         ind: 'overig',  alt: 'ringerlactaat', store: '< 25 °C' },
+      { name: 'Paracetamol',           form: 'tablet 500 mg',                                        ind: 'pijn',    store: '—' },
+      { name: 'Paracetamol',           form: 'zetpil 60, 120, 240, 500 en 1000 mg',                  ind: 'pijn',    store: '< 25 °C' },
+      { name: 'Prednisolon',           form: 'tablet 5 mg',                                          ind: 'anafyl',  qty: 8, store: '< 25 °C' },
+      { name: 'Prednisolon',           form: 'drank 5 mg/ml, fles 100 ml',                           ind: 'anafyl',  store: '15-25 °C, na openen 6 maanden houdbaar' },
+      { name: 'Ringerlactaat',         form: 'oplossing, zak 500 ml',                                ind: 'overig',  alt: 'NaCl 0,9% 500 ml', store: '< 25 °C en buiten invloed van licht' },
+      { name: 'Salbutamol + ipratropium', form: 'vernevelvloeistof 1 mg / 200 microg/ml, flacon 2,5 ml', ind: 'resp', store: '< 25 °C en buiten invloed van licht' },
+      { name: 'Salbutamol',            form: 'vernevelvloeistof 1 mg/ml, flacon 2,5 ml (2,5 mg)',    ind: 'resp',    store: '< 25 °C en buiten invloed van licht' },
+      { name: 'Salbutamol',            form: 'vernevelvloeistof 2 mg/ml, flacon 2,5 ml (5 mg)',      ind: 'resp',    store: '< 25 °C en buiten invloed van licht' },
+      { name: 'Zuurstof',              form: 'medicinaal gasvormig 100% v/v',                        ind: 'overig',  store: '< 65 °C' }
+    ]
+  };
+  const SPOEDMED_INDICATIES = {
+    cardio:  { label: 'Cardiovasculair', desc: 'ACS, hartfalen, ritme', color: 'red' },
+    resp:    { label: 'Respiratoir',     desc: 'Longaanval, bronchospasme', color: 'blue' },
+    anafyl:  { label: 'Allergie / anafylaxie', desc: 'Adrenaline, cortico, anti-H1', color: 'amber' },
+    neuro:   { label: 'Neuro / sedatie', desc: 'Insult, agitatie, anxiolyse', color: 'amber' },
+    endo:    { label: 'Endocrien',       desc: 'Hypoglycemie', color: 'green' },
+    pijn:    { label: 'Pijn',            desc: 'NSAID, opioid', color: 'amber' },
+    psy:     { label: 'Psychiatrie',     desc: 'Acute agitatie', color: 'amber' },
+    overig:  { label: 'Vulling + overig', desc: 'NaCl, Ringer, O₂', color: 'gray' }
+  };
+
+  TOOLS.push({
+    id: 'spoedmedicatie',
+    name: 'Spoedmedicatie-voorraad',
+    category: 'Acuut & spoed',
+    metaLabel: 'NHG · BR 2024',
+    desc: 'Aanbevolen + facultatieve middelen voor de visitetas, met bewaarcondities',
+    keywords: ['spoedmedicatie','voorraad','visitetas','adrenaline','midazolam','glucagon','furosemide','bumetanide','dexamethason','salbutamol','morfine','atropine','prednisolon','fentanyl','haloperidol','nitroglycerine','isosorbide','paracetamol','levocetirizine','desloratadine','budesonide','ipratropium','glucose','natriumchloride','ringer','lorazepam','diclofenac','zuurstof','aspirine','asa','expiratie','bewaren','nhg'],
+    render() {
+      const indChips = Object.entries(SPOEDMED_INDICATIES).map(([key, v]) =>
+        `<button class="filter-chip" data-filter-ind="${key}" style="padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:9999px;font-size:11px;font-family:var(--font-mono);font-weight:500;color:var(--muted);transition:all 150ms ease">${escape(v.label)}</button>`
+      ).join('');
+
+      return `
+        <div class="tool-view">
+          <h2>Spoedmedicatie-voorraad</h2>
+          <div class="tool-subtitle">Inventaris voor de visitetas conform NHG-Behandelrichtlijn Geneesmiddelen en zuurstof in spoedeisende situaties (versie 3.0, oktober 2024). Aanbevolen middelen zijn evidence-based; facultatieve middelen weeg je af tegen praktijkpopulatie, geografie en bekwaamheid.</div>
+
+          <div class="view-toggle" id="med-view-toggle">
+            <button class="active" data-v="aanbevolen">Aanbevolen</button>
+            <button data-v="facultatief">Facultatief</button>
+            <button data-v="alle">Alle</button>
+            <button data-v="bewaarbeleid">Bewaarbeleid</button>
+          </div>
+
+          <div id="med-search-bar" class="search" style="margin:8px 0 16px 0;position:static">
+            <span class="search-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            </span>
+            <input id="med-search" type="search" placeholder="Zoek middel — bv. adrenaline, midazolam, glucagon…" autocomplete="off" />
+          </div>
+
+          <div id="med-filters" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px">
+            <button class="filter-chip active" data-filter-ind="all" style="padding:6px 12px;background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:9999px;font-size:11px;font-family:var(--font-mono);font-weight:600;color:var(--accent)">Alle indicaties</button>
+            ${indChips}
+          </div>
+
+          <div id="med-list"></div>
+
+          <div id="med-bewaarbeleid" style="display:none">
+            <div class="flow">
+              <div class="flow-node flow-info">
+                <div class="flow-node-label">Bewaaradvies</div>
+                <div class="flow-node-title">Behoud werkzaamheid tot expiratiedatum</div>
+                <div class="flow-node-body">
+                  Bewaar middelen in originele verpakking, bij voorkeur kamertemperatuur (15–25 °C) en buiten licht. <strong>Niet in de vriezer.</strong> Door temperatuurschommelingen in de auto is naleving van bewaarcondities lastig — laat de visitetas <strong>niet in de auto</strong>.
+                </div>
+              </div>
+              <div class="flow-node">
+                <div class="flow-node-label">Bij ontvangst</div>
+                <div class="flow-node-title">Noteer expiratiedatum</div>
+                <div class="flow-node-body">
+                  Leg bij elk middel de eerst-verlopende datum vast in je inventarislijst. Bij verschillende batches: de vroegste datum is leidend.
+                </div>
+              </div>
+              <div class="flow-node">
+                <div class="flow-node-label">Controle</div>
+                <div class="flow-node-title">Twee keer per jaar, plus na zomer</div>
+                <div class="flow-node-body">
+                  Controleer ten minste tweemaal per jaar alle expiratiedata. Vernieuw bij voorkeur de hele set jaarlijks na de zomer (warmere maanden zijn het risicovolst voor degradatie).
+                </div>
+              </div>
+              <div class="flow-node">
+                <div class="flow-node-label">Geopende verpakkingen</div>
+                <div class="flow-node-title">Schrijf aanbreekdatum op</div>
+                <div class="flow-node-body">
+                  Bij dranken (desloratadine, levocetirizine, dexamethason, prednisolon) en andere middelen met beperkte na-openen-houdbaarheid: noteer datum van aanbreken op de verpakking. Vooral relevant voor pediatrische doseringen.
+                </div>
+              </div>
+              <div class="flow-node">
+                <div class="flow-node-label">Reserve</div>
+                <div class="flow-node-title">Minimaal één extra per middel</div>
+                <div class="flow-node-body">
+                  Houd van elk middel ten minste één stuk in reserve. Van enkele middelen heb je voor de <strong>eerste gift</strong> al meerdere ampullen/tabletten nodig: acetylsalicylzuur (2 tabl.), dexamethason injectie (2 amp.), glucose 40% (2 amp.), budesonide vernevel (2 amp.), prednisolon tablet (8 tabl. voor 40 mg).
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="disclaimer">Bron: NHG-Behandelrichtlijn Geneesmiddelen en zuurstof in spoedeisende situaties (v3.0, oktober 2024). De selectie facultatieve middelen weeg je af tegen incidentie in de praktijkpopulatie, populatie-omvang, geografische setting (responstijd ambulance), bekwaamheid van de huisarts(en), regionale afspraken en duurzaamheid. <strong>#</strong> markeert uitwisselbare middelen — één van beide volstaat.</div>
+        </div>
+      `;
+    },
+    onMount() {
+      let currentSet = 'aanbevolen';
+      let currentInd = 'all';
+      let currentSearch = '';
+
+      function getList() {
+        if (currentSet === 'alle') return [...SPOEDMED.aanbevolen.map(m => ({...m, set: 'aanbevolen'})), ...SPOEDMED.facultatief.map(m => ({...m, set: 'facultatief'}))];
+        return SPOEDMED[currentSet].map(m => ({...m, set: currentSet}));
+      }
+
+      function renderList() {
+        const list = getList();
+        const q = currentSearch.trim().toLowerCase();
+        const filtered = list.filter(m => {
+          if (currentInd !== 'all' && m.ind !== currentInd) return false;
+          if (q && !(m.name.toLowerCase().includes(q) || m.form.toLowerCase().includes(q))) return false;
+          return true;
+        });
+
+        if (filtered.length === 0) {
+          $('med-list').innerHTML = `<div class="empty"><p>Geen middelen gevonden.</p></div>`;
+          return;
+        }
+
+        // Groep op indicatie binnen het resultaat
+        const groups = {};
+        filtered.forEach(m => {
+          if (!groups[m.ind]) groups[m.ind] = [];
+          groups[m.ind].push(m);
+        });
+        const indOrder = ['cardio', 'resp', 'anafyl', 'neuro', 'endo', 'pijn', 'psy', 'overig'];
+
+        $('med-list').innerHTML = indOrder.filter(i => groups[i]).map(ind => {
+          const indMeta = SPOEDMED_INDICATIES[ind];
+          const items = groups[ind].map(m => {
+            const qtyBadge = m.qty && m.qty > 1 ? `<span class="tag tag-amber" style="margin-left:0;font-size:9px">${m.qty}× eerste gift</span>` : '';
+            const altBadge = m.alt ? `<span class="tag tag-blue" style="margin-left:6px;font-size:9px">↔ ${escape(m.alt)}</span>` : '';
+            const setBadge = currentSet === 'alle' ? `<span class="tag ${m.set === 'aanbevolen' ? 'tag-green' : 'tag-muted'}" style="margin-left:6px;font-size:9px">${m.set === 'aanbevolen' ? 'aanbevolen' : 'facultatief'}</span>` : '';
+            return `
+              <div class="matrix-row">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+                  <strong style="font-family:var(--font-display);font-size:14px;font-weight:600;color:var(--ink);letter-spacing:-0.01em">${escape(m.name)}</strong>
+                  <div>${qtyBadge}${altBadge}${setBadge}</div>
+                </div>
+                <div style="font-family:var(--font-mono);font-size:11px;color:var(--ink-2);margin-bottom:4px">${escape(m.form)}</div>
+                <div style="font-size:11px;color:var(--muted);font-style:italic">${escape(m.store)}</div>
+              </div>
+            `;
+          }).join('');
+          return `
+            <div style="margin-bottom:24px">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border)">
+                <span class="tool-card-tag tag-${indMeta.color === 'red' ? 'acuut' : indMeta.color === 'blue' ? 'pediatrisch' : 'lookup'}" style="margin:0;font-size:9px">${escape(indMeta.label)}</span>
+                <span style="font-size:11px;color:var(--muted);font-family:var(--font-mono)">${escape(indMeta.desc)} · ${groups[ind].length}</span>
+              </div>
+              ${items}
+            </div>
+          `;
+        }).join('');
+      }
+
+      // View toggle (Aanbevolen / Facultatief / Alle / Bewaarbeleid)
+      document.querySelectorAll('#med-view-toggle button').forEach(b => {
+        b.addEventListener('click', () => {
+          document.querySelectorAll('#med-view-toggle button').forEach(x => x.classList.remove('active'));
+          b.classList.add('active');
+          const v = b.dataset.v;
+          if (v === 'bewaarbeleid') {
+            document.getElementById('med-list').style.display = 'none';
+            document.getElementById('med-search-bar').style.display = 'none';
+            document.getElementById('med-filters').style.display = 'none';
+            document.getElementById('med-bewaarbeleid').style.display = '';
+          } else {
+            document.getElementById('med-list').style.display = '';
+            document.getElementById('med-search-bar').style.display = '';
+            document.getElementById('med-filters').style.display = 'flex';
+            document.getElementById('med-bewaarbeleid').style.display = 'none';
+            currentSet = v;
+            renderList();
+          }
+        });
+      });
+
+      // Indicatie-filter chips
+      document.querySelectorAll('#med-filters button').forEach(b => {
+        b.addEventListener('click', () => {
+          document.querySelectorAll('#med-filters button').forEach(x => {
+            x.classList.remove('active');
+            x.style.background = 'var(--surface-2)';
+            x.style.borderColor = 'var(--border)';
+            x.style.color = 'var(--muted)';
+            x.style.fontWeight = '500';
+          });
+          b.classList.add('active');
+          b.style.background = 'var(--accent-bg)';
+          b.style.borderColor = 'var(--accent-border)';
+          b.style.color = 'var(--accent)';
+          b.style.fontWeight = '600';
+          currentInd = b.dataset.filterInd;
+          renderList();
+        });
+      });
+
+      // Zoekveld
+      document.getElementById('med-search').addEventListener('input', (e) => {
+        currentSearch = e.target.value;
+        renderList();
+      });
+
+      renderList();
+    }
+  });
+
+  /* ==================================================================
+     27. ASRS-v1.1 — ADHD-screener volwassenen
      ================================================================== */
   const ASRS_ITEMS = [
     'Hoe vaak heeft u moeite om de laatste details van een project af te ronden, wanneer de uitdagende delen al gedaan zijn?',
