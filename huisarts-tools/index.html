@@ -1293,17 +1293,31 @@
     }
     .body-svg { width: 100%; max-width: 160px; height: auto; }
     .body-band {
-      fill: var(--surface);
-      stroke: var(--border);
-      stroke-width: 1;
+      stroke: rgba(0,0,0,0.25);
+      stroke-width: 0.5;
       cursor: pointer;
-      transition: fill 150ms ease, stroke 150ms ease;
+      transition: opacity 150ms ease, stroke 150ms ease, stroke-width 150ms ease, filter 150ms ease;
+      opacity: 0.9;
     }
-    .body-band:hover { fill: var(--accent-bg); stroke: var(--accent); }
+    .body-band:hover {
+      opacity: 1;
+      stroke: var(--ink);
+      stroke-width: 1;
+      filter: brightness(1.08);
+    }
     .body-band.active {
-      fill: var(--accent-bg);
-      stroke: var(--accent);
+      opacity: 1;
+      stroke: var(--ink);
       stroke-width: 2;
+      filter: brightness(1.12) saturate(1.2);
+    }
+    :root[data-theme="dark"] .body-band { stroke: rgba(255,255,255,0.25); }
+    :root[data-theme="dark"] .body-band:hover,
+    :root[data-theme="dark"] .body-band.active { stroke: var(--ink); }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .body-band { stroke: rgba(255,255,255,0.25); }
+      :root:not([data-theme="light"]) .body-band:hover,
+      :root:not([data-theme="light"]) .body-band.active { stroke: var(--ink); }
     }
     .body-outline {
       fill: var(--surface);
@@ -1313,11 +1327,30 @@
     .body-label {
       font-family: var(--font-mono);
       font-size: 9px;
-      fill: var(--muted);
+      fill: rgba(0,0,0,0.65);
+      font-weight: 600;
       text-anchor: middle;
       pointer-events: none;
+      paint-order: stroke;
+      stroke: rgba(255,255,255,0.5);
+      stroke-width: 2;
+      stroke-linejoin: round;
     }
-    .body-label.active { fill: var(--accent); font-weight: 600; }
+    .body-label.active {
+      fill: #000;
+      stroke: rgba(255,255,255,0.8);
+      stroke-width: 2.5;
+    }
+    :root[data-theme="dark"] .body-label {
+      fill: rgba(0,0,0,0.75);
+      stroke: rgba(255,255,255,0.65);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .body-label {
+        fill: rgba(0,0,0,0.75);
+        stroke: rgba(255,255,255,0.65);
+      }
+    }
     .body-detail {
       margin-top: 14px;
       padding: 16px;
@@ -1560,7 +1593,7 @@
       </div>
       <div class="fade-in">${inner}</div>
       <div class="app-footer">
-        Praktijktools v0.11 · Het Roosendael, Roermond · Niet bedoeld ter vervanging van klinisch oordeel.
+        Praktijktools v0.12 · Het Roosendael, Roermond · Niet bedoeld ter vervanging van klinisch oordeel.
       </div>
     `;
   }
@@ -3805,43 +3838,104 @@
     { lvl: 'S2',     derm: 'Achterzijde dij (midden)',                            myot: 'Intrinsieke voetspieren',                                        refl: '—' },
     { lvl: 'S3–S5',  derm: 'Perineum, perianaal (zadelgebied)',                   myot: 'Bekkenbodem, m. sphincter ani externus',                         refl: 'Anale reflex, bulbocavernosus' }
   ];
-  // Body-regions voor het diagram — anterior + posterior view.
-  // viewBox 200x440 per view; gekoppeld via data-lvl zodat klik in
-  // één view de andere ook hooglicht. Schematisch — niet anatomisch precies.
+  // Anatomische body-regions — viewBox 200x500.
+  // Dermatomen worden getekend als gekleurde polygonen die samen het lichaam vormen.
+  // Limb-dermatomen lopen longitudinaal (C5-T1 in arm, L1-S1 in been).
+  // Kleurpalet volgt klassieke medische illustraties (Netter/Hansen).
   const BODY_ANT = [
-    { lvl: 'C3–C4',  path: 'M 78 28 L 122 28 L 130 50 L 132 60 L 68 60 L 70 50 Z',                                     label: { x: 100, y: 48, text: 'C3–4' } },
-    { lvl: 'C5',     path: 'M 50 60 L 68 60 L 68 92 L 50 92 Z M 132 60 L 150 60 L 150 92 L 132 92 Z',                  label: { x: 32, y: 80, text: 'C5' } },
-    { lvl: 'C6',     path: 'M 50 92 L 68 92 L 60 144 L 42 144 Z M 132 92 L 150 92 L 158 144 L 140 144 Z',              label: { x: 26, y: 122, text: 'C6' } },
-    { lvl: 'C7',     path: 'M 42 144 L 60 144 L 56 184 L 38 184 Z M 140 144 L 158 144 L 162 184 L 144 184 Z',          label: { x: 22, y: 168, text: 'C7' } },
-    { lvl: 'C8',     path: 'M 38 184 L 56 184 L 52 212 L 36 212 Z M 144 184 L 162 184 L 164 212 L 148 212 Z',          label: { x: 22, y: 202, text: 'C8' } },
-    { lvl: 'T4',     path: 'M 68 60 L 132 60 L 132 100 L 68 100 Z',                                                    label: { x: 100, y: 84, text: 'T4' } },
-    { lvl: 'T10',    path: 'M 68 100 L 132 100 L 132 144 L 68 144 Z',                                                  label: { x: 100, y: 126, text: 'T10' } },
-    { lvl: 'L1',     path: 'M 68 144 L 132 144 L 138 180 L 62 180 Z',                                                  label: { x: 100, y: 165, text: 'L1' } },
-    { lvl: 'L3',     path: 'M 62 180 L 100 180 L 96 240 L 64 240 Z M 100 180 L 138 180 L 136 240 L 104 240 Z',         label: { x: 100, y: 215, text: 'L3' } },
-    { lvl: 'L4',     path: 'M 64 240 L 96 240 L 92 300 L 66 300 Z M 104 240 L 136 240 L 134 300 L 108 300 Z',          label: { x: 100, y: 275, text: 'L4' } },
-    { lvl: 'L5',     path: 'M 66 300 L 92 300 L 88 360 L 68 360 Z M 108 300 L 134 300 L 132 360 L 112 360 Z',          label: { x: 100, y: 335, text: 'L5' } },
-    { lvl: 'S1',     path: 'M 68 360 L 88 360 L 86 400 L 70 400 Z M 112 360 L 132 360 L 130 400 L 114 400 Z',          label: { x: 100, y: 385, text: 'S1' } }
+    // Hoofd + nek
+    { lvl: 'C2–C3', color: '#F4B4A8', label: { x: 100, y: 30, text: 'C2/3' },
+      path: 'M 100 8 C 80 8 76 50 90 60 L 90 72 L 110 72 L 110 60 C 124 50 120 8 100 8 Z' },
+    { lvl: 'C3–C4', color: '#EDA868', label: { x: 100, y: 82, text: 'C3/4' },
+      path: 'M 88 72 L 112 72 L 136 88 L 130 100 L 70 100 L 64 88 Z' },
+    // Arm — longitudinaal: C5 deltoid+lateraal upper arm, C6 thumb side forearm, C7 middle, C8/T1 medial
+    { lvl: 'C5', color: '#E8C46C', label: { x: 36, y: 130, text: 'C5' },
+      path: 'M 64 88 L 70 100 L 60 110 L 48 140 L 44 170 L 32 175 L 30 145 L 36 110 L 50 92 Z M 130 100 L 136 88 L 150 92 L 164 110 L 170 145 L 168 175 L 156 170 L 152 140 L 140 110 Z' },
+    { lvl: 'C6', color: '#D9D070', label: { x: 22, y: 220, text: 'C6' },
+      path: 'M 32 175 L 44 170 L 42 210 L 34 250 L 22 260 L 16 230 L 18 200 Z M 168 175 L 156 170 L 158 210 L 166 250 L 178 260 L 184 230 L 182 200 Z' },
+    { lvl: 'C7', color: '#C9D86C', label: { x: 12, y: 290, text: 'C7' },
+      path: 'M 22 260 L 34 250 L 32 290 L 22 310 L 12 305 L 8 280 Z M 178 260 L 166 250 L 168 290 L 178 310 L 188 305 L 192 280 Z' },
+    { lvl: 'C8', color: '#B8D08C', label: { x: 10, y: 320, text: 'C8' },
+      path: 'M 12 305 L 22 310 L 18 330 L 24 348 L 12 348 L 4 332 Z M 188 305 L 178 310 L 182 330 L 176 348 L 188 348 L 196 332 Z' },
+    { lvl: 'T1', color: '#A4C690', label: { x: 56, y: 160, text: 'T1' },
+      path: 'M 44 170 L 60 110 L 70 100 L 70 130 L 64 160 L 60 200 L 46 200 L 42 210 Z M 156 170 L 140 110 L 130 100 L 130 130 L 136 160 L 140 200 L 154 200 L 158 210 Z' },
+    // Romp — horizontale T-bands (T2-T12)
+    { lvl: 'T2–T3', color: '#9DC894', label: { x: 100, y: 108, text: 'T2/3' },
+      path: 'M 70 100 L 130 100 L 130 122 L 70 122 Z' },
+    { lvl: 'T4', color: '#92C088', label: { x: 100, y: 132, text: 'T4' },
+      path: 'M 70 122 L 130 122 L 130 144 L 70 144 Z' },
+    { lvl: 'T5–T6', color: '#86B880', label: { x: 100, y: 154, text: 'T5/6' },
+      path: 'M 70 144 L 130 144 L 130 168 L 72 168 Z' },
+    { lvl: 'T7–T8', color: '#7CB078', label: { x: 100, y: 178, text: 'T7/8' },
+      path: 'M 72 168 L 130 168 L 130 190 L 74 190 Z' },
+    { lvl: 'T9', color: '#6FA46C', label: { x: 100, y: 200, text: 'T9' },
+      path: 'M 74 190 L 130 190 L 130 210 L 76 210 Z' },
+    { lvl: 'T10', color: '#629A60', label: { x: 100, y: 222, text: 'T10' },
+      path: 'M 76 210 L 130 210 L 130 232 L 78 232 Z' },
+    { lvl: 'T11', color: '#588C58', label: { x: 100, y: 244, text: 'T11' },
+      path: 'M 78 232 L 130 232 L 130 254 L 80 254 Z' },
+    { lvl: 'T12', color: '#4E7E50', label: { x: 100, y: 266, text: 'T12' },
+      path: 'M 80 254 L 130 254 L 130 276 L 82 276 Z' },
+    { lvl: 'L1', color: '#88B6CA', label: { x: 100, y: 290, text: 'L1' },
+      path: 'M 82 276 L 130 276 L 134 302 L 78 302 Z' },
+    // Been — longitudinaal: L2 boven, L3 midden, L4 mediaal onderbeen, L5 dorsum voet
+    { lvl: 'L2', color: '#7DA9C0', label: { x: 100, y: 330, text: 'L2' },
+      path: 'M 78 302 L 134 302 L 132 360 L 80 360 Z' },
+    { lvl: 'L3', color: '#6E9EBC', label: { x: 100, y: 388, text: 'L3' },
+      path: 'M 80 360 L 110 360 L 108 416 L 82 416 Z M 110 360 L 132 360 L 130 416 L 112 416 Z' },
+    { lvl: 'L4', color: '#5F92B6', label: { x: 100, y: 444, text: 'L4' },
+      path: 'M 82 416 L 108 416 L 106 462 L 84 462 Z M 112 416 L 130 416 L 128 462 L 114 462 Z' },
+    { lvl: 'L5', color: '#6A78B0', label: { x: 100, y: 478, text: 'L5' },
+      path: 'M 84 462 L 106 462 L 104 484 L 86 484 Z M 114 462 L 128 462 L 126 484 L 116 484 Z' },
+    { lvl: 'S1', color: '#856DA7', label: { x: 100, y: 494, text: 'S1' },
+      path: 'M 86 484 L 104 484 L 100 496 L 88 496 Z M 116 484 L 126 484 L 124 496 L 114 496 Z' }
   ];
-  // Posterior — C2 prominent (achterhoofd), T-bands lopen door op rug,
-  // S-regions zichtbaar op billen + perineum
+
+  // Posterior: C2 occiput prominent, T-bands op rug, S3-S5 perineum centraal, S2 lateraal billen, posterior leg L4-L5-S1
   const BODY_POST = [
-    { lvl: 'C2',     path: 'M 78 12 A 22 22 0 0 1 122 12 L 122 36 L 78 36 Z',                                          label: { x: 100, y: 26, text: 'C2' } },
-    { lvl: 'C3–C4',  path: 'M 78 36 L 122 36 L 130 56 L 132 64 L 68 64 L 70 56 Z',                                     label: { x: 100, y: 52, text: 'C3–4' } },
-    { lvl: 'C5',     path: 'M 50 64 L 68 64 L 68 96 L 50 96 Z M 132 64 L 150 64 L 150 96 L 132 96 Z',                  label: { x: 32, y: 84, text: 'C5' } },
-    { lvl: 'C6',     path: 'M 50 96 L 68 96 L 60 148 L 42 148 Z M 132 96 L 150 96 L 158 148 L 140 148 Z',              label: { x: 26, y: 126, text: 'C6' } },
-    { lvl: 'C7',     path: 'M 42 148 L 60 148 L 56 188 L 38 188 Z M 140 148 L 158 148 L 162 188 L 144 188 Z',          label: { x: 22, y: 172, text: 'C7' } },
-    { lvl: 'C8',     path: 'M 38 188 L 56 188 L 52 216 L 36 216 Z M 144 188 L 162 188 L 164 216 L 148 216 Z',          label: { x: 22, y: 206, text: 'C8' } },
-    // Rug-bands T2–T12 als continuous strip
-    { lvl: 'T4',     path: 'M 68 64 L 132 64 L 132 104 L 68 104 Z',                                                    label: { x: 100, y: 88, text: 'T4' } },
-    { lvl: 'T10',    path: 'M 68 104 L 132 104 L 132 148 L 68 148 Z',                                                  label: { x: 100, y: 128, text: 'T10' } },
-    { lvl: 'L1',     path: 'M 68 148 L 132 148 L 138 182 L 62 182 Z',                                                  label: { x: 100, y: 168, text: 'L1' } },
-    // Billen + perineum: S3-S5 centraal, S2 lateraal
-    { lvl: 'S3–S5',  path: 'M 88 182 L 112 182 L 112 220 L 88 220 Z',                                                  label: { x: 100, y: 202, text: 'S3–5' } },
-    { lvl: 'S2',     path: 'M 62 182 L 88 182 L 88 220 L 64 220 Z M 112 182 L 138 182 L 136 220 L 112 220 Z',          label: { x: 100, y: 202, text: 'S2' } },
-    // Posterior leg — L3 boven, L4 midden, S1 onder (kuit), L5 alleen voet lateraal
-    { lvl: 'L3',     path: 'M 64 220 L 100 220 L 96 280 L 66 280 Z M 100 220 L 136 220 L 134 280 L 104 280 Z',         label: { x: 100, y: 252, text: 'L3' } },
-    { lvl: 'S2',     path: 'M 66 280 L 96 280 L 92 340 L 68 340 Z M 104 280 L 134 280 L 132 340 L 108 340 Z',          label: { x: 100, y: 312, text: 'S2' } },
-    { lvl: 'S1',     path: 'M 68 340 L 92 340 L 88 400 L 70 400 Z M 108 340 L 132 340 L 130 400 L 112 400 Z',          label: { x: 100, y: 372, text: 'S1' } }
+    { lvl: 'C2', color: '#F4B4A8', label: { x: 100, y: 30, text: 'C2' },
+      path: 'M 100 8 C 80 8 76 50 90 60 L 90 72 L 110 72 L 110 60 C 124 50 120 8 100 8 Z' },
+    { lvl: 'C3–C4', color: '#EDA868', label: { x: 100, y: 82, text: 'C3/4' },
+      path: 'M 88 72 L 112 72 L 136 88 L 130 100 L 70 100 L 64 88 Z' },
+    { lvl: 'C5', color: '#E8C46C', label: { x: 36, y: 130, text: 'C5' },
+      path: 'M 64 88 L 70 100 L 60 110 L 48 140 L 44 170 L 32 175 L 30 145 L 36 110 L 50 92 Z M 130 100 L 136 88 L 150 92 L 164 110 L 170 145 L 168 175 L 156 170 L 152 140 L 140 110 Z' },
+    { lvl: 'C6', color: '#D9D070', label: { x: 22, y: 220, text: 'C6' },
+      path: 'M 32 175 L 44 170 L 42 210 L 34 250 L 22 260 L 16 230 L 18 200 Z M 168 175 L 156 170 L 158 210 L 166 250 L 178 260 L 184 230 L 182 200 Z' },
+    { lvl: 'C7', color: '#C9D86C', label: { x: 12, y: 290, text: 'C7' },
+      path: 'M 22 260 L 34 250 L 32 290 L 22 310 L 12 305 L 8 280 Z M 178 260 L 166 250 L 168 290 L 178 310 L 188 305 L 192 280 Z' },
+    { lvl: 'C8', color: '#B8D08C', label: { x: 10, y: 320, text: 'C8' },
+      path: 'M 12 305 L 22 310 L 18 330 L 24 348 L 12 348 L 4 332 Z M 188 305 L 178 310 L 182 330 L 176 348 L 188 348 L 196 332 Z' },
+    { lvl: 'T1', color: '#A4C690', label: { x: 56, y: 160, text: 'T1' },
+      path: 'M 44 170 L 60 110 L 70 100 L 70 130 L 64 160 L 60 200 L 46 200 L 42 210 Z M 156 170 L 140 110 L 130 100 L 130 130 L 136 160 L 140 200 L 154 200 L 158 210 Z' },
+    // Rug-bands T2-T12 continuous, breder dan anterior (rug is breder)
+    { lvl: 'T2–T3', color: '#9DC894', label: { x: 100, y: 108, text: 'T2/3' },
+      path: 'M 70 100 L 130 100 L 130 122 L 70 122 Z' },
+    { lvl: 'T4–T5', color: '#92C088', label: { x: 100, y: 134, text: 'T4/5' },
+      path: 'M 70 122 L 130 122 L 130 146 L 70 146 Z' },
+    { lvl: 'T6–T7', color: '#86B880', label: { x: 100, y: 158, text: 'T6/7' },
+      path: 'M 70 146 L 130 146 L 130 170 L 72 170 Z' },
+    { lvl: 'T8–T9', color: '#7CB078', label: { x: 100, y: 182, text: 'T8/9' },
+      path: 'M 72 170 L 130 170 L 130 194 L 74 194 Z' },
+    { lvl: 'T10–T11', color: '#6FA46C', label: { x: 100, y: 206, text: 'T10/11' },
+      path: 'M 74 194 L 130 194 L 130 218 L 76 218 Z' },
+    { lvl: 'T12', color: '#588C58', label: { x: 100, y: 230, text: 'T12' },
+      path: 'M 76 218 L 130 218 L 130 242 L 78 242 Z' },
+    { lvl: 'L1', color: '#88B6CA', label: { x: 100, y: 254, text: 'L1' },
+      path: 'M 78 242 L 130 242 L 132 270 L 76 270 Z' },
+    // Billen — S2 lateraal, S3-S5 centraal (perineum)
+    { lvl: 'S3–S5', color: '#B068B2', label: { x: 100, y: 300, text: 'S3/5' },
+      path: 'M 92 270 L 116 270 L 116 326 L 92 326 Z' },
+    { lvl: 'S2', color: '#9A6CAA', label: { x: 100, y: 300, text: 'S2' },
+      path: 'M 76 270 L 92 270 L 92 326 L 78 326 Z M 116 270 L 132 270 L 130 326 L 116 326 Z' },
+    // Posterior been: L3 boven, S2 midden (achterzijde dij), S1 kuit, L5 lateraal voet
+    { lvl: 'L3', color: '#6E9EBC', label: { x: 100, y: 360, text: 'L3' },
+      path: 'M 78 326 L 110 326 L 108 388 L 80 388 Z M 110 326 L 130 326 L 128 388 L 112 388 Z' },
+    { lvl: 'L4', color: '#5F92B6', label: { x: 100, y: 416, text: 'L4' },
+      path: 'M 80 388 L 108 388 L 106 444 L 84 444 Z M 112 388 L 128 388 L 126 444 L 114 444 Z' },
+    { lvl: 'S1', color: '#856DA7', label: { x: 100, y: 472, text: 'S1' },
+      path: 'M 84 444 L 106 444 L 104 484 L 86 484 Z M 114 444 L 126 444 L 124 484 L 116 484 Z' },
+    { lvl: 'L5', color: '#6A78B0', label: { x: 100, y: 494, text: 'L5' },
+      path: 'M 86 484 L 104 484 L 100 496 L 88 496 Z M 116 484 L 126 484 L 124 496 L 114 496 Z' }
   ];
 
   TOOLS.push({
@@ -3854,7 +3948,7 @@
     keywords: ['dermatoom','myotoom','reflex','wortel','sensibiliteit','radiculair','wortelcompressie','zenuw','anatomie','beeld','schema'],
     render() {
       const renderRegions = (regions) => regions.map(r => `
-        <path class="body-band" data-lvl="${r.lvl}" d="${r.path}"></path>
+        <path class="body-band" data-lvl="${r.lvl}" d="${r.path}" fill="${r.color}"></path>
         <text class="body-label" data-lvl="${r.lvl}" x="${r.label.x}" y="${r.label.y}">${r.label.text}</text>
       `).join('');
 
@@ -3891,13 +3985,13 @@
             <div class="body-diagram">
               <div class="body-figure">
                 <div class="body-figure-label">Voor (anterior)</div>
-                <svg viewBox="0 0 200 440" class="body-svg">
+                <svg viewBox="0 0 200 500" class="body-svg">
                   <g>${renderRegions(BODY_ANT)}</g>
                 </svg>
               </div>
               <div class="body-figure">
                 <div class="body-figure-label">Achter (posterior)</div>
-                <svg viewBox="0 0 200 440" class="body-svg">
+                <svg viewBox="0 0 200 500" class="body-svg">
                   <g>${renderRegions(BODY_POST)}</g>
                 </svg>
               </div>
