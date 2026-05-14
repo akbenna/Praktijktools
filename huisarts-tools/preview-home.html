@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#FAFAFA" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+  <title>Praktijktools — preview lay-out</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ---- Design tokens — overgenomen uit de live app ---- */
+    :root {
+      --bg: #FAFAFA; --surface: #FFFFFF; --surface-2: #F4F4F5;
+      --ink: #0A0A0A; --ink-2: #1F1F1F; --muted: #404040; --muted-2: #737373;
+      --border: #D4D4D4; --border-strong: #A3A3A3;
+      --accent: #0F766E; --accent-hover: #115E59; --accent-bg: #F0FDFA; --accent-border: #5EEAD4; --accent-text-on: #FFFFFF;
+      --red-bg: #FEF2F2; --red-ink: #B91C1C; --red-border: #FCA5A5;
+      --blue-bg: #EFF6FF; --blue-ink: #1D4ED8; --blue-border: #93C5FD;
+      --green-bg: #F0FDF4; --green-ink: #15803D; --green-border: #86EFAC;
+      --amber-bg: #FFFBEB; --amber-ink: #B45309; --amber-border: #FCD34D;
+      --cat-acuut-ink: #DC2626;     --cat-acuut-bg: #FEF2F2;
+      --cat-hart-ink: #E11D48;      --cat-hart-bg: #FFF1F2;
+      --cat-infectie-ink: #D97706;  --cat-infectie-bg: #FFFBEB;
+      --cat-psyche-ink: #7C3AED;    --cat-psyche-bg: #F5F3FF;
+      --cat-medicatie-ink: #2563EB; --cat-medicatie-bg: #EFF6FF;
+      --cat-endocrien-ink: #059669; --cat-endocrien-bg: #ECFDF5;
+      --cat-neuro-ink: #4F46E5;     --cat-neuro-bg: #EEF2FF;
+      --font-display: 'Geist', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+      --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+      --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      --safe-top: env(safe-area-inset-top); --safe-bottom: env(safe-area-inset-bottom);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0A0A0A; --surface: #171717; --surface-2: #262626;
+        --ink: #FAFAFA; --ink-2: #E5E5E5; --muted: #A3A3A3; --muted-2: #737373;
+        --border: #404040; --border-strong: #525252;
+        --accent: #2DD4BF; --accent-hover: #5EEAD4; --accent-bg: #134E4A; --accent-border: #0F766E; --accent-text-on: #064E3B;
+        --red-bg: #450A0A; --red-ink: #FCA5A5; --red-border: #B91C1C;
+        --blue-bg: #1E3A8A; --blue-ink: #BFDBFE; --blue-border: #1D4ED8;
+        --green-bg: #14532D; --green-ink: #BBF7D0; --green-border: #15803D;
+        --amber-bg: #451A03; --amber-ink: #FCD34D; --amber-border: #B45309;
+        --cat-acuut-ink: #FCA5A5;     --cat-acuut-bg: #450A0A;
+        --cat-hart-ink: #FDA4AF;      --cat-hart-bg: #4C0519;
+        --cat-infectie-ink: #FCD34D;  --cat-infectie-bg: #422006;
+        --cat-psyche-ink: #C4B5FD;    --cat-psyche-bg: #2E1065;
+        --cat-medicatie-ink: #93C5FD; --cat-medicatie-bg: #172554;
+        --cat-endocrien-ink: #6EE7B7; --cat-endocrien-bg: #022C22;
+        --cat-neuro-ink: #A5B4FC;     --cat-neuro-bg: #1E1B4B;
+      }
+    }
+    :root[data-theme="dark"] {
+      --bg: #0A0A0A; --surface: #171717; --surface-2: #262626;
+      --ink: #FAFAFA; --ink-2: #E5E5E5; --muted: #A3A3A3; --muted-2: #737373;
+      --border: #404040; --border-strong: #525252;
+      --accent: #2DD4BF; --accent-hover: #5EEAD4; --accent-bg: #134E4A; --accent-border: #0F766E; --accent-text-on: #064E3B;
+      --red-bg: #450A0A; --red-ink: #FCA5A5; --red-border: #B91C1C;
+      --blue-bg: #1E3A8A; --blue-ink: #BFDBFE; --blue-border: #1D4ED8;
+      --green-bg: #14532D; --green-ink: #BBF7D0; --green-border: #15803D;
+      --amber-bg: #451A03; --amber-ink: #FCD34D; --amber-border: #B45309;
+      --cat-acuut-ink: #FCA5A5;     --cat-acuut-bg: #450A0A;
+      --cat-hart-ink: #FDA4AF;      --cat-hart-bg: #4C0519;
+      --cat-infectie-ink: #FCD34D;  --cat-infectie-bg: #422006;
+      --cat-psyche-ink: #C4B5FD;    --cat-psyche-bg: #2E1065;
+      --cat-medicatie-ink: #93C5FD; --cat-medicatie-bg: #172554;
+      --cat-endocrien-ink: #6EE7B7; --cat-endocrien-bg: #022C22;
+      --cat-neuro-ink: #A5B4FC;     --cat-neuro-bg: #1E1B4B;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); }
+    body {
+      font-family: var(--font-sans); font-size: 16px; line-height: 1.5;
+      font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased;
+    }
+    button { font-family: inherit; cursor: pointer; }
+    .app { max-width: 680px; margin: 0 auto; padding-bottom: calc(56px + var(--safe-bottom)); }
+
+    /* ---- preview-banner ---- */
+    .preview-banner {
+      background: var(--amber-bg); color: var(--amber-ink);
+      border-bottom: 1px solid var(--amber-border);
+      padding: calc(8px + var(--safe-top)) 16px 8px;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .preview-banner .label { font-family: var(--font-mono); font-size: 10px; letter-spacing: .04em; line-height: 1.35; }
+    .seg { display: flex; gap: 2px; background: var(--surface); border: 1px solid var(--amber-border); border-radius: 7px; padding: 2px; flex: 0 0 auto; }
+    .seg button {
+      border: 0; background: transparent; color: var(--amber-ink);
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: .02em;
+      padding: 5px 10px; border-radius: 5px;
+    }
+    .seg button.active { background: var(--amber-ink); color: var(--amber-bg); }
+
+    /* ---- topbar ---- */
+    .topbar {
+      position: sticky; top: 0; z-index: 20;
+      background: color-mix(in srgb, var(--bg) 86%, transparent);
+      -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; padding: 9px 16px;
+    }
+    .topbar-id { display: flex; flex-direction: column; gap: 1px; }
+    .topbar-id .eyebrow { font-family: var(--font-mono); font-size: 9px; letter-spacing: .09em; text-transform: uppercase; color: var(--accent); }
+    .topbar-id h1 { margin: 0; font-family: var(--font-display); font-size: 15px; font-weight: 600; letter-spacing: -0.02em; }
+    .theme-toggle {
+      width: 34px; height: 34px; border: 1px solid var(--border); border-radius: 8px;
+      background: var(--surface); color: var(--muted); display: flex; align-items: center; justify-content: center;
+    }
+    .theme-toggle svg { width: 16px; height: 16px; }
+    .icon-sun { display: none; } .icon-moon { display: block; }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .icon-sun { display: block; }
+      :root:not([data-theme="light"]) .icon-moon { display: none; }
+    }
+    :root[data-theme="dark"] .icon-sun { display: block; }
+    :root[data-theme="dark"] .icon-moon { display: none; }
+    :root[data-theme="light"] .icon-sun { display: none; }
+    :root[data-theme="light"] .icon-moon { display: block; }
+
+    /* ---- search ---- */
+    .search { position: sticky; top: 52px; z-index: 15; background: var(--bg); padding: 11px 14px 9px; }
+    .search-inner { position: relative; }
+    .search input {
+      width: 100%; height: 40px; border: 1px solid var(--border); border-radius: 9px;
+      background: var(--surface); padding: 0 14px 0 38px; font-size: 14px; color: var(--ink); font-family: inherit;
+    }
+    .search input::placeholder { color: var(--muted-2); }
+    .search input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg); }
+    .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted-2); display: flex; }
+
+    .content { padding: 0 14px; }
+
+    /* ---- favorites ---- */
+    .favs { margin: 2px 0 14px; }
+    .favs-head {
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: .07em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 7px; display: flex; align-items: center; gap: 5px;
+    }
+    .favs-head svg { width: 11px; height: 11px; color: var(--accent); }
+    .favs-scroll { display: flex; gap: 7px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+    .favs-scroll::-webkit-scrollbar { display: none; }
+    .fav-chip {
+      flex: 0 0 auto; border: 1px solid var(--border); border-radius: 8px; background: var(--surface);
+      padding: 7px 11px; display: flex; flex-direction: column; gap: 1px; min-width: 104px; text-align: left;
+    }
+    .fav-chip .m { font-family: var(--font-mono); font-size: 9px; color: var(--accent); white-space: nowrap; }
+    .fav-chip .n { font-size: 12px; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; }
+
+    /* ---- category accordion ---- */
+    .cat-controls { display: flex; justify-content: flex-end; margin-bottom: 8px; }
+    .cat-controls button {
+      border: 0; background: transparent; color: var(--accent);
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: .03em; padding: 4px 2px;
+    }
+    .cat {
+      margin-bottom: 8px; border: 1px solid var(--border); border-radius: 11px;
+      background: var(--surface); overflow: hidden;
+    }
+    .cat-head {
+      width: 100%; border: 0; background: transparent; display: flex; align-items: center; gap: 10px;
+      padding: 11px 13px; text-align: left;
+    }
+    .cat-icon {
+      width: 28px; height: 28px; flex: 0 0 auto; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--accent-bg); color: var(--accent);
+    }
+    .cat-icon svg { width: 16px; height: 16px; }
+    .cat.cat-acuut     .cat-icon { background: var(--cat-acuut-bg);     color: var(--cat-acuut-ink); }
+    .cat.cat-hart      .cat-icon { background: var(--cat-hart-bg);      color: var(--cat-hart-ink); }
+    .cat.cat-infectie  .cat-icon { background: var(--cat-infectie-bg);  color: var(--cat-infectie-ink); }
+    .cat.cat-psyche    .cat-icon { background: var(--cat-psyche-bg);    color: var(--cat-psyche-ink); }
+    .cat.cat-medicatie .cat-icon { background: var(--cat-medicatie-bg); color: var(--cat-medicatie-ink); }
+    .cat.cat-endocrien .cat-icon { background: var(--cat-endocrien-bg); color: var(--cat-endocrien-ink); }
+    .cat.cat-neuro     .cat-icon { background: var(--cat-neuro-bg);     color: var(--cat-neuro-ink); }
+    .cat-name { flex: 1; font-family: var(--font-display); font-size: 13px; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); }
+    .cat-count { font-family: var(--font-mono); font-size: 11px; color: var(--muted-2); }
+    .cat-chev { width: 16px; height: 16px; color: var(--muted-2); transition: transform .18s ease; flex: 0 0 auto; }
+    .cat.collapsed .cat-chev { transform: rotate(-90deg); }
+    .cat-body { border-top: 1px solid var(--border); }
+    .cat.collapsed .cat-body { display: none; }
+
+    /* ---- list rows ---- */
+    .row {
+      width: 100%; border: 0; background: transparent; display: flex; align-items: center; gap: 9px;
+      padding: 9px 13px; text-align: left; border-bottom: 1px solid var(--border);
+    }
+    .row:last-child { border-bottom: 0; }
+    .row:active { background: var(--surface-2); }
+    .row-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+    .row-name { font-size: 13.5px; font-weight: 500; color: var(--ink); letter-spacing: -0.01em; }
+    .row-name .dot {
+      display: inline-block; width: 5px; height: 5px; border-radius: 50%;
+      background: var(--accent); margin-right: 6px; vertical-align: middle;
+    }
+    .row-meta {
+      font-family: var(--font-mono); font-size: 10px; color: var(--muted-2);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .row-star { color: var(--accent); display: flex; flex: 0 0 auto; }
+    .row-star svg { width: 13px; height: 13px; }
+    .row-chev { width: 15px; height: 15px; color: var(--muted-2); flex: 0 0 auto; }
+    .tagpill {
+      font-family: var(--font-mono); font-size: 8px; letter-spacing: .05em; text-transform: uppercase;
+      padding: 2px 5px; border-radius: 4px; flex: 0 0 auto;
+    }
+    .tag-acuut { background: var(--red-bg); color: var(--red-ink); }
+    .tag-pediatrisch { background: var(--blue-bg); color: var(--blue-ink); }
+    .tag-lookup { background: var(--surface-2); color: var(--muted); }
+
+    /* ---- compact card view ---- */
+    .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px; }
+    .card {
+      border: 1px solid var(--border); border-radius: 9px; background: var(--bg); padding: 10px;
+      display: flex; flex-direction: column; gap: 3px; text-align: left; min-height: 64px;
+    }
+    .card:active { background: var(--surface-2); }
+    .card .m { font-family: var(--font-mono); font-size: 9px; color: var(--accent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card .n { font-size: 12.5px; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; line-height: 1.25; }
+    .card.featured { border-color: var(--accent-border); background: var(--accent-bg); }
+    .card .tagpill { align-self: flex-start; margin-top: auto; }
+
+    /* ---- search results ---- */
+    .results-head {
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: .06em; text-transform: uppercase;
+      color: var(--muted); margin: 4px 0 8px;
+    }
+    .flat { border: 1px solid var(--border); border-radius: 11px; background: var(--surface); overflow: hidden; }
+    .empty { text-align: center; color: var(--muted); font-size: 13px; padding: 36px 14px; }
+
+    /* ---- toast ---- */
+    .toast {
+      position: fixed; left: 50%; bottom: calc(20px + var(--safe-bottom)); transform: translateX(-50%) translateY(20px);
+      background: var(--ink); color: var(--bg); font-size: 12px; font-weight: 500;
+      padding: 9px 15px; border-radius: 9px; opacity: 0; pointer-events: none;
+      transition: opacity .2s ease, transform .2s ease; z-index: 50; max-width: 88%;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="preview-banner">
+      <div class="label">PREVIEW-ONTWERP<br>niet de live app</div>
+      <div class="seg" id="viewSeg">
+        <button data-view="list">Lijst</button>
+        <button data-view="cards">Kaarten</button>
+      </div>
+    </div>
+    <div class="topbar">
+      <div class="topbar-id">
+        <span class="eyebrow">Het Roosendael · Roermond</span>
+        <h1>Praktijktools</h1>
+      </div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Wissel licht/donker">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+      </button>
+    </div>
+    <div class="search">
+      <div class="search-inner">
+        <span class="search-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        </span>
+        <input id="searchbox" type="search" placeholder="Zoek tool, score, medicatie…" autocomplete="off" />
+      </div>
+    </div>
+    <div class="content" id="content"></div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const TOOLS = [
+      { id:'egfr', name:'eGFR + medicatie-flags', category:'Hart & vaten', metaLabel:'CKD-EPI 2021', tag:'', featured:true },
+      { id:'chads-hasbled', name:'CHA₂DS₂-VASc + HAS-BLED', category:'Hart & vaten', metaLabel:'AF · antistolling', tag:'', featured:true },
+      { id:'score2', name:'SCORE2 + CV-leeftijd', category:'Hart & vaten', metaLabel:'NL low-risk · NHG/ESC', tag:'', featured:false },
+      { id:'wells-dvt', name:'Wells DVT', category:'Hart & vaten', metaLabel:'Beenklacht · trombose', tag:'', featured:false },
+      { id:'abcd2', name:'ABCD² (TIA)', category:'Hart & vaten', metaLabel:'TIA · stroke-risico', tag:'', featured:false },
+      { id:'anaphylaxis', name:'Anafylaxie-protocol', category:'Acuut & spoed', metaLabel:'NVA · ABCDE', tag:'acuut', featured:true },
+      { id:'abcde', name:'ABCDE-kaart (NHG)', category:'Acuut & spoed', metaLabel:'NHG · dec 2024', tag:'acuut', featured:true },
+      { id:'spoedmedicatie', name:'Spoedmedicatie-voorraad', category:'Acuut & spoed', metaLabel:'NHG · BR 2024', tag:'', featured:false },
+      { id:'qsofa', name:'qSOFA', category:'Acuut & spoed', metaLabel:'Sepsis · bedside-score', tag:'', featured:false },
+      { id:'ottawa', name:'Ottawa Ankle/Knee Rules', category:'Acuut & spoed', metaLabel:'X-ray-indicatie · trauma', tag:'', featured:false },
+      { id:'hoofdtrauma', name:'Hoofdtrauma (NICE)', category:'Acuut & spoed', metaLabel:'NICE NG232 · CT-criteria', tag:'acuut', featured:false },
+      { id:'centor', name:'Centor / McIsaac', category:'Infectie & antibiotica', metaLabel:'Keelpijn · antibiotica', tag:'', featured:false },
+      { id:'ab-keuze', name:'Antibiotica per indicatie', category:'Infectie & antibiotica', metaLabel:'NHG · SWAB', tag:'', featured:true },
+      { id:'ab-dosering', name:'Antibiotica-dosering per middel', category:'Infectie & antibiotica', metaLabel:'FK · Kinderformularium', tag:'lookup', featured:true },
+      { id:'paracetamol-peds', name:'Paracetamol pediatrisch', category:'Infectie & antibiotica', metaLabel:'Kinderformularium', tag:'pediatrisch', featured:false },
+      { id:'phq9', name:'PHQ-9', category:'Psyche & GGZ', metaLabel:'Depressie · 9 items', tag:'', featured:false },
+      { id:'gad7', name:'GAD-7', category:'Psyche & GGZ', metaLabel:'Angst · 7 items', tag:'', featured:false },
+      { id:'audit-c', name:'AUDIT-C', category:'Psyche & GGZ', metaLabel:'Alcohol · 3 items', tag:'', featured:false },
+      { id:'adhd-meds', name:'ADHD-medicatie', category:'Psyche & GGZ', metaLabel:'Dosering · titratie', tag:'pediatrisch', featured:false },
+      { id:'asrs', name:'ADHD-screener (ASRS-v1.1)', category:'Psyche & GGZ', metaLabel:'WHO · 6-item · volwassenen', tag:'', featured:false },
+      { id:'epds', name:'EPDS (postpartum)', category:'Psyche & GGZ', metaLabel:'10 items · postpartum', tag:'', featured:false },
+      { id:'moca', name:'MoCA-scoring', category:'Psyche & GGZ', metaLabel:'Cognitieve screening · 30 pt', tag:'', featured:false },
+      { id:'ad-switch', name:'Antidepressiva-switch', category:'Medicatie & rotatie', metaLabel:'SSRI/SNRI/TCA/MAOi', tag:'', featured:true },
+      { id:'opioid-rotate', name:'Opiatenrotatie', category:'Medicatie & rotatie', metaLabel:'OME · Pallialine', tag:'', featured:true },
+      { id:'cyp', name:'CYP-interacties', category:'Medicatie & rotatie', metaLabel:'P450 · SIP-score', tag:'', featured:true },
+      { id:'benzo-eq', name:'Benzodiazepine-equivalenten', category:'Medicatie & rotatie', metaLabel:'Diazepam-equivalent · Ashton', tag:'', featured:false },
+      { id:'steroid-eq', name:'Corticoïd-equivalenten', category:'Medicatie & rotatie', metaLabel:'Glucocorticoïden', tag:'', featured:false },
+      { id:'stopp-start', name:'STOPP/START quick screener', category:'Medicatie & rotatie', metaLabel:'Ouderen · medicatiereview', tag:'', featured:false },
+      { id:'acb', name:'Anticholinerge belasting (ACB)', category:'Medicatie & rotatie', metaLabel:'Boustani · medicatiereview', tag:'', featured:false },
+      { id:'ramadan-med', name:'Ramadan & medicatie', category:'Medicatie & rotatie', metaLabel:'Vasten · NHG + DAR', tag:'', featured:false },
+      { id:'contraception', name:'Anticonceptie-keuzehulp', category:'Endocrien & metabool', metaLabel:'NHG · WHO MEC', tag:'', featured:false },
+      { id:'findrisc', name:'FINDRISC', category:'Endocrien & metabool', metaLabel:'Diabetes · screening', tag:'', featured:false },
+      { id:'hrt', name:'Hormonale substitutie (HRT)', category:'Endocrien & metabool', metaLabel:'Overgang · NHG', tag:'', featured:false },
+      { id:'testosterone', name:'Testosteron-suppletie', category:'Endocrien & metabool', metaLabel:'NHG-Standpunt 2022', tag:'', featured:false },
+      { id:'dermatomes', name:'Dermatomen & myotomen', category:'Neuro & anatomie', metaLabel:'C2 – S5', tag:'lookup', featured:false },
+      { id:'cranial-nerves', name:'Hersenzenuwen I–XII', category:'Neuro & anatomie', metaLabel:'Functie + test + laesie', tag:'lookup', featured:false },
+      { id:'muscles', name:'Spieren & innervatie', category:'Neuro & anatomie', metaLabel:'Wortel + perifere zenuw', tag:'lookup', featured:false }
+    ];
+    const FAV_IDS = ['egfr', 'ab-dosering', 'phq9', 'centor', 'anaphylaxis'];
+    const CAT_ORDER = ['Acuut & spoed', 'Hart & vaten', 'Infectie & antibiotica', 'Psyche & GGZ', 'Medicatie & rotatie', 'Endocrien & metabool', 'Neuro & anatomie'];
+    const CATEGORY_CLASS = {
+      'Acuut & spoed': 'cat-acuut', 'Hart & vaten': 'cat-hart', 'Infectie & antibiotica': 'cat-infectie',
+      'Psyche & GGZ': 'cat-psyche', 'Medicatie & rotatie': 'cat-medicatie',
+      'Endocrien & metabool': 'cat-endocrien', 'Neuro & anatomie': 'cat-neuro'
+    };
+    const CATEGORY_ICONS = {
+      'Acuut & spoed': '<path d="M12 2v6"/><path d="M12 14v8"/><circle cx="12" cy="11" r="2"/><path d="M5 9c0-3.866 3.134-7 7-7s7 3.134 7 7"/><path d="M19 13c0 3.866-3.134 7-7 7s-7-3.134-7-7"/>',
+      'Hart & vaten': '<path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0L12 5.34l-.77-.76a5.4 5.4 0 0 0-7.65 7.65l8.42 8.42 8.42-8.42a5.4 5.4 0 0 0 0-7.65z"/>',
+      'Infectie & antibiotica': '<circle cx="12" cy="12" r="3"/><path d="M12 3v3"/><path d="M12 18v3"/><path d="M3 12h3"/><path d="M18 12h3"/><path d="m5.6 5.6 2.1 2.1"/><path d="m16.3 16.3 2.1 2.1"/><path d="m5.6 18.4 2.1-2.1"/><path d="m16.3 7.7 2.1-2.1"/>',
+      'Psyche & GGZ': '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+      'Medicatie & rotatie': '<path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/>',
+      'Endocrien & metabool': '<path d="M3 12c0-4.97 4.03-9 9-9s9 4.03 9 9-4.03 9-9 9c-2.97 0-5.61-1.44-7.25-3.65"/><path d="M12 7v5l3 3"/>',
+      'Neuro & anatomie': '<path d="M12 4.5C9.5 4 7 5.5 7 8c0 1 .5 2 1 2.5C7 11 6 12 6 13.5c0 1.5 1 2.5 2 3"/><path d="M12 4.5c2.5-.5 5 1 5 3.5 0 1-.5 2-1 2.5 1 .5 2 1.5 2 3 0 1.5-1 2.5-2 3"/><path d="M12 4.5v15"/><path d="M8 16.5c.5 2 2 3 4 3s3.5-1 4-3"/>'
+    };
+
+    const PKEY = 'praktijktools.preview.';
+    const State = {
+      view: localStorage.getItem(PKEY + 'view') || 'list',
+      collapsed: new Set(JSON.parse(localStorage.getItem(PKEY + 'collapsed') || '[]')),
+      search: ''
+    };
+    const saveCollapsed = () => localStorage.setItem(PKEY + 'collapsed', JSON.stringify([...State.collapsed]));
+
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+    const svg = (inner, w) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
+    const CHEV_DOWN = svg('<path d="m6 9 6 6 6-6"/>');
+    const CHEV_RIGHT = svg('<path d="m9 6 6 6-6 6"/>');
+    const STAR = '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
+
+    function rowHtml(t) {
+      const fav = FAV_IDS.includes(t.id);
+      const tagPill = t.tag ? `<span class="tagpill tag-${t.tag}">${esc(t.tag)}</span>` : '';
+      const dot = t.featured ? '<span class="dot"></span>' : '';
+      return `<button class="row" data-id="${esc(t.id)}">
+        <span class="row-main">
+          <span class="row-name">${dot}${esc(t.name)}</span>
+          <span class="row-meta">${esc(t.metaLabel)}</span>
+        </span>
+        ${tagPill}
+        ${fav ? `<span class="row-star">${STAR}</span>` : ''}
+        <span class="row-chev">${CHEV_RIGHT}</span>
+      </button>`;
+    }
+    function cardsHtml(tools) {
+      return `<div class="cards">${tools.map(t => {
+        const tagPill = t.tag ? `<span class="tagpill tag-${t.tag}">${esc(t.tag)}</span>` : '';
+        return `<button class="card ${t.featured ? 'featured' : ''}" data-id="${esc(t.id)}">
+          <span class="m">${esc(t.metaLabel)}</span>
+          <span class="n">${esc(t.name)}</span>
+          ${tagPill}
+        </button>`;
+      }).join('')}</div>`;
+    }
+    function catHtml(cat) {
+      const tools = TOOLS.filter(t => t.category === cat);
+      if (!tools.length) return '';
+      const collapsed = State.collapsed.has(cat);
+      const inner = State.view === 'cards' ? cardsHtml(tools) : tools.map(rowHtml).join('');
+      return `<div class="cat ${CATEGORY_CLASS[cat]} ${collapsed ? 'collapsed' : ''}">
+        <button class="cat-head" data-toggle="${esc(cat)}">
+          <span class="cat-icon">${svg(CATEGORY_ICONS[cat])}</span>
+          <span class="cat-name">${esc(cat)}</span>
+          <span class="cat-count">${tools.length}</span>
+          <span class="cat-chev">${CHEV_DOWN}</span>
+        </button>
+        <div class="cat-body">${inner}</div>
+      </div>`;
+    }
+    function favsHtml() {
+      const pinned = FAV_IDS.map(id => TOOLS.find(t => t.id === id)).filter(Boolean);
+      return `<div class="favs">
+        <div class="favs-head">${STAR.replace('<svg', '<svg width="11" height="11"')} Favorieten</div>
+        <div class="favs-scroll">
+          ${pinned.map(t => `<button class="fav-chip" data-id="${esc(t.id)}">
+            <span class="m">${esc(t.metaLabel)}</span>
+            <span class="n">${esc(t.name)}</span>
+          </button>`).join('')}
+        </div>
+      </div>`;
+    }
+    function controlsHtml() {
+      const activeCats = CAT_ORDER.filter(c => TOOLS.some(t => t.category === c));
+      const allCollapsed = activeCats.every(c => State.collapsed.has(c));
+      return `<div class="cat-controls">
+        <button id="toggleAll">${allCollapsed ? 'Alles uitklappen' : 'Alles inklappen'}</button>
+      </div>`;
+    }
+
+    function render() {
+      const q = State.search.trim().toLowerCase();
+      const content = document.getElementById('content');
+      if (q) {
+        const hits = TOOLS.filter(t =>
+          t.name.toLowerCase().includes(q) ||
+          t.metaLabel.toLowerCase().includes(q) ||
+          t.category.toLowerCase().includes(q));
+        if (!hits.length) {
+          content.innerHTML = `<div class="empty">Geen tool gevonden voor &ldquo;${esc(State.search)}&rdquo;.</div>`;
+          return;
+        }
+        const list = State.view === 'cards'
+          ? cardsHtml(hits)
+          : `<div class="flat">${hits.map(rowHtml).join('')}</div>`;
+        content.innerHTML = `<div class="results-head">${hits.length} ${hits.length === 1 ? 'resultaat' : 'resultaten'}</div>${list}`;
+        return;
+      }
+      content.innerHTML = favsHtml() + controlsHtml() + CAT_ORDER.map(catHtml).join('');
+    }
+
+    function showToast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(el._t);
+      el._t = setTimeout(() => el.classList.remove('show'), 1700);
+    }
+
+    // ---- events ----
+    document.getElementById('content').addEventListener('click', e => {
+      const head = e.target.closest('[data-toggle]');
+      if (head) {
+        const cat = head.dataset.toggle;
+        if (State.collapsed.has(cat)) State.collapsed.delete(cat);
+        else State.collapsed.add(cat);
+        saveCollapsed();
+        render();
+        return;
+      }
+      if (e.target.closest('#toggleAll')) {
+        const activeCats = CAT_ORDER.filter(c => TOOLS.some(t => t.category === c));
+        const allCollapsed = activeCats.every(c => State.collapsed.has(c));
+        if (allCollapsed) State.collapsed.clear();
+        else activeCats.forEach(c => State.collapsed.add(c));
+        saveCollapsed();
+        render();
+        return;
+      }
+      const item = e.target.closest('[data-id]');
+      if (item) {
+        const t = TOOLS.find(x => x.id === item.dataset.id);
+        showToast(`Preview — hier opent: ${t ? t.name : item.dataset.id}`);
+      }
+    });
+
+    document.getElementById('viewSeg').addEventListener('click', e => {
+      const btn = e.target.closest('[data-view]');
+      if (!btn) return;
+      State.view = btn.dataset.view;
+      localStorage.setItem(PKEY + 'view', State.view);
+      syncViewSeg();
+      render();
+    });
+    function syncViewSeg() {
+      document.querySelectorAll('#viewSeg button').forEach(b =>
+        b.classList.toggle('active', b.dataset.view === State.view));
+    }
+
+    document.getElementById('searchbox').addEventListener('input', e => {
+      State.search = e.target.value;
+      render();
+    });
+
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      const cur = document.documentElement.getAttribute('data-theme');
+      let isDark;
+      if (cur === 'dark') isDark = true;
+      else if (cur === 'light') isDark = false;
+      else isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const next = isDark ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem(PKEY + 'theme', next);
+    });
+
+    // ---- init ----
+    (function init() {
+      const savedTheme = localStorage.getItem(PKEY + 'theme');
+      if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
+      syncViewSeg();
+      render();
+    })();
+  </script>
+</body>
+</html>

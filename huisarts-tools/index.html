@@ -5923,6 +5923,347 @@
   }
 
   /* ==================================================================
+     37. Antibiotica-dosering per middel — orale antibiotica
+     ================================================================== */
+  const AB_DOSING = [
+    // ---- Penicillines ----
+    {
+      id: 'amoxicilline', klasse: 'Penicillines', name: 'Amoxicilline',
+      adult: "500 mg 3×/dag; bij pneumonie 750–1000 mg 3×/dag. Kuurduur indicatie-afhankelijk (meestal 5–7 dagen).",
+      pedText: "Meestal 25–50 mg/kg/dag in 3 doses; bij otitis media acuta en pneumonie 40–75 mg/kg/dag. De exacte mg/kg is indicatie-afhankelijk — zie Kinderformularium.",
+      pedKg: { low: 25, high: 50, doses: 3, maxDay: 3000 },
+      renal: "Bij eGFR < 30: doseerinterval verlengen of dosis verlagen; bij eGFR < 10 maximaal 1×/dag. Bij sterke cumulatie risico op neurotoxiciteit.",
+      renalColor: 'amber',
+      hepatic: "Geen dosisaanpassing nodig.",
+      hepaticColor: 'green',
+      preg: "Veilig in zwangerschap en lactatie — eerste keus binnen de penicillinegroep.",
+      pregColor: 'green',
+      allergy: "Penicillinegroep — niet geven bij penicilline-allergie. Bij een niet-ernstige reactie in de voorgeschiedenis is een cefalosporine vaak nog mogelijk; bij eerdere anafylaxie elke kruisreactie vermijden.",
+      allergyColor: 'red',
+      note: "Een maculopapuleus exantheem — vooral bij gelijktijdige mononucleosis — is meestal géén echte allergie. Bij twijfel de allergie-anamnese uitdiepen.",
+      bron: "Farmacotherapeutisch Kompas · Kinderformularium · SWAB."
+    },
+    {
+      id: 'amox-clav', klasse: 'Penicillines', name: 'Amoxicilline / clavulaanzuur',
+      adult: "500/125 mg 3×/dag of 875/125 mg 2×/dag. Kuurduur indicatie-afhankelijk.",
+      pedText: "25–45 mg/kg/dag van de amoxicilline-component in 3 doses. Let op de juiste suspensie-verhouding — zie Kinderformularium.",
+      pedKg: { low: 25, high: 45, doses: 3, maxDay: 1500 },
+      pedKgNote: "Berekening op de amoxicilline-component.",
+      renal: "Bij eGFR 10–30: 500/125 mg maximaal 2×/dag. Bij eGFR < 10: 500/125 mg 1×/dag. Vermijd de 875/125 mg-formulering bij eGFR < 30.",
+      renalColor: 'amber',
+      hepatic: "Risico op cholestatische hepatitis, vaker dan bij amoxicilline alleen. Vermijden bij een eerdere leverreactie op amox/clav; voorzichtig bij leverziekte.",
+      hepaticColor: 'amber',
+      preg: "Kan gebruikt worden indien geïndiceerd; geef waar mogelijk de voorkeur aan smal-spectrum amoxicilline. Lactatie: acceptabel.",
+      pregColor: 'amber',
+      allergy: "Penicillinegroep — niet geven bij penicilline-allergie.",
+      allergyColor: 'red',
+      note: "Meer gastro-intestinale bijwerkingen (diarree) dan amoxicilline. Reserveer voor indicaties waar bètalactamasevorming verwacht wordt.",
+      bron: "Farmacotherapeutisch Kompas · Kinderformularium · SWAB."
+    },
+    {
+      id: 'feneticilline', klasse: 'Penicillines', name: 'Feneticilline',
+      adult: "250–500 mg 3×/dag. Innemen ½–1 uur vóór de maaltijd.",
+      pedText: "25–50 mg/kg/dag in 3 doses, op de nuchtere maag. Zie Kinderformularium.",
+      pedKg: { low: 25, high: 50, doses: 3, maxDay: 1500 },
+      renal: "Bij ernstige nierinsufficiëntie (eGFR < 10) het doseerinterval verlengen. Bij matige nierfunctiestoornis meestal geen aanpassing.",
+      renalColor: 'amber',
+      hepatic: "Geen dosisaanpassing nodig.",
+      hepaticColor: 'green',
+      preg: "Veilig in zwangerschap en lactatie.",
+      pregColor: 'green',
+      allergy: "Penicillinegroep — niet geven bij penicilline-allergie.",
+      allergyColor: 'red',
+      note: "Smal-spectrum penicilline; eerste keus bij streptokokken-faryngitis en zekere streptokokken-cellulitis. De absorptie daalt met voedsel — daarom nuchter innemen.",
+      bron: "Farmacotherapeutisch Kompas · SWAB · NHG-Behandelrichtlijnen."
+    },
+    {
+      id: 'flucloxacilline', klasse: 'Penicillines', name: 'Flucloxacilline',
+      adult: "500 mg 4×/dag; bij ernstige infectie tot 1000 mg 4×/dag. Innemen op de nuchtere maag (1 uur vóór of 2 uur na de maaltijd).",
+      pedText: "50–100 mg/kg/dag in 3–4 doses, op de nuchtere maag. Zie Kinderformularium.",
+      pedKg: { low: 50, high: 100, doses: 4, maxDay: 4000 },
+      renal: "Bij eGFR < 10 de dosis verlagen. Bij matige nierfunctiestoornis meestal geen aanpassing.",
+      renalColor: 'amber',
+      hepatic: "Risico op — soms pas wéken na de kuur optredende — cholestatische hepatitis, vooral bij ouderen en kuren langer dan twee weken. Vermijd langdurig gebruik bij leverziekte; staken bij icterus.",
+      hepaticColor: 'amber',
+      preg: "Veilig in zwangerschap en lactatie.",
+      pregColor: 'green',
+      allergy: "Penicillinegroep — niet geven bij penicilline-allergie.",
+      allergyColor: 'red',
+      note: "Penicillinase-resistent — eerste keus bij Staphylococcus aureus (impetigo, geïnfecteerd eczeem, stafylokokken-cellulitis). Voedsel vermindert de absorptie sterk: altijd nuchter innemen.",
+      bron: "Farmacotherapeutisch Kompas · SWAB."
+    },
+    {
+      id: 'fenoxymethylpenicilline', klasse: 'Penicillines', name: 'Fenoxymethylpenicilline',
+      adult: "500 mg 3×/dag bij faryngitis; bij andere streptokokken-indicaties volgens richtlijn.",
+      pedText: "25–50 mg/kg/dag in 3 doses. Zie Kinderformularium.",
+      pedKg: { low: 25, high: 50, doses: 3, maxDay: 1500 },
+      renal: "Bij ernstige nierinsufficiëntie het doseerinterval verlengen; bij matige nierfunctiestoornis meestal geen aanpassing.",
+      renalColor: 'amber',
+      hepatic: "Geen dosisaanpassing nodig.",
+      hepaticColor: 'green',
+      preg: "Veilig in zwangerschap en lactatie.",
+      pregColor: 'green',
+      allergy: "Penicillinegroep — niet geven bij penicilline-allergie.",
+      allergyColor: 'red',
+      note: "Zuurstabiel smal-spectrum penicilline; functioneel vergelijkbaar met feneticilline, dat in Nederland gangbaarder is. Mag met voedsel ingenomen worden.",
+      bron: "Farmacotherapeutisch Kompas · SWAB."
+    },
+    // ---- Macroliden ----
+    {
+      id: 'claritromycine', klasse: 'Macroliden', name: 'Claritromycine',
+      adult: "500 mg 2×/dag, of de gereguleerde-afgifte-vorm 500 mg 1×/dag. Kuurduur indicatie-afhankelijk.",
+      pedText: "15 mg/kg/dag in 2 doses. Zie Kinderformularium.",
+      pedKg: { low: 15, high: 15, doses: 2, maxDay: 1000 },
+      renal: "Bij eGFR < 30: dosis halveren of het doseerinterval verdubbelen.",
+      renalColor: 'amber',
+      hepatic: "Voorzichtig bij leverfunctiestoornis; staken bij tekenen van hepatitis. De combinatie van ernstige leverinsufficiëntie én nierfunctiestoornis is een contra-indicatie.",
+      hepaticColor: 'amber',
+      preg: "Terughoudend, vooral in het eerste trimester; als een macrolide nodig is heeft azitromycine de voorkeur. Lactatie: acceptabel.",
+      pregColor: 'amber',
+      allergy: "Geen kruisreactie met penicilline — bruikbaar alternatief bij penicilline-allergie.",
+      allergyColor: 'green',
+      note: "Sterke CYP3A4-remmer én QT-verlenging: controleer interacties (onder meer statines, sommige DOAC's). Vermijd combinatie met andere QT-verlengende middelen.",
+      bron: "Farmacotherapeutisch Kompas · SWAB."
+    },
+    {
+      id: 'azitromycine', klasse: 'Macroliden', name: 'Azitromycine',
+      adult: "500 mg 1×/dag gedurende 3 dagen, óf 500 mg op dag 1 gevolgd door 250 mg/dag op dag 2–5.",
+      pedText: "10 mg/kg/dag (maximaal 500 mg) 1×/dag gedurende 3 dagen. Zie Kinderformularium.",
+      pedKg: { low: 10, high: 10, doses: 1, maxDay: 500 },
+      renal: "Geen aanpassing bij lichte tot matige nierfunctiestoornis; voorzichtig bij eGFR < 10.",
+      renalColor: 'green',
+      hepatic: "Voorzichtig bij leverfunctiestoornis; staken bij tekenen van hepatitis.",
+      hepaticColor: 'amber',
+      preg: "Macrolide van voorkeur in de zwangerschap indien geïndiceerd. Lactatie: acceptabel.",
+      pregColor: 'green',
+      allergy: "Geen kruisreactie met penicilline — bruikbaar alternatief bij penicilline-allergie.",
+      allergyColor: 'green',
+      note: "QT-verlenging — voorzichtig bij andere QT-verlengers. De lange weefselhalfwaardetijd verklaart het korte kuurschema. Minder CYP-interacties dan claritromycine.",
+      bron: "Farmacotherapeutisch Kompas · SWAB."
+    },
+    // ---- Tetracyclinen ----
+    {
+      id: 'doxycycline', klasse: 'Tetracyclinen', name: 'Doxycycline',
+      adult: "200 mg op dag 1, daarna 100 mg 1×/dag; bij sommige indicaties 100 mg 2×/dag. Innemen met ruim water, daarna rechtop blijven.",
+      pedText: "Niet bij kinderen jonger dan 8 jaar (tandverkleuring), behalve bij een strikte indicatie. Vanaf 8 jaar: 4 mg/kg/dag in 1–2 doses, maximaal 200 mg/dag.",
+      pedKg: { low: 4, high: 4, doses: 1, maxDay: 200 },
+      pedKgNote: "Geldt voor kinderen ≥ 8 jaar.",
+      renal: "Geen dosisaanpassing nodig — in tegenstelling tot de overige tetracyclinen veilig bij nierinsufficiëntie.",
+      renalColor: 'green',
+      hepatic: "Voorzichtig bij ernstige leverfunctiestoornis.",
+      hepaticColor: 'amber',
+      preg: "Gecontra-indiceerd in de zwangerschap (effecten op tand- en botaanleg vanaf het tweede trimester). Lactatie: kortdurend gebruik wordt afgeraden — kies een alternatief.",
+      pregColor: 'red',
+      allergy: "Geen kruisreactie met penicilline — bruikbaar alternatief bij penicilline-allergie.",
+      allergyColor: 'green',
+      note: "Niet innemen met zuivel, antacida of ijzerpreparaten (chelatie verlaagt de opname). Geeft fotosensibilisatie — patiënt waarschuwen. Tegen slokdarmirritatie met ruim water en niet vlak voor het slapen innemen.",
+      bron: "Farmacotherapeutisch Kompas · SWAB · NHG-Behandelrichtlijnen."
+    },
+    // ---- Urineweg-antibiotica ----
+    {
+      id: 'nitrofurantoine', klasse: 'Urineweg-antibiotica', name: 'Nitrofurantoïne',
+      adult: "50 mg 4×/dag óf de gereguleerde-afgifte-vorm 100 mg 2×/dag, gedurende 5 dagen bij ongecompliceerde cystitis.",
+      pedText: "Vanaf 1 maand: 3–5 mg/kg/dag in 4 doses (maximaal 300 mg/dag). Bedenk dat een urineweginfectie bij een kind altijd verder onderzoek vraagt.",
+      pedKg: { low: 3, high: 5, doses: 4, maxDay: 300 },
+      renal: "Gecontra-indiceerd bij eGFR < 30: onvoldoende werkzame urineconcentratie én een verhoogd risico op systemische toxiciteit. Bij eGFR 30–45 alleen kortdurend en terughoudend.",
+      renalColor: 'red',
+      hepatic: "Vermijden bij een eerdere nitrofurantoïne-geassocieerde leverreactie; zeldzaam (chronische) hepatitis.",
+      hepaticColor: 'amber',
+      preg: "Bruikbaar tot ongeveer 36 weken; vermijden à terme en rond de bevalling (risico op hemolyse bij de neonaat). Lactatie: vermijden in de eerste levensmaand en bij verdenking op G6PD-deficiëntie van het kind.",
+      pregColor: 'amber',
+      allergy: "Geen kruisreactie met penicilline.",
+      allergyColor: 'green',
+      note: "Alleen voor ongecompliceerde lagere urineweginfecties — bereikt geen weefselspiegels, dus niet bij pyelonefritis of prostatitis. Zeldzame maar ernstige pulmonale en hepatische toxiciteit bij langdurig (profylactisch) gebruik.",
+      bron: "Farmacotherapeutisch Kompas · NHG-Standaard Urineweginfecties · SWAB."
+    },
+    {
+      id: 'fosfomycine', klasse: 'Urineweg-antibiotica', name: 'Fosfomycine',
+      adult: "3 g als eenmalige gift, op de lege maag — bij voorkeur voor het slapen, na blaaslediging.",
+      pedText: "Vanaf 12 jaar of ongeveer 50 kg: 3 g eenmalig. Bij jongere kinderen onvoldoende gegevens — overleg of verwijs.",
+      pedKg: null,
+      renal: "Bij eGFR < 10 niet aanbevolen. Voor de eenmalige gift bij lichte tot matige nierfunctiestoornis is meestal geen aanpassing nodig.",
+      renalColor: 'amber',
+      hepatic: "Geen dosisaanpassing nodig.",
+      hepaticColor: 'green',
+      preg: "Kan in de zwangerschap gebruikt worden (eenmalige gift). Lactatie: kortdurend acceptabel.",
+      pregColor: 'green',
+      allergy: "Geen kruisreactie met penicilline.",
+      allergyColor: 'green',
+      note: "Alleen voor ongecompliceerde lagere urineweginfecties. Innemen op de lege maag; het effect treedt vertraagd in.",
+      bron: "Farmacotherapeutisch Kompas · NHG-Standaard Urineweginfecties."
+    },
+    {
+      id: 'trimethoprim', klasse: 'Urineweg-antibiotica', name: 'Trimethoprim',
+      adult: "300 mg 1×/dag, bij voorkeur 's avonds; 3 dagen bij ongecompliceerde cystitis.",
+      pedText: "4–6 mg/kg/dag in 2 doses (maximaal 300 mg/dag). Zie Kinderformularium.",
+      pedKg: { low: 4, high: 6, doses: 2, maxDay: 300 },
+      renal: "Bij eGFR 15–30: na 3 dagen de dosis halveren. Bij eGFR < 15: vermijden of een halve dosis. Let op hyperkaliëmie.",
+      renalColor: 'amber',
+      hepatic: "Geen specifieke dosisaanpassing.",
+      hepaticColor: 'green',
+      preg: "Vermijden in het eerste trimester (foliumzuurantagonist — risico op neuraalbuisdefecten); in het tweede en derde trimester acceptabel, bij voorkeur met foliumzuursuppletie. Lactatie: acceptabel bij een gezonde voldragen zuigeling.",
+      pregColor: 'amber',
+      allergy: "Geen kruisreactie met penicilline.",
+      allergyColor: 'green',
+      note: "Hyperkaliëmie-risico, vooral in combinatie met ACE-remmers, ARB's of kaliumsparende diuretica — controleer het kalium bij risicopatiënten. Kan het creatinine schijnbaar laten stijgen door remming van de tubulaire secretie.",
+      bron: "Farmacotherapeutisch Kompas · NHG-Standaard Urineweginfecties."
+    },
+    {
+      id: 'cotrimoxazol', klasse: 'Urineweg-antibiotica', name: 'Cotrimoxazol',
+      adult: "960 mg 2×/dag.",
+      pedText: "36 mg/kg/dag van de totale cotrimoxazol in 2 doses (ongeveer 6 mg trimethoprim/kg/dag). Zie Kinderformularium.",
+      pedKg: { low: 36, high: 36, doses: 2, maxDay: 1920 },
+      pedKgNote: "Berekening op de totale cotrimoxazol-hoeveelheid.",
+      renal: "Bij eGFR 15–30: dosis halveren. Bij eGFR < 15: niet aanbevolen.",
+      renalColor: 'amber',
+      hepatic: "Vermijden bij ernstige leverinsufficiëntie.",
+      hepaticColor: 'amber',
+      preg: "Vermijden in het eerste trimester (trimethoprim-component) en rond de à terme periode (sulfonamide — risico op kernicterus bij de neonaat). Lactatie: vermijden in de eerste levensmaand, bij prematuren en bij G6PD-deficiëntie.",
+      pregColor: 'red',
+      allergy: "Geen kruisreactie met penicilline, maar bevat een sulfonamide — niet geven bij sulfa-allergie. Verhoogd risico op ernstige huidreacties (Stevens-Johnson-syndroom, TEN).",
+      allergyColor: 'amber',
+      note: "Hyperkaliëmie-risico, net als trimethoprim. In de eerste lijn een reservemiddel — bij voorkeur gericht op de kweekuitslag inzetten.",
+      bron: "Farmacotherapeutisch Kompas · SWAB."
+    },
+    // ---- Overige ----
+    {
+      id: 'clindamycine', klasse: 'Overige', name: 'Clindamycine',
+      adult: "600 mg 3×/dag of 300 mg 4×/dag. Innemen met ruim water.",
+      pedText: "20–40 mg/kg/dag in 3–4 doses. Zie Kinderformularium.",
+      pedKg: { low: 20, high: 40, doses: 3, maxDay: 1800 },
+      renal: "Geen dosisaanpassing nodig.",
+      renalColor: 'green',
+      hepatic: "Bij ernstige leverfunctiestoornis voorzichtig; een dosisreductie overwegen.",
+      hepaticColor: 'amber',
+      preg: "Kan gebruikt worden indien geïndiceerd. Lactatie: acceptabel — let op diarree of candidiasis bij de zuigeling.",
+      pregColor: 'green',
+      allergy: "Geen kruisreactie met penicilline — bruikbaar bij penicilline-allergie, onder meer bij huid- en wekedeleninfecties en tandheelkundige infecties.",
+      allergyColor: 'green',
+      note: "Het belangrijkste risico is Clostridioides difficile-colitis — staken bij (bloederige) diarree en denken aan CDI. Innemen met ruim water tegen slokdarmirritatie.",
+      bron: "Farmacotherapeutisch Kompas · SWAB."
+    },
+    {
+      id: 'metronidazol', klasse: 'Overige', name: 'Metronidazol',
+      adult: "Indicatie-afhankelijk, onder meer 500 mg 3×/dag; bacteriële vaginose en giardiasis kennen eigen schema's. Zie richtlijn.",
+      pedText: "20–30 mg/kg/dag in 3 doses, indicatie-afhankelijk. Zie Kinderformularium.",
+      pedKg: { low: 20, high: 30, doses: 3, maxDay: 1500 },
+      renal: "Geen dosisaanpassing nodig bij nierinsufficiëntie.",
+      renalColor: 'green',
+      hepatic: "Bij ernstige leverinsufficiëntie de dosis verlagen of het doseerinterval verlengen.",
+      hepaticColor: 'amber',
+      preg: "Kan gebruikt worden indien geïndiceerd; in het eerste trimester terughoudend en hoge eenmalige doses vermijden. Lactatie: bij voorkeur direct na een voeding; na een hoge eenmalige dosis 12–24 uur kolven en weggooien.",
+      pregColor: 'amber',
+      allergy: "Geen kruisreactie met penicilline.",
+      allergyColor: 'green',
+      note: "Disulfiram-achtige reactie met alcohol — instrueer de patiënt geen alcohol te gebruiken tijdens en tot 48 uur na de kuur. Vaak metaalsmaak. Versterkt het effect van cumarines: INR controleren.",
+      bron: "Farmacotherapeutisch Kompas · SWAB."
+    },
+    {
+      id: 'ciprofloxacine', klasse: 'Overige', name: 'Ciprofloxacine',
+      adult: "500 mg 2×/dag; bij gecompliceerde urineweginfectie of pyelonefritis meestal 7 dagen.",
+      pedText: "Terughoudend bij kinderen vanwege effecten op kraakbeen en pezen — alleen op strikte indicatie, bij voorkeur via de specialist. 10–20 mg/kg/dag in 2 doses, maximaal 1500 mg/dag.",
+      pedKg: null,
+      renal: "Bij eGFR 30–60: maximaal 1000 mg/dag. Bij eGFR < 30: 500 mg 1×/dag (dosis ongeveer halveren).",
+      renalColor: 'amber',
+      hepatic: "Voorzichtig; zeldzaam ernstige hepatotoxiciteit — staken bij tekenen van leverschade.",
+      hepaticColor: 'amber',
+      preg: "Vermijden in zwangerschap en lactatie; kies een alternatief.",
+      pregColor: 'red',
+      allergy: "Geen kruisreactie met penicilline.",
+      allergyColor: 'green',
+      note: "Reservemiddel — alleen inzetten als de eerste keus niet kan. EMA-waarschuwingen: pees­ontsteking en -ruptuur (vooral bij ouderen en gelijktijdig corticosteroïdgebruik), aorta-aneurysma en -dissectie, QT-verlenging, neuropsychiatrische effecten en bloedglucoseschommelingen. Niet innemen met zuivel, antacida of ijzer.",
+      bron: "Farmacotherapeutisch Kompas · SWAB · EMA-restricties fluorchinolonen."
+    }
+  ];
+
+  function abDoseCalcLine(rec, w) {
+    if (!rec.pedKg || isNaN(w) || w < 3 || w > 90) return '';
+    const k = rec.pedKg;
+    const totLow = Math.min(Math.round(w * k.low), k.maxDay);
+    const totHigh = Math.min(Math.round(w * k.high), k.maxDay);
+    const perLow = Math.round(totLow / k.doses);
+    const perHigh = Math.round(totHigh / k.doses);
+    const doseWord = k.doses === 1 ? 'gift' : 'doses';
+    const dayRange = k.low === k.high ? `${totHigh} mg/dag` : `${totLow}–${totHigh} mg/dag`;
+    const perRange = perLow === perHigh ? `± ${perHigh} mg per gift` : `± ${perLow}–${perHigh} mg per gift`;
+    const capped = (w * k.high) > k.maxDay ? ` Begrensd op het maximum van ${k.maxDay} mg/dag.` : '';
+    const extra = rec.pedKgNote ? ` ${rec.pedKgNote}` : '';
+    return `<strong>Richtdosis voor ${fmt(w, 1)} kg:</strong> ${dayRange} in ${k.doses} ${doseWord} (${perRange}).${capped}${extra} De exacte mg/kg blijft indicatie-afhankelijk — verifieer in het Kinderformularium.`;
+  }
+
+  TOOLS.push({
+    id: 'ab-dosering',
+    name: 'Antibiotica-dosering per middel',
+    category: 'Infectie & antibiotica',
+    tag: 'lookup',
+    metaLabel: 'FK · Kinderformularium',
+    desc: 'Orale antibiotica — kinderdosering per kg en aanpassing bij nier-, lever-, zwangerschap en allergie',
+    featured: true,
+    keywords: ['antibiotica','dosering','antibioticadossier','kind','kinderdosering','per kg','nierfunctie','egfr','nierinsufficientie','leverfunctie','zwangerschap','lactatie','borstvoeding','penicilline-allergie','kruisreactie','oraal','amoxicilline','augmentin','clavulaanzuur','feneticilline','flucloxacilline','fenoxymethylpenicilline','doxycycline','nitrofurantoine','fosfomycine','claritromycine','azitromycine','trimethoprim','cotrimoxazol','clindamycine','metronidazol','ciprofloxacine','fk','kinderformularium','swab'],
+    render() {
+      const klassen = [];
+      AB_DOSING.forEach(r => { if (!klassen.includes(r.klasse)) klassen.push(r.klasse); });
+      const opts = klassen.map(kl => `
+        <optgroup label="${escape(kl)}">
+          ${AB_DOSING.filter(r => r.klasse === kl).map(r => `<option value="${r.id}">${escape(r.name)}</option>`).join('')}
+        </optgroup>
+      `).join('');
+      return `
+        <div class="tool-view">
+          <h2>Antibiotica-dosering per middel</h2>
+          <div class="tool-subtitle">Doseringsdossier voor de meest gebruikte orale antibiotica in de huisartsenpraktijk. Kies het middel; vul optioneel een gewicht in voor een richtdosis bij kinderen. Voor de keuze van het middel per indicatie: zie de tool <em>Antibiotica per indicatie</em>.</div>
+
+          <div class="field"><label>Antibioticum</label>
+            <select id="abd-drug">${opts}</select>
+          </div>
+          <div class="field"><label>Gewicht kind (kg) — optioneel</label>
+            <input type="number" id="abd-weight" placeholder="bv. 18" min="3" max="90" step="0.5" />
+            <span class="hint">Vul in voor een richtdosis-berekening van de kinderdosering.</span>
+          </div>
+
+          <div id="abd-legend" style="display:flex;flex-wrap:wrap;gap:10px;margin:4px 0 16px 0;padding:10px 12px;background:var(--surface-2);border-radius:8px;font-size:11px">
+            <span style="display:inline-flex;align-items:center;gap:5px"><span class="tag tag-green" style="margin:0;font-size:9px">●</span> geen aanpassing / veilig</span>
+            <span style="display:inline-flex;align-items:center;gap:5px"><span class="tag tag-amber" style="margin:0;font-size:9px">●</span> aanpassen / voorzichtig</span>
+            <span style="display:inline-flex;align-items:center;gap:5px"><span class="tag tag-red" style="margin:0;font-size:9px">●</span> contra-indicatie / mijden</span>
+          </div>
+
+          <div id="abd-out"></div>
+
+          <div class="disclaimer">Bronnen: Farmacotherapeutisch Kompas · Kinderformularium (NKFK) · SWAB Antibioticaboekje · NHG-Behandelrichtlijnen. Doseringen zijn richtwaarden — de definitieve dosering, kuurduur en keuze zijn indicatie-afhankelijk. Bij kinderen, verminderde nier- of leverfunctie, zwangerschap, lactatie of allergie altijd dubbelchecken in Kinderformularium of het Farmacotherapeutisch Kompas. Berekende kinderdoseringen zijn een hulpmiddel, geen vervanging van het formularium.</div>
+        </div>
+      `;
+    },
+    onMount() {
+      $('abd-drug').addEventListener('change', computeABDosing);
+      $('abd-weight').addEventListener('input', computeABDosing);
+      computeABDosing();
+    }
+  });
+  function computeABDosing() {
+    const rec = AB_DOSING.find(r => r.id === $('abd-drug').value);
+    if (!rec) { $('abd-out').innerHTML = ''; return; }
+    const w = parseFloat($('abd-weight').value);
+    const calc = abDoseCalcLine(rec, w);
+    const calcBlock = calc ? `<br><br>${calc}` : '';
+    $('abd-out').innerHTML = `
+      <div class="result">
+        <div class="result-eyebrow">${escape(rec.klasse)}</div>
+        <div class="result-value" style="font-size:26px">${escape(rec.name)}</div>
+        <div class="result-interpretation" style="margin-top:12px"><strong>Volwassen:</strong> ${rec.adult}</div>
+        <div class="flag flag-blue"><strong>Kind:</strong> ${rec.pedText}${calcBlock}</div>
+        <div class="flag flag-${rec.renalColor}"><strong>Nierfunctie:</strong> ${rec.renal}</div>
+        <div class="flag flag-${rec.hepaticColor}"><strong>Leverfunctie:</strong> ${rec.hepatic}</div>
+        <div class="flag flag-${rec.pregColor}"><strong>Zwangerschap &amp; lactatie:</strong> ${rec.preg}</div>
+        <div class="flag flag-${rec.allergyColor}"><strong>Allergie / kruisreactie:</strong> ${rec.allergy}</div>
+        <div class="result-detail">
+          <strong>Aandachtspunt:</strong> ${rec.note}<br><br>
+          <strong>Bron:</strong> ${rec.bron}
+        </div>
+      </div>
+    `;
+  }
+
+  /* ==================================================================
      INIT
      ================================================================== */
   App.init();

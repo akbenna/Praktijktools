@@ -242,6 +242,7 @@ Toggle bovenaan via `.view-toggle` patroon (segmented control style). Data zit i
 - v0.10 — Drie nieuwe tools: EPDS (Edinburgh Postnatal Depression Scale, 10 items met item-10 zelfverwondings-warning), ACB anticholinerge belasting (Boustani-schaal met ~40 klinisch relevante middelen, sticky lopende-som-result), Hoofdtrauma NICE NG232 (CT-criteria volwassen + kind, sub-views met segmented control). Totaal 35 tools. Acuut & spoed nu 6 tools, Psyche & GGZ 6, Medicatie & rotatie 8 (overweeg opsplitsing als > 9).
 - v0.11 — MoCA-scoring tool (domein-input + educatie-correctie + RUDAS-suggestie voor Donderberg-populatie), dermatomen-diagram met **posterior view** ernaast (C2 occiput, T-bands op rug, S2-S5 perineum/billen + S1 kuit), en **categorie-jump-strip** boven de tool-secties op home (horizontale scroll met chips per categorie, smooth-scroll naar sectie bij klik). Totaal 36 tools. Mobile UX: kleurgecodeerde quick-nav voor snel scrollen door 36 tools.
 - v0.12 — Anatomische dermatomen-redesign: viewBox uitgebreid naar 200×500, longitudinale limb-regions (C5 deltoid + lateraal upper arm, C6 thumb side, C8 ulnar/pinky, T1 axilla) i.p.v. horizontale slices, **kleurpalet uit klassieke medische illustraties** (salmon C2/3, oranje C3/4, geel arm, groen romp gradient, blauw been gradient, paars sacraal). Elke dermatoom heeft eigen fill-kleur inline op de path; hover/active state via opacity + stroke + brightness. Labels met paint-order outline voor leesbaarheid op gekleurde achtergrond. Posterior view aangepast met S3-S5 centraal + S2 lateraal billen. Toaal 36 tools.
+- v0.13 — Antibiotica-dosering per middel (`ab-dosering`): doseringsdossier voor 15 orale antibiotica, geordend per klasse (penicillines, macroliden, tetracyclinen, urineweg-antibiotica, overige). Per middel volwassen-dosering, pediatrische dosering met optionele gewicht-gebaseerde richtdosis-berekening (`abDoseCalcLine`, range-output met max-begrenzing), plus kleurgecodeerde blokken (groen/amber/rood) voor nierfunctie (kwalitatieve eGFR-drempels), leverfunctie, zwangerschap & lactatie en allergie/kruisreactie. Select met `<optgroup>` per klasse; complementair aan `ab-keuze` (indicatie-gestuurd) als middel-gestuurd dossier. Bronnen: FK · Kinderformularium · SWAB. Totaal 37 tools. Infectie & antibiotica nu 4 tools.
 
 ## Categorie-kleurpalet (v0.5)
 
@@ -263,4 +264,4 @@ De **accent-teal** blijft voor alle primaire acties (buttons, focus-rings, resul
 
 ---
 
-*Laatst bijgewerkt: 13 mei 2026.*
+*Laatst bijgewerkt: 14 mei 2026.*
