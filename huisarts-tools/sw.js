@@ -1,7 +1,7 @@
 // Service Worker — Praktijktools
 // Offline-first caching zodat de tools werken zonder wifi
 
-const CACHE = 'praktijktools-v13';
+const CACHE = 'praktijktools-v14';
 const ASSETS = [
   './',
   './index.html',
