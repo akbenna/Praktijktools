@@ -277,71 +277,52 @@
     .topbar-star:active { transform: scale(0.94); }
 
     /* ----------------------------------------------------------------
-       Home — masthead + search
+       Home — slanke sticky topbar + search
     ---------------------------------------------------------------- */
-    .masthead {
-      padding: 8px 0 28px;
-      margin-bottom: 24px;
-      position: relative;
-    }
-    .masthead::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0;
-      width: 40px;
-      height: 2px;
-      background: var(--accent);
-      border-radius: 2px;
-    }
-    .masthead-eyebrow {
-      display: inline-flex;
+    .home-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      margin: calc(-1 * (var(--safe-top) + 16px)) -20px 16px;
+      padding: calc(var(--safe-top) + 10px) 20px 10px;
+      display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--bg);
+      background: color-mix(in srgb, var(--bg) 85%, transparent);
+      -webkit-backdrop-filter: saturate(180%) blur(14px);
+      backdrop-filter: saturate(180%) blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+    .home-topbar-id {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 0;
+    }
+    .home-topbar-eyebrow {
       font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 0.1em;
+      font-size: 9px;
+      letter-spacing: 0.09em;
       text-transform: uppercase;
       color: var(--accent);
       font-weight: 500;
-      margin-bottom: 14px;
     }
-    .masthead-eyebrow::before {
-      content: '';
-      display: inline-block;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-bg);
-    }
-    .masthead h1 {
+    .home-topbar-id h1 {
+      margin: 0;
       font-family: var(--font-display);
-      font-size: 36px;
+      font-size: 17px;
       font-weight: 600;
-      letter-spacing: -0.035em;
-      line-height: 1.02;
-      margin: 0 0 10px 0;
+      letter-spacing: -0.025em;
       color: var(--ink);
-      text-wrap: balance;
-    }
-    .masthead h1 em {
-      font-style: normal;
-      font-weight: 400;
-      color: var(--muted);
-    }
-    .masthead p {
-      font-size: 15px;
-      color: var(--muted);
-      margin: 10px 0 0 0;
-      max-width: 32em;
-      line-height: 1.55;
     }
 
     .search {
       position: relative;
       margin: 8px 0 24px 0;
       position: sticky;
-      top: var(--safe-top, 0);
+      top: calc(var(--safe-top) + 56px);
       z-index: 10;
       padding-top: 4px;
       background: linear-gradient(180deg, var(--bg) 70%, rgba(250,250,250,0));
@@ -376,27 +357,52 @@
        Category sections
     ---------------------------------------------------------------- */
     .section {
-      margin: 0 0 36px 0;
+      margin: 0 0 10px 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
     }
     .section-head {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 16px;
-      padding-bottom: 8px;
+      gap: 11px;
+      width: 100%;
+      padding: 12px 14px;
+      background: transparent;
+      border: none;
+      text-align: left;
+      transition: background 150ms ease;
     }
+    button.section-head:active { background: var(--surface-2); }
     .section-title {
       display: inline-flex;
       align-items: center;
       gap: 10px;
+      flex: 1;
+      min-width: 0;
       font-family: var(--font-display);
-      font-size: 13px;
+      font-size: 13.5px;
       font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--ink-2);
+      letter-spacing: -0.01em;
+      color: var(--ink);
     }
+    .section-head-meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      flex-shrink: 0;
+    }
+    .section-chevron {
+      width: 16px;
+      height: 16px;
+      color: var(--muted-2);
+      transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .section.collapsed .section-chevron { transform: rotate(-90deg); }
+    .section-body { border-top: 1px solid var(--border); }
+    .section.collapsed .section-body { display: none; }
     .section-title-icon {
       display: inline-flex;
       align-items: center;
@@ -526,6 +532,123 @@
     @media (min-width: 540px) {
       .tool-card.featured { grid-column: span 2; }
     }
+
+    /* Tool-cards binnen de accordeon-sectie — luchtiger op surface-container */
+    .section-body .tool-grid { padding: 12px; }
+    .section-body .tool-card {
+      background: var(--bg);
+      box-shadow: none;
+    }
+    .section-body .tool-card:hover { box-shadow: var(--shadow-hover); }
+    .section-body .tool-card.featured {
+      background: linear-gradient(135deg, var(--surface) 0%, var(--accent-bg) 200%);
+    }
+
+    /* Tool-lijst — compacte regels (lijst-weergave) */
+    .tool-list { display: flex; flex-direction: column; }
+    .tool-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 10px 14px;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      transition: background 150ms ease;
+    }
+    .tool-row:last-child { border-bottom: none; }
+    .tool-row:active { background: var(--surface-2); }
+    .tool-row-main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+    .tool-row-name {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+    .tool-row-dot {
+      display: inline-block;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-right: 7px;
+      vertical-align: middle;
+    }
+    .tool-row-meta {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--muted-2);
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tool-row-tag {
+      flex-shrink: 0;
+      padding: 2px 6px;
+      font-size: 9px;
+      font-family: var(--font-mono);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: var(--surface-2);
+      border-radius: 4px;
+      font-weight: 500;
+    }
+    .tool-row-tag.tag-acuut { background: var(--red-bg); color: var(--red-ink); }
+    .tool-row-tag.tag-pediatrisch { background: var(--blue-bg); color: var(--blue-ink); }
+    .tool-row-tag.tag-lookup { background: var(--surface-2); color: var(--muted); }
+    .tool-row-star { display: inline-flex; color: var(--accent); flex-shrink: 0; }
+    .tool-row-star svg { width: 13px; height: 13px; }
+    .tool-row-chevron {
+      width: 15px;
+      height: 15px;
+      color: var(--muted-2);
+      flex-shrink: 0;
+    }
+
+    /* Home-controls — inklap-knop + lijst/kaarten-weergaveschakelaar */
+    .home-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .collapse-all-btn {
+      border: none;
+      background: transparent;
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.03em;
+      font-weight: 500;
+      padding: 6px 2px;
+    }
+    .collapse-all-btn:active { opacity: 0.55; }
+    .view-toggle.view-toggle-home {
+      display: inline-flex;
+      margin-bottom: 0;
+      flex-shrink: 0;
+    }
+    .view-toggle.view-toggle-home button {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 13px;
+      font-size: 12px;
+    }
+    .view-toggle.view-toggle-home button svg { width: 13px; height: 13px; }
 
     /* Categorie-jump-strip — quick scroll-naar-sectie voor mobile */
     .cat-jump {
@@ -1113,23 +1236,20 @@
     }
 
     /* ----------------------------------------------------------------
-       Theme toggle — kleine knop in masthead-hoek op home
+       Theme toggle — knop in de home-topbar
     ---------------------------------------------------------------- */
     .theme-toggle {
-      position: absolute;
-      top: 0;
-      right: 0;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       width: 36px;
       height: 36px;
-      border-radius: 50%;
+      border-radius: 9px;
       border: 1px solid var(--border);
       background: var(--surface);
       color: var(--ink-2);
       padding: 0;
-      box-shadow: var(--shadow-card);
+      flex-shrink: 0;
       transition: all 150ms ease;
     }
     .theme-toggle:hover {
@@ -1498,15 +1618,32 @@
       this.render();
     },
     scrollToCategory(catName) {
-      const klass = (catName === 'Acuut & spoed' ? 'cat-acuut' :
-                     catName === 'Hart & vaten' ? 'cat-hart' :
-                     catName === 'Infectie & antibiotica' ? 'cat-infectie' :
-                     catName === 'Psyche & GGZ' ? 'cat-psyche' :
-                     catName === 'Medicatie & rotatie' ? 'cat-medicatie' :
-                     catName === 'Endocrien & metabool' ? 'cat-endocrien' :
-                     catName === 'Neuro & anatomie' ? 'cat-neuro' : '');
-      const sec = document.getElementById('sec-' + klass);
+      if (Collapsed.has(catName)) {
+        Collapsed.toggle(catName);
+        const grid = document.getElementById('tool-sections');
+        if (grid) grid.innerHTML = renderToolSections(this.state.search);
+      }
+      const sec = document.getElementById('sec-' + catClass(catName));
       if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    },
+    setView(mode) {
+      View.set(mode);
+      const grid = document.getElementById('tool-sections');
+      if (grid) grid.innerHTML = renderToolSections(this.state.search);
+    },
+    toggleCategory(catName) {
+      Collapsed.toggle(catName);
+      const grid = document.getElementById('tool-sections');
+      if (grid) grid.innerHTML = renderToolSections(this.state.search);
+    },
+    toggleAllCategories() {
+      const order = ['Acuut & spoed', 'Hart & vaten', 'Infectie & antibiotica', 'Psyche & GGZ', 'Medicatie & rotatie', 'Endocrien & metabool', 'Neuro & anatomie'];
+      const active = order.filter(c => TOOLS.some(t => t.category === c));
+      const allCollapsed = active.every(c => Collapsed.has(c));
+      if (allCollapsed) Collapsed.clear();
+      else Collapsed.setAll(active);
+      const grid = document.getElementById('tool-sections');
+      if (grid) grid.innerHTML = renderToolSections(this.state.search);
     },
     render() {
       if (this.state.view === 'home') {
@@ -1576,6 +1713,44 @@
     }
   };
 
+  // ------------------------------------------------------------------
+  // Home-weergave (lijst / kaarten) + ingeklapte categorieën — localStorage
+  // ------------------------------------------------------------------
+  const View = {
+    KEY: 'praktijktools.homeview',
+    current() {
+      try { return localStorage.getItem(this.KEY) === 'cards' ? 'cards' : 'list'; }
+      catch (e) { return 'list'; }
+    },
+    set(mode) {
+      try { localStorage.setItem(this.KEY, mode === 'cards' ? 'cards' : 'list'); }
+      catch (e) {}
+    }
+  };
+
+  const Collapsed = {
+    KEY: 'praktijktools.collapsed',
+    list() {
+      try { return JSON.parse(localStorage.getItem(this.KEY) || '[]'); }
+      catch (e) { return []; }
+    },
+    has(cat) { return this.list().includes(cat); },
+    toggle(cat) {
+      const cur = this.list();
+      const idx = cur.indexOf(cat);
+      if (idx >= 0) cur.splice(idx, 1);
+      else cur.push(cat);
+      try { localStorage.setItem(this.KEY, JSON.stringify(cur)); } catch (e) {}
+      return this.has(cat);
+    },
+    setAll(cats) {
+      try { localStorage.setItem(this.KEY, JSON.stringify(cats)); } catch (e) {}
+    },
+    clear() {
+      try { localStorage.setItem(this.KEY, '[]'); } catch (e) {}
+    }
+  };
+
   function renderShell(inner, title, toolId) {
     const pinned = toolId ? Favs.has(toolId) : false;
     const starBtn = toolId ? `
@@ -1593,7 +1768,7 @@
       </div>
       <div class="fade-in">${inner}</div>
       <div class="app-footer">
-        Praktijktools v0.12 · Het Roosendael, Roermond · Niet bedoeld ter vervanging van klinisch oordeel.
+        Praktijktools v0.14 · Het Roosendael, Roermond · Niet bedoeld ter vervanging van klinisch oordeel.
       </div>
     `;
   }
@@ -1603,14 +1778,15 @@
   // ------------------------------------------------------------------
   function renderHome(search) {
     return `
-      <header class="masthead fade-in">
+      <header class="home-topbar fade-in">
+        <div class="home-topbar-id">
+          <span class="home-topbar-eyebrow">Het Roosendael · Roermond</span>
+          <h1>Praktijktools</h1>
+        </div>
         <button class="theme-toggle" onclick="App.toggleTheme()" aria-label="Wissel licht/donker">
           <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
           <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
         </button>
-        <div class="masthead-eyebrow">Het Roosendael · Roermond</div>
-        <h1>Praktijktools</h1>
-        <p>Klinische rekentools, switch-kaarten en wijzers voor de spreekkamer. Werkt offline.</p>
       </header>
 
       <div class="search fade-in">
@@ -1706,6 +1882,7 @@
 
   function renderToolSections(search) {
     const q = search.trim().toLowerCase();
+    const view = View.current();
     const filtered = q ? TOOLS.filter(t =>
       t.name.toLowerCase().includes(q) ||
       t.desc.toLowerCase().includes(q) ||
@@ -1716,35 +1893,70 @@
       return `<div class="empty"><p>Geen tools gevonden voor "${escape(search)}".</p></div>`;
     }
 
+    const renderBody = (tools) => view === 'cards'
+      ? `<div class="tool-grid">${tools.map(toolCard).join('')}</div>`
+      : `<div class="tool-list">${tools.map(toolRow).join('')}</div>`;
+
     if (q) {
-      // Flat list when searching
+      // Flat list when searching — niet inklapbaar
       return `
         <section class="section">
-          <div class="section-head">
+          <div class="section-head section-head-static">
             <div class="section-title">Resultaten</div>
-            <div class="section-count">${filtered.length} ${filtered.length === 1 ? 'tool' : 'tools'}</div>
+            <div class="section-head-meta">
+              <div class="section-count">${filtered.length} ${filtered.length === 1 ? 'tool' : 'tools'}</div>
+            </div>
           </div>
-          <div class="tool-grid">${filtered.map(toolCard).join('')}</div>
+          <div class="section-body">${renderBody(filtered)}</div>
         </section>
       `;
     }
 
-    // Grouped by category
+    // Grouped by category — inklapbare accordeon
     const cats = {};
     filtered.forEach(t => {
       if (!cats[t.category]) cats[t.category] = [];
       cats[t.category].push(t);
     });
     const CAT_ORDER = ['Acuut & spoed', 'Hart & vaten', 'Infectie & antibiotica', 'Psyche & GGZ', 'Medicatie & rotatie', 'Endocrien & metabool', 'Neuro & anatomie'];
-    return CAT_ORDER.filter(c => cats[c]).map(c => `
-      <section class="section ${catClass(c)}" id="sec-${catClass(c)}" data-category="${escape(c)}">
-        <div class="section-head">
-          <div class="section-title">${categoryIcon(c)}${escape(c)}</div>
-          <div class="section-count">${cats[c].length}</div>
+    const activeCats = CAT_ORDER.filter(c => cats[c]);
+    const allCollapsed = activeCats.length > 0 && activeCats.every(c => Collapsed.has(c));
+
+    const controls = `
+      <div class="home-controls fade-in">
+        <button class="collapse-all-btn" onclick="App.toggleAllCategories()">
+          ${allCollapsed ? 'Alles uitklappen' : 'Alles inklappen'}
+        </button>
+        <div class="view-toggle view-toggle-home">
+          <button class="${view === 'list' ? 'active' : ''}" onclick="App.setView('list')" aria-label="Lijstweergave">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M3 12h18"/><path d="M3 18h18"/></svg>
+            Lijst
+          </button>
+          <button class="${view === 'cards' ? 'active' : ''}" onclick="App.setView('cards')" aria-label="Kaartweergave">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            Kaarten
+          </button>
         </div>
-        <div class="tool-grid">${cats[c].map(toolCard).join('')}</div>
+      </div>
+    `;
+
+    const sections = activeCats.map(c => {
+      const collapsed = Collapsed.has(c);
+      return `
+      <section class="section ${catClass(c)} ${collapsed ? 'collapsed' : ''}" id="sec-${catClass(c)}" data-category="${escape(c)}">
+        <button class="section-head" onclick="App.toggleCategory('${escape(c)}')" aria-expanded="${!collapsed}">
+          <div class="section-title">${categoryIcon(c)}${escape(c)}</div>
+          <div class="section-head-meta">
+            <div class="section-count">${cats[c].length}</div>
+            <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+        </button>
+        <div class="section-body">${renderBody(cats[c])}</div>
       </section>
-    `).join('');
+    `;
+    }).join('');
+
+    return controls + sections;
   }
 
   function toolCard(t) {
@@ -1755,6 +1967,25 @@
         <span class="tool-card-name">${escape(t.name)}</span>
         <span class="tool-card-desc">${escape(t.desc)}</span>
         ${tag}
+      </button>
+    `;
+  }
+
+  function toolRow(t) {
+    const tag = t.tag ? `<span class="tool-row-tag tag-${t.tag}">${escape(t.tag)}</span>` : '';
+    const dot = t.featured ? '<span class="tool-row-dot"></span>' : '';
+    const star = Favs.has(t.id)
+      ? `<span class="tool-row-star"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>`
+      : '';
+    return `
+      <button class="tool-row" onclick="App.navigate('${t.id}')">
+        <span class="tool-row-main">
+          <span class="tool-row-name">${dot}${escape(t.name)}</span>
+          <span class="tool-row-meta">${escape(t.metaLabel || t.category)}</span>
+        </span>
+        ${tag}
+        ${star}
+        <svg class="tool-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
       </button>
     `;
   }
